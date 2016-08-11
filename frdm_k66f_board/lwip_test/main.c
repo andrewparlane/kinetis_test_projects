@@ -33,12 +33,32 @@
 #include "clock_config.h"
 #include "fsl_debug_console.h"
 
+// LWIP includes
+#include "lwip/tcpip.h"
+#include "lwip/netif.h"
+#include "ethernetif.h"
+
 int main(void)
 {
     // Init pins, clocks and default console
     BOARD_InitPins();
     BOARD_BootClockRUN();
     BOARD_InitDebugConsole();
+
+    // initialise LWIP
+    ip_addr_t our_ipaddr;
+    ip_addr_t our_netmask;
+    ip_addr_t our_gw;
+    struct netif eth0;
+
+    IP4_ADDR(&our_ipaddr, 192, 168, 1, 200);
+    IP4_ADDR(&our_netmask, 255, 255, 255, 0);
+    IP4_ADDR(&our_gw, 0, 0, 0, 0);
+
+    tcpip_init(NULL, NULL);
+    netif_add(&eth0, &our_ipaddr, &our_netmask, &our_gw, NULL, ethernetif_init, tcpip_input);
+    netif_set_default(&eth0);
+    netif_set_up(&eth0);
 
     // don't exit main()
     for(;;);
