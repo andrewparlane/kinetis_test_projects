@@ -42,7 +42,6 @@
  * allocation and deallocation.
  */
 #define SYS_LIGHTWEIGHT_PROT    0
-#if USE_RTOS
 
 /**
  * NO_SYS==0: Use RTOS
@@ -57,21 +56,6 @@
  */
 #define LWIP_SOCKET                     1
 
-#else
-/**
- * NO_SYS==1: Bare metal lwIP
- */
-#define NO_SYS                 1
-/**
- * LWIP_NETCONN==0: Disable Netconn API (require to use api_lib.c)
- */
-#define LWIP_NETCONN                    0
-/**
- * LWIP_SOCKET==0: Disable Socket API (require to use sockets.c)
- */
-#define LWIP_SOCKET                     0
-
-#endif
 /* ---------- Memory options ---------- */
 /**
  * MEM_ALIGNMENT: should be set to the alignment of the CPU
@@ -118,7 +102,7 @@
 
 
 /* ---------- TCP options ---------- */
-#define LWIP_TCP                1
+#define LWIP_TCP                0
 #define TCP_TTL                 255
 
 /* Controls if TCP should queue segments that arrive out of
@@ -140,18 +124,18 @@
 
 
 /* ---------- ICMP options ---------- */
-#define LWIP_ICMP                       1
+#define LWIP_ICMP                       0
 
 
 /* ---------- DHCP options ---------- */
 /* Define LWIP_DHCP to 1 if you want DHCP configuration of
    interfaces. DHCP is not implemented in lwIP 0.5.1, however, so
    turning this on does currently not work. */
-#define LWIP_DHCP               1
+#define LWIP_DHCP               0
 
 
 /* ---------- UDP options ---------- */
-#define LWIP_UDP                1
+#define LWIP_UDP                0
 #define UDP_TTL                 255
 
 
@@ -208,7 +192,7 @@ Some MCU allow computing and verifying the IP, UDP, TCP and ICMP checksums by ha
    ------------------------------------
 */
 
-#define LWIP_DEBUG
+//#define LWIP_DEBUG
 
 #ifdef LWIP_DEBUG
 #define U8_F "c"
