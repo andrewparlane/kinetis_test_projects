@@ -36,6 +36,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>LWIP</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>board</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -64,6 +69,16 @@
 			<name>utilities</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>LWIP/port</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/middleware/lwip_1.4.1/port</locationURI>
+		</link>
+		<link>
+			<name>LWIP/src</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/middleware/lwip_1.4.1/src</locationURI>
 		</link>
 		<link>
 			<name>board/board.c</name>
@@ -714,6 +729,11 @@
 			<name>sources/FreeRTOSConfig.h</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/FreeRTOSConfig.h</locationURI>
+		</link>
+		<link>
+			<name>sources/fsl_phy.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/fsl_phy.c</locationURI>
 		</link>
 		<link>
 			<name>sources/main.c</name>
