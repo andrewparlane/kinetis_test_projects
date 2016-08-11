@@ -50,29 +50,33 @@
 /*!
  * @brief Task responsible for printing of "Hello world." message.
  */
-static void hello_task(void *pvParameters) {
-  for (;;) {
-    PRINTF("Hello world.\r\n");
-    vTaskSuspend(NULL);
-  }
+static void hello_task(void *pvParameters)
+{
+    for (;;)
+    {
+        PRINTF("Hello world.\r\n");
+        vTaskSuspend(NULL);
+    }
 }
 
 /*!
  * @brief Application entry point.
  */
-int main(void) {
-  /* Init board hardware. */
-  BOARD_InitPins();
-  BOARD_BootClockRUN();
-  BOARD_InitDebugConsole();
+int main(void)
+{
+    /* Init board hardware. */
+    BOARD_InitPins();
+    BOARD_BootClockRUN();
+    BOARD_InitDebugConsole();
 
-  /* Create RTOS task */
-  xTaskCreate(hello_task, "Hello_task", configMINIMAL_STACK_SIZE, NULL, hello_task_PRIORITY, NULL);
-  vTaskStartScheduler();
+    /* Create RTOS task */
+    xTaskCreate(hello_task, "Hello_task", configMINIMAL_STACK_SIZE, NULL, hello_task_PRIORITY, NULL);
+    vTaskStartScheduler();
 
-  /* Add your code here */
+    /* Add your code here */
 
-  for(;;) { /* Infinite loop to avoid leaving the main function */
-    __asm("NOP"); /* something to use as a breakpoint stop while looping */
-  }
+    for(;;)
+    {   /* Infinite loop to avoid leaving the main function */
+        __asm("NOP"); /* something to use as a breakpoint stop while looping */
+    }
 }
