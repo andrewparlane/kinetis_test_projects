@@ -26,30 +26,61 @@
  * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
  */
 
 #ifndef _PIN_MUX_H_
 #define _PIN_MUX_H_
 
-#include <stdbool.h>
-#include "fsl_common.h"
+
+/*******************************************************************************
+ * Definitions
+ ******************************************************************************/
+
+/*! @brief Direction type  */
+typedef enum _pin_mux_direction
+{
+  kPIN_MUX_DirectionInput = 0U,         /* Input direction */
+  kPIN_MUX_DirectionOutput = 1U,        /* Output direction */
+  kPIN_MUX_DirectionInputOrOutput = 2U  /* Input or output direction */
+} pin_mux_direction_t;
+
+/*!
+ * @addtogroup pin_mux
+ * @{
+ */
+
+/*******************************************************************************
+ * API
+ ******************************************************************************/
 
 #if defined(__cplusplus)
 extern "C" {
-#endif /* __cplusplus*/
-       /*!
-        * @brief configure all pins for this demo/example
-        *
-        */
-void BOARD_InitPins(void);
+#endif
+
+#define BOARD_INITPINS_GPIOA_10_DIRECTION                kPIN_MUX_DirectionInput   /*!< Direction of GPIOA_10 signal */
+#define BOARD_INITPINS_GPIOA_11_DIRECTION               kPIN_MUX_DirectionOutput   /*!< Direction of GPIOA_11 signal */
+#define BOARD_INITPINS_GPIOC_9_DIRECTION                kPIN_MUX_DirectionOutput   /*!< Direction of GPIOC_9 signal */
+#define BOARD_INITPINS_GPIOC_13_DIRECTION                kPIN_MUX_DirectionInput   /*!< Direction of GPIOC_13 signal */
+#define BOARD_INITPINS_GPIOD_10_DIRECTION                kPIN_MUX_DirectionInput   /*!< Direction of GPIOD_10 signal */
+#define BOARD_INITPINS_GPIOD_11_DIRECTION                kPIN_MUX_DirectionInput   /*!< Direction of GPIOD_11 signal */
+#define BOARD_INITPINS_GPIOE_6_DIRECTION                kPIN_MUX_DirectionOutput   /*!< Direction of GPIOE_6 signal */
 
 /*!
- * @brief configure pins for uart0
+ * @brief Configures pin routing and optionally pin electrical features.
  *
  */
+void BOARD_InitPins(void);
 
 #if defined(__cplusplus)
 }
-#endif /* __cplusplus*/
+#endif
 
-#endif /* _PIN_MUX_H_  */
+/*!
+ * @}
+ */
+#endif /* _PIN_MUX_H_ */
+
+/*******************************************************************************
+ * EOF
+ ******************************************************************************/
