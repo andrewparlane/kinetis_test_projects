@@ -83,6 +83,7 @@
 									<listOptionValue builtIn="false" value="../../../../common/middleware/usb_1.0.0/include"/>
 									<listOptionValue builtIn="false" value="../../../../common/middleware/usb_1.0.0/osa"/>
 									<listOptionValue builtIn="false" value="../../../../common/middleware/usb_1.0.0/device"/>
+									<listOptionValue builtIn="false" value="../../../../common/middleware/usb_1.0.0/phy"/>
 									<listOptionValue builtIn="false" value="../../usb"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.933718024" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.gnu99" valueType="enumerated"/>
@@ -228,6 +229,7 @@
 									<listOptionValue builtIn="false" value="../../../../common/middleware/usb_1.0.0/include"/>
 									<listOptionValue builtIn="false" value="../../../../common/middleware/usb_1.0.0/osa"/>
 									<listOptionValue builtIn="false" value="../../../../common/middleware/usb_1.0.0/device"/>
+									<listOptionValue builtIn="false" value="../../../../common/middleware/usb_1.0.0/phy"/>
 									<listOptionValue builtIn="false" value="../../usb"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.997197032" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.gnu99" valueType="enumerated"/>
