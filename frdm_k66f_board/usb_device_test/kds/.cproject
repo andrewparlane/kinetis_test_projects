@@ -80,10 +80,15 @@
 									<listOptionValue builtIn="false" value="../../../../common/devices/MK66F18/utilities"/>
 									<listOptionValue builtIn="false" value="../../../../common/rtos/freertos_8.2.3/Source"/>
 									<listOptionValue builtIn="false" value="../../../../common/devices/MK66F18/gcc"/>
+									<listOptionValue builtIn="false" value="../../../../common/middleware/usb_1.0.0/include"/>
+									<listOptionValue builtIn="false" value="../../../../common/middleware/usb_1.0.0/osa"/>
+									<listOptionValue builtIn="false" value="../../../../common/middleware/usb_1.0.0/device"/>
+									<listOptionValue builtIn="false" value="../../usb"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.933718024" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.gnu99" valueType="enumerated"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.869311397" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="DEBUG"/>
+									<listOptionValue builtIn="false" value="USB_STACK_FREERTOS"/>
 									<listOptionValue builtIn="false" value="NDEBUG"/>
 									<listOptionValue builtIn="false" value="CPU_MK66FN2M0VMD18"/>
 								</option>
@@ -137,7 +142,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="freertos/heap_1.c|freertos/heap_5.c|freertos/heap_2.c|freertos/heap_3.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
+						<entry excluding="freertos/heap_1.c|freertos/heap_2.c|freertos/heap_5.c|freertos/heap_3.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -220,9 +225,15 @@
 									<listOptionValue builtIn="false" value="../../../../common/devices/MK66F18/utilities"/>
 									<listOptionValue builtIn="false" value="../../../../common/rtos/freertos_8.2.3/Source"/>
 									<listOptionValue builtIn="false" value="../../../../common/devices/MK66F18/gcc"/>
+									<listOptionValue builtIn="false" value="../../../../common/middleware/usb_1.0.0/include"/>
+									<listOptionValue builtIn="false" value="../../../../common/middleware/usb_1.0.0/osa"/>
+									<listOptionValue builtIn="false" value="../../../../common/middleware/usb_1.0.0/device"/>
+									<listOptionValue builtIn="false" value="../../usb"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.997197032" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.gnu99" valueType="enumerated"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.2881285214" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="DEBUG"/>
+									<listOptionValue builtIn="false" value="USB_STACK_FREERTOS"/>
 									<listOptionValue builtIn="false" value="NDEBUG"/>
 									<listOptionValue builtIn="false" value="CPU_MK66FN2M0VMD18"/>
 								</option>
@@ -274,7 +285,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="freertos/heap_1.c|freertos/heap_5.c|freertos/heap_2.c|freertos/heap_3.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
+						<entry excluding="freertos/heap_1.c|freertos/heap_2.c|freertos/heap_5.c|freertos/heap_3.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
