@@ -71,18 +71,18 @@
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.1397207158" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.336878990" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="../../"/>
-									<listOptionValue builtIn="false" value="../../../../middleware/lwip_1.4.1/src/include"/>
-									<listOptionValue builtIn="false" value="../../../../middleware/lwip_1.4.1/src/include/ipv4"/>
-									<listOptionValue builtIn="false" value="../../../../middleware/lwip_1.4.1/port"/>
-									<listOptionValue builtIn="false" value="../../../../rtos/freertos_8.2.3/Source/include"/>
-									<listOptionValue builtIn="false" value="../../../../rtos/freertos_8.2.3/Source/portable/GCC/ARM_CM4F"/>
-									<listOptionValue builtIn="false" value="../../../../devices/MK66F18/drivers"/>
-									<listOptionValue builtIn="false" value="../../../../CMSIS/Include"/>
-									<listOptionValue builtIn="false" value="../../../../rtos/freertos_8.2.3/Source/portable/MemMang"/>
-									<listOptionValue builtIn="false" value="../../../../devices/MK66F18"/>
-									<listOptionValue builtIn="false" value="../../../../devices/MK66F18/utilities"/>
-									<listOptionValue builtIn="false" value="../../../../rtos/freertos_8.2.3/Source"/>
-									<listOptionValue builtIn="false" value="../../../../devices/MK66F18/gcc"/>
+									<listOptionValue builtIn="false" value="../../../../common/middleware/lwip_1.4.1/src/include"/>
+									<listOptionValue builtIn="false" value="../../../../common/middleware/lwip_1.4.1/src/include/ipv4"/>
+									<listOptionValue builtIn="false" value="../../../../common/middleware/lwip_1.4.1/port"/>
+									<listOptionValue builtIn="false" value="../../../../common/rtos/freertos_8.2.3/Source/include"/>
+									<listOptionValue builtIn="false" value="../../../../common/rtos/freertos_8.2.3/Source/portable/GCC/ARM_CM4F"/>
+									<listOptionValue builtIn="false" value="../../../../common/devices/MK66F18/drivers"/>
+									<listOptionValue builtIn="false" value="../../../../common/CMSIS/Include"/>
+									<listOptionValue builtIn="false" value="../../../../common/rtos/freertos_8.2.3/Source/portable/MemMang"/>
+									<listOptionValue builtIn="false" value="../../../../common/devices/MK66F18"/>
+									<listOptionValue builtIn="false" value="../../../../common/devices/MK66F18/utilities"/>
+									<listOptionValue builtIn="false" value="../../../../common/rtos/freertos_8.2.3/Source"/>
+									<listOptionValue builtIn="false" value="../../../../common/devices/MK66F18/gcc"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.933718024" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.gnu99" valueType="enumerated"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.869311397" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
@@ -214,18 +214,18 @@
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.955273220" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.767758500" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="../../"/>
-									<listOptionValue builtIn="false" value="../../../../middleware/lwip_1.4.1/src/include"/>
-									<listOptionValue builtIn="false" value="../../../../middleware/lwip_1.4.1/src/include/ipv4"/>
-									<listOptionValue builtIn="false" value="../../../../middleware/lwip_1.4.1/port"/>
-									<listOptionValue builtIn="false" value="../../../../rtos/freertos_8.2.3/Source/include"/>
-									<listOptionValue builtIn="false" value="../../../../rtos/freertos_8.2.3/Source/portable/GCC/ARM_CM4F"/>
-									<listOptionValue builtIn="false" value="../../../../devices/MK66F18/drivers"/>
-									<listOptionValue builtIn="false" value="../../../../CMSIS/Include"/>
-									<listOptionValue builtIn="false" value="../../../../rtos/freertos_8.2.3/Source/portable/MemMang"/>
-									<listOptionValue builtIn="false" value="../../../../devices/MK66F18"/>
-									<listOptionValue builtIn="false" value="../../../../devices/MK66F18/utilities"/>
-									<listOptionValue builtIn="false" value="../../../../rtos/freertos_8.2.3/Source"/>
-									<listOptionValue builtIn="false" value="../../../../devices/MK66F18/gcc"/>
+									<listOptionValue builtIn="false" value="../../../../common/middleware/lwip_1.4.1/src/include"/>
+									<listOptionValue builtIn="false" value="../../../../common/middleware/lwip_1.4.1/src/include/ipv4"/>
+									<listOptionValue builtIn="false" value="../../../../common/middleware/lwip_1.4.1/port"/>
+									<listOptionValue builtIn="false" value="../../../../common/rtos/freertos_8.2.3/Source/include"/>
+									<listOptionValue builtIn="false" value="../../../../common/rtos/freertos_8.2.3/Source/portable/GCC/ARM_CM4F"/>
+									<listOptionValue builtIn="false" value="../../../../common/devices/MK66F18/drivers"/>
+									<listOptionValue builtIn="false" value="../../../../common/CMSIS/Include"/>
+									<listOptionValue builtIn="false" value="../../../../common/rtos/freertos_8.2.3/Source/portable/MemMang"/>
+									<listOptionValue builtIn="false" value="../../../../common/devices/MK66F18"/>
+									<listOptionValue builtIn="false" value="../../../../common/devices/MK66F18/utilities"/>
+									<listOptionValue builtIn="false" value="../../../../common/rtos/freertos_8.2.3/Source"/>
+									<listOptionValue builtIn="false" value="../../../../common/devices/MK66F18/gcc"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.997197032" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.gnu99" valueType="enumerated"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.2881285214" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
