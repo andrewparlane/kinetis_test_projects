@@ -321,6 +321,8 @@ lwip_accept(int s, struct sockaddr *addr, socklen_t *addrlen)
   err_t err;
   SYS_ARCH_DECL_PROTECT(lev);
 
+  LWIP_UNUSED_ARG(temp);
+
   LWIP_DEBUGF(SOCKETS_DEBUG, ("lwip_accept(%d)...\n", s));
   sock = get_socket(s);
   if (!sock) {
@@ -413,6 +415,8 @@ lwip_bind(int s, const struct sockaddr *name, socklen_t namelen)
   err_t err;
   const struct sockaddr_in *name_in;
 
+  LWIP_UNUSED_ARG(temp);
+
   sock = get_socket(s);
   if (!sock) {
     return -1;
@@ -496,6 +500,8 @@ lwip_connect(int s, const struct sockaddr *name, socklen_t namelen)
     ip_addr_t remote_addr;
     ip_addr_t * temp;
     u16_t remote_port;
+
+    LWIP_UNUSED_ARG(temp);
 
     inet_addr_to_ipaddr(&remote_addr, &name_in->sin_addr);
     remote_port = name_in->sin_port;
@@ -1417,6 +1423,8 @@ lwip_getaddrname(int s, struct sockaddr *name, socklen_t *namelen, u8_t local)
   struct sockaddr_in sin;
   ip_addr_t naddr;
   ip_addr_t *temp;
+
+  LWIP_UNUSED_ARG(temp);
 
   sock = get_socket(s);
   if (!sock) {
