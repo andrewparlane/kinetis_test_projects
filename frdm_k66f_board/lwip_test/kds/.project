@@ -46,7 +46,7 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>freertos</name>
+			<name>freertos_8.2.3</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -586,134 +586,9 @@
 			<locationURI>PARENT-1-PROJECT_LOC/devices/MK66F18/drivers/fsl_wdog.h</locationURI>
 		</link>
 		<link>
-			<name>freertos/FreeRTOS.h</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/FreeRTOS.h</locationURI>
-		</link>
-		<link>
-			<name>freertos/StackMacros.h</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/StackMacros.h</locationURI>
-		</link>
-		<link>
-			<name>freertos/croutine.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/croutine.c</locationURI>
-		</link>
-		<link>
-			<name>freertos/croutine.h</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/croutine.h</locationURI>
-		</link>
-		<link>
-			<name>freertos/deprecated_definitions.h</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/deprecated_definitions.h</locationURI>
-		</link>
-		<link>
-			<name>freertos/event_groups.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/event_groups.c</locationURI>
-		</link>
-		<link>
-			<name>freertos/event_groups.h</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/event_groups.h</locationURI>
-		</link>
-		<link>
-			<name>freertos/heap_1.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/portable/MemMang/heap_1.c</locationURI>
-		</link>
-		<link>
-			<name>freertos/heap_2.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/portable/MemMang/heap_2.c</locationURI>
-		</link>
-		<link>
-			<name>freertos/heap_3.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/portable/MemMang/heap_3.c</locationURI>
-		</link>
-		<link>
-			<name>freertos/heap_4.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/portable/MemMang/heap_4.c</locationURI>
-		</link>
-		<link>
-			<name>freertos/heap_5.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/portable/MemMang/heap_5.c</locationURI>
-		</link>
-		<link>
-			<name>freertos/list.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/list.c</locationURI>
-		</link>
-		<link>
-			<name>freertos/list.h</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/list.h</locationURI>
-		</link>
-		<link>
-			<name>freertos/mpu_wrappers.h</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/mpu_wrappers.h</locationURI>
-		</link>
-		<link>
-			<name>freertos/port.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/portable/GCC/ARM_CM4F/port.c</locationURI>
-		</link>
-		<link>
-			<name>freertos/portable.h</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/portable.h</locationURI>
-		</link>
-		<link>
-			<name>freertos/portmacro.h</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/portable/GCC/ARM_CM4F/portmacro.h</locationURI>
-		</link>
-		<link>
-			<name>freertos/projdefs.h</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/projdefs.h</locationURI>
-		</link>
-		<link>
-			<name>freertos/queue.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/queue.c</locationURI>
-		</link>
-		<link>
-			<name>freertos/queue.h</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/queue.h</locationURI>
-		</link>
-		<link>
-			<name>freertos/semphr.h</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/semphr.h</locationURI>
-		</link>
-		<link>
-			<name>freertos/task.h</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/task.h</locationURI>
-		</link>
-		<link>
-			<name>freertos/tasks.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/tasks.c</locationURI>
-		</link>
-		<link>
-			<name>freertos/timers.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/timers.c</locationURI>
-		</link>
-		<link>
-			<name>freertos/timers.h</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/timers.h</locationURI>
+			<name>freertos_8.2.3/Source</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>lwip_1.4.1/port</name>
@@ -781,6 +656,46 @@
 			<locationURI>PARENT-1-PROJECT_LOC/devices/MK66F18/utilities/fsl_sbrk.c</locationURI>
 		</link>
 		<link>
+			<name>freertos_8.2.3/Source/croutine.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/croutine.c</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/event_groups.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/event_groups.c</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/include</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/list.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/list.c</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/portable</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/queue.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/queue.c</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/tasks.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/tasks.c</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/timers.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/timers.c</locationURI>
+		</link>
+		<link>
 			<name>lwip_1.4.1/port/arch</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -817,6 +732,81 @@
 		</link>
 		<link>
 			<name>lwip_1.4.1/src/netif</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/include/FreeRTOS.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/FreeRTOS.h</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/include/StackMacros.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/StackMacros.h</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/include/croutine.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/croutine.h</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/include/deprecated_definitions.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/deprecated_definitions.h</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/include/event_groups.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/event_groups.h</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/include/list.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/list.h</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/include/mpu_wrappers.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/mpu_wrappers.h</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/include/portable.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/portable.h</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/include/projdefs.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/projdefs.h</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/include/queue.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/queue.h</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/include/semphr.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/semphr.h</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/include/task.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/task.h</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/include/timers.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/include/timers.h</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/portable/GCC</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/portable/MemMang</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -999,6 +989,36 @@
 			<name>lwip_1.4.1/src/netif/slipif.c</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/middleware/lwip_1.4.1/src/netif/slipif.c</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/portable/GCC/ARM_CM4F</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/portable/MemMang/heap_1.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/portable/MemMang/heap_1.c</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/portable/MemMang/heap_2.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/portable/MemMang/heap_2.c</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/portable/MemMang/heap_3.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/portable/MemMang/heap_3.c</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/portable/MemMang/heap_4.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/portable/MemMang/heap_4.c</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/portable/MemMang/heap_5.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/portable/MemMang/heap_5.c</locationURI>
 		</link>
 		<link>
 			<name>lwip_1.4.1/src/core/ipv4/autoip.c</name>
@@ -1399,6 +1419,16 @@
 			<name>lwip_1.4.1/src/netif/ppp/vj.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/middleware/lwip_1.4.1/src/netif/ppp/vj.h</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/portable/GCC/ARM_CM4F/port.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/portable/GCC/ARM_CM4F/port.c</locationURI>
+		</link>
+		<link>
+			<name>freertos_8.2.3/Source/portable/GCC/ARM_CM4F/portmacro.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/rtos/freertos_8.2.3/Source/portable/GCC/ARM_CM4F/portmacro.h</locationURI>
 		</link>
 		<link>
 			<name>lwip_1.4.1/src/include/ipv4/lwip/autoip.h</name>
