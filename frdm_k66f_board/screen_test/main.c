@@ -35,7 +35,7 @@
 #include "clock_config.h"
 #include "fsl_debug_console.h"
 
-// freeRTOS inclueds
+// freeRTOS includes
 #include "FreeRTOS.h"
 #include "task.h"
 
