@@ -65,6 +65,10 @@ extern "C" {
 #define BOARD_INITPINS_GPIOD_10_DIRECTION                kPIN_MUX_DirectionInput   /*!< Direction of GPIOD_10 signal */
 #define BOARD_INITPINS_GPIOD_11_DIRECTION                kPIN_MUX_DirectionInput   /*!< Direction of GPIOD_11 signal */
 #define BOARD_INITPINS_GPIOE_6_DIRECTION                kPIN_MUX_DirectionOutput   /*!< Direction of GPIOE_6 signal */
+#define BOARD_INITPINS_GPIOB_19_DIRECTION               kPIN_MUX_DirectionOutput   /*!< Direction of GPIOB_19 signal */
+#define BOARD_INITPINS_GPIOB_18_DIRECTION               kPIN_MUX_DirectionOutput   /*!< Direction of GPIOB_18 signal */
+#define BOARD_INITPINS_GPIOC_4_DIRECTION                 kPIN_MUX_DirectionInput   /*!< Direction of GPIOC_4 signal */
+#define BOARD_INITPINS_GPIOC_16_DIRECTION               kPIN_MUX_DirectionOutput   /*!< Direction of GPIOC_16 signal */
 
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
