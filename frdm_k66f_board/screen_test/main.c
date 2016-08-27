@@ -143,22 +143,20 @@ enum
 volatile uint8_t transfer_finished = 0;
 void screen_spi_transfer_complete(SPI_Type *base, dspi_master_edma_handle_t *handle, status_t status, void *userData)
 {
-    DbgConsole_Printf("screen_spi_transfer_complete: ");
-
     if (status == kStatus_Success)
     {
-        DbgConsole_Printf("OK");
+        /*DbgConsole_Printf("Screen SPI tfer complete, data:");
+        for (int i = 0; i < MAX_SPI_TRANSFER_SIZE; i++)
+        {
+            DbgConsole_Printf(" %02X", spi_rx_buffer[i]);
+        }
+        DbgConsole_Printf("\n");*/
     }
     else
     {
-        DbgConsole_Printf("Error: %u", (unsigned int)status);
+        DbgConsole_Printf("Screen SPI error: %u\n", (unsigned int)status);
     }
-    DbgConsole_Printf("\ndata:");
-    for (int i = 0; i < MAX_SPI_TRANSFER_SIZE; i++)
-    {
-        DbgConsole_Printf(" %02X", spi_rx_buffer[i]);
-    }
-    DbgConsole_Printf("\n");
+
     transfer_finished = 1;
 }
 
@@ -169,23 +167,20 @@ void screen_spi_transfer_complete(SPI_Type *base, dspi_master_edma_handle_t *han
 static void main_thread(void *arg)
 {
     DbgConsole_Printf("Starting screen_test\n");
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
-    DbgConsole_Printf("1\n");
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
-    DbgConsole_Printf("2\n");
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
-    DbgConsole_Printf("3\n");
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
 
     // ----------------------------------------------------------
     // set up the communication pins
     // ----------------------------------------------------------
 
     // configure the GPIO pins
+    // this puts the screen in reset
     for (int i = 0; i < NUM_GPIO_PINS; i++)
     {
         GPIO_PinInit(pin_config[i]->port, pin_config[i]->pin, &pin_config[i]->config);
     }
+
+    // make sure the screen is properly in reset
+    vTaskDelay(1);
 
     // configure our DMA
     if (NUM_EDMA_CHANNELS > FSL_FEATURE_DMAMUX_MODULE_CHANNEL)
@@ -226,9 +221,8 @@ static void main_thread(void *arg)
     // ----------------------------------------------------------
 
     // first take the module out of reset
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
     GPIO_WritePinOutput(screen_not_pd_pin.port, screen_not_pd_pin.pin, 1);
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    vTaskDelay(1);
 
     // start an EDMA transfer to get the ID out of the FT810
     dspi_master_edma_handle_t screen_spi_edma_handle;
@@ -258,7 +252,9 @@ static void main_thread(void *arg)
     }
 
     while (!transfer_finished);
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    transfer_finished = 0;
+    // wait a bit to give the screen chance to wake up
+    vTaskDelay(1);
 
     // Send read memory address 0x0030_2000 (ID reg)
     memset(spi_tx_buffer, 0, sizeof(spi_tx_buffer));
@@ -277,6 +273,16 @@ static void main_thread(void *arg)
     if (ret != kStatus_Success)
     {
         DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u trying to read ID register\n", (unsigned int)ret);
+    }
+
+    while (!transfer_finished);
+    transfer_finished = 0;
+
+    printf("ID: %02X\n", spi_rx_buffer[4]);
+
+    if (spi_rx_buffer[4] != 0x7C)
+    {
+        printf("Invalid response for ID register, expecting 7C\n");
     }
 }
 
