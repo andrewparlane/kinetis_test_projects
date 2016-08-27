@@ -68,8 +68,9 @@ const GPIO_Info *pin_config[] = { &screen_dcx_pin,
 #define NUM_GPIO_PINS (sizeof(pin_config) / sizeof(pin_config[0]))
 
 // ----------------------------------------------------------------------------
-// SPI buffers
+// SPI
 // ----------------------------------------------------------------------------
+#define TRANSFER_BAUDRATE 10000; // 10KHz - TODO: increase
 #define MAX_SPI_TRANSFER_SIZE   32
 uint8_t spi_tx_buffer[MAX_SPI_TRANSFER_SIZE];
 uint8_t spi_rx_buffer[MAX_SPI_TRANSFER_SIZE];
@@ -173,12 +174,12 @@ static void main_thread(void *arg)
     // set up the SPI module
     dspi_master_config_t screen_spi_config;
     screen_spi_config.whichCtar = kDSPI_Ctar0;
-    screen_spi_config.ctarConfig.baudRate = 500000; // 500KHz - TODO: increase
+    screen_spi_config.ctarConfig.baudRate = TRANSFER_BAUDRATE; // 500KHz - TODO: increase
     screen_spi_config.ctarConfig.bitsPerFrame = 8U;
     screen_spi_config.ctarConfig.cpol = kDSPI_ClockPolarityActiveHigh;
     screen_spi_config.ctarConfig.cpha = kDSPI_ClockPhaseFirstEdge;
     screen_spi_config.ctarConfig.direction = kDSPI_MsbFirst;
-    screen_spi_config.ctarConfig.pcsToSckDelayInNanoSec = 4;
+    screen_spi_config.ctarConfig.pcsToSckDelayInNanoSec = 500000000U / TRANSFER_BAUDRATE; // todo this needs to be at least 4nS
     screen_spi_config.ctarConfig.lastSckToPcsDelayInNanoSec = 0;
     screen_spi_config.ctarConfig.betweenTransferDelayInNanoSec = 0;
     // note we use kDSPI_Pcs0 here but in the tfer we use kDSPI_MasterPcs0
@@ -219,7 +220,7 @@ static void main_thread(void *arg)
     screen_spi_transfer.rxData = spi_rx_buffer;
     screen_spi_transfer.dataSize = 3;
     // note we use kDSPI_MasterPcs0 here but in init we use kDSPI_Pcs0
-    screen_spi_transfer.configFlags = kDSPI_MasterCtar0 | kDSPI_MasterPcs0;
+    screen_spi_transfer.configFlags = kDSPI_MasterCtar0 | kDSPI_MasterPcs0 | kDSPI_MasterPcsContinuous;
 
     status_t ret = DSPI_MasterTransferEDMA(SPI0, &screen_spi_edma_handle, &screen_spi_transfer);
     if (ret != kStatus_Success)
@@ -241,7 +242,7 @@ static void main_thread(void *arg)
     screen_spi_transfer.rxData = spi_rx_buffer;
     screen_spi_transfer.dataSize = 8;
     // note we use kDSPI_MasterPcs0 here but in init we use kDSPI_Pcs0
-    screen_spi_transfer.configFlags = kDSPI_MasterCtar0 | kDSPI_MasterPcs0;
+    screen_spi_transfer.configFlags = kDSPI_MasterCtar0 | kDSPI_MasterPcs0 | kDSPI_MasterPcsContinuous;
 
     ret = DSPI_MasterTransferEDMA(SPI0, &screen_spi_edma_handle, &screen_spi_transfer);
     if (ret != kStatus_Success)
