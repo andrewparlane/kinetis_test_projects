@@ -96,22 +96,22 @@ enum
 volatile uint8_t transfer_finished = 0;
 void screen_spi_transfer_complete(SPI_Type *base, dspi_master_edma_handle_t *handle, status_t status, void *userData)
 {
-    printf("screen_spi_transfer_complete: ");
+    DbgConsole_Printf("screen_spi_transfer_complete: ");
 
     if (status == kStatus_Success)
     {
-        printf("OK");
+        DbgConsole_Printf("OK");
     }
     else
     {
-        printf("Error: %u", (unsigned int)status);
+        DbgConsole_Printf("Error: %u", (unsigned int)status);
     }
-    printf("\ndata:");
+    DbgConsole_Printf("\ndata:");
     for (int i = 0; i < MAX_SPI_TRANSFER_SIZE; i++)
     {
-        printf(" %02X", spi_rx_buffer[i]);
+        DbgConsole_Printf(" %02X", spi_rx_buffer[i]);
     }
-    printf("\n");
+    DbgConsole_Printf("\n");
     transfer_finished = 1;
 }
 
@@ -121,13 +121,13 @@ void screen_spi_transfer_complete(SPI_Type *base, dspi_master_edma_handle_t *han
 
 static void main_thread(void *arg)
 {
-    printf("Starting screen_test\n");
+    DbgConsole_Printf("Starting screen_test\n");
     vTaskDelay(1000 / portTICK_PERIOD_MS);
-    printf("1\n");
+    DbgConsole_Printf("1\n");
     vTaskDelay(1000 / portTICK_PERIOD_MS);
-    printf("2\n");
+    DbgConsole_Printf("2\n");
     vTaskDelay(1000 / portTICK_PERIOD_MS);
-    printf("3\n");
+    DbgConsole_Printf("3\n");
     vTaskDelay(1000 / portTICK_PERIOD_MS);
 
     // ----------------------------------------------------------
@@ -143,7 +143,7 @@ static void main_thread(void *arg)
     // configure our DMA
     if (NUM_EDMA_CHANNELS > FSL_FEATURE_DMAMUX_MODULE_CHANNEL)
     {
-        printf("Trying to use too many DMA channels, aborting\n");
+        DbgConsole_Printf("Trying to use too many DMA channels, aborting\n");
         while(1);
     }
     DMAMUX_Init(DMAMUX);
@@ -224,7 +224,7 @@ static void main_thread(void *arg)
     status_t ret = DSPI_MasterTransferEDMA(SPI0, &screen_spi_edma_handle, &screen_spi_transfer);
     if (ret != kStatus_Success)
     {
-        printf("DSPI_MasterTransferEDMA() returned %u, trying to send ACTIVE command\n", (unsigned int)ret);
+        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to send ACTIVE command\n", (unsigned int)ret);
     }
 
     while (!transfer_finished);
@@ -246,7 +246,7 @@ static void main_thread(void *arg)
     ret = DSPI_MasterTransferEDMA(SPI0, &screen_spi_edma_handle, &screen_spi_transfer);
     if (ret != kStatus_Success)
     {
-        printf("DSPI_MasterTransferEDMA() returned %u trying to read ID register\n", (unsigned int)ret);
+        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u trying to read ID register\n", (unsigned int)ret);
     }
 }
 
@@ -268,7 +268,7 @@ int main(void)
     // create the main thread ati start the task scheduler
     if (xTaskCreate(main_thread, "main_thread", 4096L / sizeof(portSTACK_TYPE), NULL, 4, NULL) != pdPASS)
     {
-        printf("failed to start main_thread\n");
+        DbgConsole_Printf("failed to start main_thread\n");
         while(1);
     }
     vTaskStartScheduler();
