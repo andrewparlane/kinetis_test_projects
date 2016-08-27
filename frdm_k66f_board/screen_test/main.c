@@ -75,6 +75,52 @@ const GPIO_Info *pin_config[] = { &screen_dcx_pin,
 uint8_t spi_tx_buffer[MAX_SPI_TRANSFER_SIZE];
 uint8_t spi_rx_buffer[MAX_SPI_TRANSFER_SIZE];
 
+void configure_spi_ft81x(void)
+{
+    dspi_master_config_t config;
+    config.whichCtar = kDSPI_Ctar0;
+    config.ctarConfig.baudRate = TRANSFER_BAUDRATE; // 500KHz - TODO: increase
+    config.ctarConfig.bitsPerFrame = 8U;
+    config.ctarConfig.cpol = kDSPI_ClockPolarityActiveHigh;
+    config.ctarConfig.cpha = kDSPI_ClockPhaseFirstEdge;
+    config.ctarConfig.direction = kDSPI_MsbFirst;
+    config.ctarConfig.pcsToSckDelayInNanoSec = 500000000U / TRANSFER_BAUDRATE; // todo this needs to be at least 4nS
+    config.ctarConfig.lastSckToPcsDelayInNanoSec = 0;
+    config.ctarConfig.betweenTransferDelayInNanoSec = 0;
+    // note we use kDSPI_Pcs0 here but in the tfer we use kDSPI_MasterPcs0
+    config.whichPcs = kDSPI_Pcs0;
+    config.pcsActiveHighOrLow = kDSPI_PcsActiveLow;
+    config.enableContinuousSCK = false;
+    config.enableRxFifoOverWrite = false;
+    config.enableModifiedTimingFormat = false;
+    config.samplePoint = kDSPI_SckToSin0Clock;
+
+    DSPI_MasterInit(SPI0, &config, CLOCK_GetFreq(DSPI0_CLK_SRC));
+}
+
+void configure_spi_display(void)
+{
+    // TODO: use correct values for the display
+    dspi_master_config_t config;
+    config.whichCtar = kDSPI_Ctar1;
+    config.ctarConfig.baudRate = TRANSFER_BAUDRATE; // 500KHz - TODO: increase
+    config.ctarConfig.bitsPerFrame = 8U;
+    config.ctarConfig.cpol = kDSPI_ClockPolarityActiveHigh;
+    config.ctarConfig.cpha = kDSPI_ClockPhaseFirstEdge;
+    config.ctarConfig.direction = kDSPI_MsbFirst;
+    config.ctarConfig.pcsToSckDelayInNanoSec = 500000000U / TRANSFER_BAUDRATE; // todo this needs to be at least 4nS
+    config.ctarConfig.lastSckToPcsDelayInNanoSec = 0;
+    config.ctarConfig.betweenTransferDelayInNanoSec = 0;
+    // note we use kDSPI_Pcs0 here but in the tfer we use kDSPI_MasterPcs0
+    config.whichPcs = kDSPI_Pcs1;
+    config.pcsActiveHighOrLow = kDSPI_PcsActiveLow;
+    config.enableContinuousSCK = false;
+    config.enableRxFifoOverWrite = false;
+    config.enableModifiedTimingFormat = false;
+    config.samplePoint = kDSPI_SckToSin0Clock;
+
+    DSPI_MasterInit(SPI0, &config, CLOCK_GetFreq(DSPI0_CLK_SRC));
+}
 
 // ----------------------------------------------------------------------------
 // DMA channels
@@ -172,25 +218,8 @@ static void main_thread(void *arg)
     EDMA_CreateHandle(&screen_spi_intermediary_to_tx_reg_edma_handle, DMA0, EDMA_CHANNEL_SCREEN_SPI_TX);
 
     // set up the SPI module
-    dspi_master_config_t screen_spi_config;
-    screen_spi_config.whichCtar = kDSPI_Ctar0;
-    screen_spi_config.ctarConfig.baudRate = TRANSFER_BAUDRATE; // 500KHz - TODO: increase
-    screen_spi_config.ctarConfig.bitsPerFrame = 8U;
-    screen_spi_config.ctarConfig.cpol = kDSPI_ClockPolarityActiveHigh;
-    screen_spi_config.ctarConfig.cpha = kDSPI_ClockPhaseFirstEdge;
-    screen_spi_config.ctarConfig.direction = kDSPI_MsbFirst;
-    screen_spi_config.ctarConfig.pcsToSckDelayInNanoSec = 500000000U / TRANSFER_BAUDRATE; // todo this needs to be at least 4nS
-    screen_spi_config.ctarConfig.lastSckToPcsDelayInNanoSec = 0;
-    screen_spi_config.ctarConfig.betweenTransferDelayInNanoSec = 0;
-    // note we use kDSPI_Pcs0 here but in the tfer we use kDSPI_MasterPcs0
-    screen_spi_config.whichPcs = kDSPI_Pcs0;
-    screen_spi_config.pcsActiveHighOrLow = kDSPI_PcsActiveLow;
-    screen_spi_config.enableContinuousSCK = false;
-    screen_spi_config.enableRxFifoOverWrite = false;
-    screen_spi_config.enableModifiedTimingFormat = false;
-    screen_spi_config.samplePoint = kDSPI_SckToSin0Clock;
-
-    DSPI_MasterInit(SPI0, &screen_spi_config, CLOCK_GetFreq(DSPI0_CLK_SRC));
+    configure_spi_ft81x();      // FT81x module (CS0)
+    configure_spi_display();    // display (CS1)
 
     // ----------------------------------------------------------
     // set up the ME810A-HV35R eval board
