@@ -114,42 +114,21 @@ void screen_spi_transfer_complete(SPI_Type *base, dspi_master_edma_handle_t *han
     printf("\n");
     transfer_finished = 1;
 }
+
 // ----------------------------------------------------------------------------
-// misc functions
+// Main thread
 // ----------------------------------------------------------------------------
 
-void delay(void)
+static void main_thread(void *arg)
 {
-    volatile uint32_t i = 0;
-    for (i = 0; i < 800000; ++i)
-    {
-        __asm("NOP"); /* delay */
-    }
-}
-
-
-int main(void)
-{
-    // Init pins, clocks and default console
-    BOARD_InitPins();
-    BOARD_BootClockRUN();
-    BOARD_InitDebugConsole();
-
-    // disable the MPU ?? why
-    MPU_Type *base = MPU;
-    base->CESR &= ~MPU_CESR_VLD_MASK;
-
-    // start the task scheduler
-    //vTaskStartScheduler();
-
     printf("Starting screen_test\n");
-    delay();
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
     printf("1\n");
-    delay();
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
     printf("2\n");
-    delay();
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
     printf("3\n");
-    delay();
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
 
     // ----------------------------------------------------------
     // set up the communication pins
@@ -217,9 +196,9 @@ int main(void)
     // ----------------------------------------------------------
 
     // first take the module out of reset
-    delay();
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
     GPIO_WritePinOutput(screen_not_pd_pin.port, screen_not_pd_pin.pin, 1);
-    delay();
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
 
     // start an EDMA transfer to get the ID out of the FT810
     dspi_master_edma_handle_t screen_spi_edma_handle;
@@ -249,8 +228,7 @@ int main(void)
     }
 
     while (!transfer_finished);
-    delay();
-    delay();
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
 
     // Send read memory address 0x0030_2000 (ID reg)
     memset(spi_tx_buffer, 0, sizeof(spi_tx_buffer));
@@ -270,6 +248,30 @@ int main(void)
     {
         printf("DSPI_MasterTransferEDMA() returned %u trying to read ID register\n", (unsigned int)ret);
     }
+}
+
+// ----------------------------------------------------------------------------
+// Entry point
+// ----------------------------------------------------------------------------
+
+int main(void)
+{
+    // Init pins, clocks and default console
+    BOARD_InitPins();
+    BOARD_BootClockRUN();
+    BOARD_InitDebugConsole();
+
+    // disable the MPU ?? why
+    MPU_Type *base = MPU;
+    base->CESR &= ~MPU_CESR_VLD_MASK;
+
+    // create the main thread ati start the task scheduler
+    if (xTaskCreate(main_thread, "main_thread", 4096L / sizeof(portSTACK_TYPE), NULL, 4, NULL) != pdPASS)
+    {
+        printf("failed to start main_thread\n");
+        while(1);
+    }
+    vTaskStartScheduler();
 
     // don't exit main()
     for (;;);
