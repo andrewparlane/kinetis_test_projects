@@ -46,6 +46,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>ft81x_lib</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>sources</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -122,6 +127,21 @@
 		</link>
 		<link>
 			<name>freertos_8.2.3/Source</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>ft81x_lib/ft81x_config.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/common/libs/ft81x_lib/ft81x_config.h</locationURI>
+		</link>
+		<link>
+			<name>ft81x_lib/include</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>ft81x_lib/src</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -691,6 +711,31 @@
 			<locationURI>PARENT-3-PROJECT_LOC/common/rtos/freertos_8.2.3/Source/timers.c</locationURI>
 		</link>
 		<link>
+			<name>ft81x_lib/include/ft81x</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>ft81x_lib/src/boards</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>ft81x_lib/src/displays</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>ft81x_lib/src/ft81x.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/common/libs/ft81x_lib/src/ft81x.c</locationURI>
+		</link>
+		<link>
+			<name>ft81x_lib/src/platforms</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>freertos_8.2.3/Source/include/FreeRTOS.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/common/rtos/freertos_8.2.3/Source/include/FreeRTOS.h</locationURI>
@@ -766,6 +811,41 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>ft81x_lib/include/ft81x/boards</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>ft81x_lib/include/ft81x/displays</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>ft81x_lib/include/ft81x/ft81x.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/common/libs/ft81x_lib/include/ft81x/ft81x.h</locationURI>
+		</link>
+		<link>
+			<name>ft81x_lib/include/ft81x/platforms</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>ft81x_lib/src/boards/frdm_k66.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/common/libs/ft81x_lib/src/boards/frdm_k66.c</locationURI>
+		</link>
+		<link>
+			<name>ft81x_lib/src/displays/ili9488.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/common/libs/ft81x_lib/src/displays/ili9488.c</locationURI>
+		</link>
+		<link>
+			<name>ft81x_lib/src/platforms/nxp_kinetis_k66.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/common/libs/ft81x_lib/src/platforms/nxp_kinetis_k66.c</locationURI>
+		</link>
+		<link>
 			<name>freertos_8.2.3/Source/portable/GCC/ARM_CM4F</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -794,6 +874,51 @@
 			<name>freertos_8.2.3/Source/portable/MemMang/heap_5.c</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/common/rtos/freertos_8.2.3/Source/portable/MemMang/heap_5.c</locationURI>
+		</link>
+		<link>
+			<name>ft81x_lib/include/ft81x/boards/board.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/common/libs/ft81x_lib/include/ft81x/boards/board.h</locationURI>
+		</link>
+		<link>
+			<name>ft81x_lib/include/ft81x/boards/board_types.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/common/libs/ft81x_lib/include/ft81x/boards/board_types.h</locationURI>
+		</link>
+		<link>
+			<name>ft81x_lib/include/ft81x/boards/frdm_k66f.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/common/libs/ft81x_lib/include/ft81x/boards/frdm_k66f.h</locationURI>
+		</link>
+		<link>
+			<name>ft81x_lib/include/ft81x/displays/display.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/common/libs/ft81x_lib/include/ft81x/displays/display.h</locationURI>
+		</link>
+		<link>
+			<name>ft81x_lib/include/ft81x/displays/display_types.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/common/libs/ft81x_lib/include/ft81x/displays/display_types.h</locationURI>
+		</link>
+		<link>
+			<name>ft81x_lib/include/ft81x/displays/ili9488.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/common/libs/ft81x_lib/include/ft81x/displays/ili9488.h</locationURI>
+		</link>
+		<link>
+			<name>ft81x_lib/include/ft81x/platforms/nxp_kinetis_k66.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/common/libs/ft81x_lib/include/ft81x/platforms/nxp_kinetis_k66.h</locationURI>
+		</link>
+		<link>
+			<name>ft81x_lib/include/ft81x/platforms/platforbm_types.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/common/libs/ft81x_lib/include/ft81x/platforms/platforbm_types.h</locationURI>
+		</link>
+		<link>
+			<name>ft81x_lib/include/ft81x/platforms/platform.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/common/libs/ft81x_lib/include/ft81x/platforms/platform.h</locationURI>
 		</link>
 		<link>
 			<name>freertos_8.2.3/Source/portable/GCC/ARM_CM4F/port.c</name>

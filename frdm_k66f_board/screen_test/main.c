@@ -42,7 +42,10 @@
 // driver includes
 #include "fsl_dmamux.h"
 #include "fsl_edma.h"
-#include "fsl_dspi_edma.h"
+
+// ft81x lib includes
+#include "ft81x/ft81x.h"
+#include "ft81x/platforms/platform.h"
 
 // ----------------------------------------------------------------------------
 // GPIO pins
@@ -68,61 +71,6 @@ const GPIO_Info *pin_config[] = { &screen_dcx_pin,
 #define NUM_GPIO_PINS (sizeof(pin_config) / sizeof(pin_config[0]))
 
 // ----------------------------------------------------------------------------
-// SPI
-// ----------------------------------------------------------------------------
-#define TRANSFER_BAUDRATE 10000; // 10KHz - TODO: increase
-#define MAX_SPI_TRANSFER_SIZE   32
-uint8_t spi_tx_buffer[MAX_SPI_TRANSFER_SIZE];
-uint8_t spi_rx_buffer[MAX_SPI_TRANSFER_SIZE];
-
-void configure_spi_ft81x(void)
-{
-    dspi_master_config_t config;
-    config.whichCtar = kDSPI_Ctar0;
-    config.ctarConfig.baudRate = TRANSFER_BAUDRATE; // 500KHz - TODO: increase
-    config.ctarConfig.bitsPerFrame = 8U;
-    config.ctarConfig.cpol = kDSPI_ClockPolarityActiveHigh;
-    config.ctarConfig.cpha = kDSPI_ClockPhaseFirstEdge;
-    config.ctarConfig.direction = kDSPI_MsbFirst;
-    config.ctarConfig.pcsToSckDelayInNanoSec = 500000000U / TRANSFER_BAUDRATE; // todo this needs to be at least 4nS
-    config.ctarConfig.lastSckToPcsDelayInNanoSec = 0;
-    config.ctarConfig.betweenTransferDelayInNanoSec = 0;
-    // note we use kDSPI_Pcs0 here but in the tfer we use kDSPI_MasterPcs0
-    config.whichPcs = kDSPI_Pcs0;
-    config.pcsActiveHighOrLow = kDSPI_PcsActiveLow;
-    config.enableContinuousSCK = false;
-    config.enableRxFifoOverWrite = false;
-    config.enableModifiedTimingFormat = false;
-    config.samplePoint = kDSPI_SckToSin0Clock;
-
-    DSPI_MasterInit(SPI0, &config, CLOCK_GetFreq(DSPI0_CLK_SRC));
-}
-
-void configure_spi_display(void)
-{
-    // TODO: use correct values for the display
-    dspi_master_config_t config;
-    config.whichCtar = kDSPI_Ctar1;
-    config.ctarConfig.baudRate = TRANSFER_BAUDRATE; // 500KHz - TODO: increase
-    config.ctarConfig.bitsPerFrame = 8U;
-    config.ctarConfig.cpol = kDSPI_ClockPolarityActiveHigh;
-    config.ctarConfig.cpha = kDSPI_ClockPhaseFirstEdge;
-    config.ctarConfig.direction = kDSPI_MsbFirst;
-    config.ctarConfig.pcsToSckDelayInNanoSec = 500000000U / TRANSFER_BAUDRATE; // todo this needs to be at least 4nS
-    config.ctarConfig.lastSckToPcsDelayInNanoSec = 0;
-    config.ctarConfig.betweenTransferDelayInNanoSec = 0;
-    // note we use kDSPI_Pcs0 here but in the tfer we use kDSPI_MasterPcs0
-    config.whichPcs = kDSPI_Pcs1;
-    config.pcsActiveHighOrLow = kDSPI_PcsActiveLow;
-    config.enableContinuousSCK = false;
-    config.enableRxFifoOverWrite = false;
-    config.enableModifiedTimingFormat = false;
-    config.samplePoint = kDSPI_SckToSin0Clock;
-
-    DSPI_MasterInit(SPI0, &config, CLOCK_GetFreq(DSPI0_CLK_SRC));
-}
-
-// ----------------------------------------------------------------------------
 // DMA channels
 // ----------------------------------------------------------------------------
 enum
@@ -136,29 +84,6 @@ enum
     // more than are available
     NUM_EDMA_CHANNELS
 };
-
-// ----------------------------------------------------------------------------
-// DMA callbacks
-// ----------------------------------------------------------------------------
-volatile uint8_t transfer_finished = 0;
-void screen_spi_transfer_complete(SPI_Type *base, dspi_master_edma_handle_t *handle, status_t status, void *userData)
-{
-    if (status == kStatus_Success)
-    {
-        /*DbgConsole_Printf("Screen SPI tfer complete, data:");
-        for (int i = 0; i < MAX_SPI_TRANSFER_SIZE; i++)
-        {
-            DbgConsole_Printf(" %02X", spi_rx_buffer[i]);
-        }
-        DbgConsole_Printf("\n");*/
-    }
-    else
-    {
-        DbgConsole_Printf("Screen SPI error: %u\n", (unsigned int)status);
-    }
-
-    transfer_finished = 1;
-}
 
 // ----------------------------------------------------------------------------
 // Main thread
@@ -193,96 +118,20 @@ static void main_thread(void *arg)
     EDMA_GetDefaultConfig(&edma_config);
     EDMA_Init(DMA0, &edma_config);
 
-    // set up the SPI Rx EDMA
-    edma_handle_t screen_spi_rx_edma_handle;
-    memset(&screen_spi_rx_edma_handle, 0, sizeof(edma_handle_t));
-    DMAMUX_SetSource(DMAMUX, EDMA_CHANNEL_SCREEN_SPI_RX, (uint8_t)kDmaRequestMux0SPI0Rx);
-    DMAMUX_EnableChannel(DMAMUX, EDMA_CHANNEL_SCREEN_SPI_RX);
-    EDMA_CreateHandle(&screen_spi_rx_edma_handle, DMA0, EDMA_CHANNEL_SCREEN_SPI_RX);
-
-    // set up the SPI Tx EDMA
-    // note: I don't understand the intermediary handle
-    // TODO: research more
-    edma_handle_t screen_spi_tx_data_to_intermediary_edma_handle;
-    edma_handle_t screen_spi_intermediary_to_tx_reg_edma_handle;
-    memset(&screen_spi_tx_data_to_intermediary_edma_handle, 0, sizeof(edma_handle_t));
-    memset(&screen_spi_intermediary_to_tx_reg_edma_handle, 0, sizeof(edma_handle_t));
-    DMAMUX_SetSource(DMAMUX, EDMA_CHANNEL_SCREEN_SPI_TX, (uint8_t)kDmaRequestMux0SPI0Tx);
-    DMAMUX_EnableChannel(DMAMUX, EDMA_CHANNEL_SCREEN_SPI_TX);
-    EDMA_CreateHandle(&screen_spi_tx_data_to_intermediary_edma_handle, DMA0, EDMA_CHANNEL_SCREEN_SPI_INTERMEDIARY);
-    EDMA_CreateHandle(&screen_spi_intermediary_to_tx_reg_edma_handle, DMA0, EDMA_CHANNEL_SCREEN_SPI_TX);
-
-    // set up the SPI module
-    configure_spi_ft81x();      // FT81x module (CS0)
-    configure_spi_display();    // display (CS1)
-
-    // ----------------------------------------------------------
-    // set up the ME810A-HV35R eval board
-    // ----------------------------------------------------------
-
     // first take the module out of reset
     GPIO_WritePinOutput(screen_not_pd_pin.port, screen_not_pd_pin.pin, 1);
     vTaskDelay(1);
 
-    // start an EDMA transfer to get the ID out of the FT810
-    dspi_master_edma_handle_t screen_spi_edma_handle;
-    DSPI_MasterTransferCreateHandleEDMA(SPI0, &screen_spi_edma_handle, screen_spi_transfer_complete,
-                                        NULL, &screen_spi_rx_edma_handle,
-                                        &screen_spi_tx_data_to_intermediary_edma_handle,
-                                        &screen_spi_intermediary_to_tx_reg_edma_handle);
-
-    // send active command (read memory address 0)
-    memset(spi_tx_buffer, 0, sizeof(spi_tx_buffer));
-    memset(spi_rx_buffer, 0, sizeof(spi_rx_buffer));
-    spi_tx_buffer[0] = 0x00;
-    spi_tx_buffer[1] = 0x00;
-    spi_tx_buffer[2] = 0x00;
-
-    dspi_transfer_t screen_spi_transfer;
-    screen_spi_transfer.txData = spi_tx_buffer;
-    screen_spi_transfer.rxData = spi_rx_buffer;
-    screen_spi_transfer.dataSize = 3;
-    // note we use kDSPI_MasterPcs0 here but in init we use kDSPI_Pcs0
-    screen_spi_transfer.configFlags = kDSPI_MasterCtar0 | kDSPI_MasterPcs0 | kDSPI_MasterPcsContinuous;
-
-    status_t ret = DSPI_MasterTransferEDMA(SPI0, &screen_spi_edma_handle, &screen_spi_transfer);
-    if (ret != kStatus_Success)
+    // set up the FT81X lib
+    // this initialisers the spi module and the dma channels
+    FT81X_NXP_kinetis_k66_user_data ft81x_platform_user_data;
+    ft81x_platform_user_data.intermediary_dma_channel = EDMA_CHANNEL_SCREEN_SPI_INTERMEDIARY;
+    ft81x_platform_user_data.tx_dma_channel = EDMA_CHANNEL_SCREEN_SPI_TX;
+    ft81x_platform_user_data.rx_dma_channel = EDMA_CHANNEL_SCREEN_SPI_RX;
+    ft81x_result res = ft81x_initialise((void *)&ft81x_platform_user_data);
+    if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to send ACTIVE command\n", (unsigned int)ret);
-    }
-
-    while (!transfer_finished);
-    transfer_finished = 0;
-    // wait a bit to give the screen chance to wake up
-    vTaskDelay(1);
-
-    // Send read memory address 0x0030_2000 (ID reg)
-    memset(spi_tx_buffer, 0, sizeof(spi_tx_buffer));
-    memset(spi_rx_buffer, 0, sizeof(spi_rx_buffer));
-    spi_tx_buffer[0] = 0x30;
-    spi_tx_buffer[1] = 0x20;
-    spi_tx_buffer[2] = 0x00;
-
-    screen_spi_transfer.txData = spi_tx_buffer;
-    screen_spi_transfer.rxData = spi_rx_buffer;
-    screen_spi_transfer.dataSize = 8;
-    // note we use kDSPI_MasterPcs0 here but in init we use kDSPI_Pcs0
-    screen_spi_transfer.configFlags = kDSPI_MasterCtar0 | kDSPI_MasterPcs0 | kDSPI_MasterPcsContinuous;
-
-    ret = DSPI_MasterTransferEDMA(SPI0, &screen_spi_edma_handle, &screen_spi_transfer);
-    if (ret != kStatus_Success)
-    {
-        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u trying to read ID register\n", (unsigned int)ret);
-    }
-
-    while (!transfer_finished);
-    transfer_finished = 0;
-
-    printf("ID: %02X\n", spi_rx_buffer[4]);
-
-    if (spi_rx_buffer[4] != 0x7C)
-    {
-        printf("Invalid response for ID register, expecting 7C\n");
+        DbgConsole_Printf("ft81x_initialise failed with %u\n", res);
     }
 }
 
