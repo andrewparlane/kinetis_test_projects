@@ -52,13 +52,6 @@ ft81x_result ft81x_initialise(void *platform_user_data)
         return res;
     }
 
-    // wait a bit to make sure it's out of reset
-    res = ft81x_platform_delay(platform_user_data, 1);
-    if (res != FT81X_RESULT_OK)
-    {
-        return res;
-    }
-
     // read the ID register
     uint32_t id;
     res = ft81x_read_gpu_register(platform_user_data, FT81X_REG_ID_ADDR, &id);
@@ -78,7 +71,37 @@ ft81x_result ft81x_initialise(void *platform_user_data)
 
 ft81x_result ft81x_set_active(void *platform_user_data)
 {
-    return ft81x_platform_gpu_send_command(platform_user_data, FT81X_COMMAND_ACTIVE, 0);
+    ft81x_result res;
+
+    // first take out of reset using the PD pin
+    res = ft81x_platform_set_power_down_pin(platform_user_data, 0);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // next wait a bit for it to come out of reset
+    res = ft81x_platform_delay(platform_user_data, 1);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // then send the ACTIVE command to wake it up
+    res = ft81x_platform_gpu_send_command(platform_user_data, FT81X_COMMAND_ACTIVE, 0);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // finally wait a bit more for it to wake up
+    res = ft81x_platform_delay(platform_user_data, 1);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    return FT81X_RESULT_OK;
 }
 
 ft81x_result ft81x_read_gpu_register(void *platform_user_data, uint32_t addr, uint32_t *val)

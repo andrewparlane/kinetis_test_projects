@@ -1,6 +1,8 @@
 #ifndef __FRDM_K66F_H
 #define __FRDM_K66F_H
 
+#include "fsl_common.h"
+
 // this board requires the FT81X_PLATFORM_NXP_KINETIS_K66 platform
 #define FT81X_PLATFORM FT81X_PLATFORM_NXP_KINETIS_K66
 
@@ -36,6 +38,9 @@
 // 14) INT#    (GPIO)          J1, pin 4   (PTC4)
 // 15) AUDL                    NC
 // 16) DISP    (GPIO)          J1, pin 6   (PTC16)
+
+#define FT81X_BOARD_GPU_NOT_PD_PIN_PORT     PTB
+#define FT81X_BOARD_GPU_NOT_PD_PIN_NUM      18
 
 #define FT81X_BOARD_GPU_SPI_MODULE          SPI0
 #define FT81X_BOARD_DISPLAY_SPI_MODULE      SPI0

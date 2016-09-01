@@ -10,6 +10,7 @@
 
 // driver includes
 #include "fsl_debug_console.h"
+#include "fsl_gpio.h"
 #include "fsl_dmamux.h"
 #include "fsl_edma.h"
 #include "fsl_dspi_edma.h"
@@ -46,7 +47,11 @@ static void gpu_spi_transfer_complete(SPI_Type *base, dspi_master_edma_handle_t 
 
 ft81x_result ft81x_platform_initialise(void *platform_user_data)
 {
-    // nothing to do here
+    // initialise the GPIO pins that connect to the GPU
+    // power down - active low
+    gpio_pin_config_t pd_config = { kGPIO_DigitalOutput, 0 }; // defaults to powered down
+    GPIO_PinInit(FT81X_BOARD_GPU_NOT_PD_PIN_PORT, FT81X_BOARD_GPU_NOT_PD_PIN_NUM, &pd_config);
+
     return FT81X_RESULT_OK;
 }
 
@@ -240,6 +245,15 @@ ft81x_result ft81x_platform_gpu_read_register(void *platform_user_data, uint32_t
         memcpy(value, &spi_rx_buffer[4], 4);
     }
 
+    return FT81X_RESULT_OK;
+}
+
+// ----------------------------------------------------------------------------
+// GPIO functions
+// ----------------------------------------------------------------------------
+ft81x_result ft81x_platform_set_power_down_pin(void *platform_user_data, uint8_t power_down)
+{
+    GPIO_WritePinOutput(FT81X_BOARD_GPU_NOT_PD_PIN_PORT, FT81X_BOARD_GPU_NOT_PD_PIN_NUM, !power_down);
     return FT81X_RESULT_OK;
 }
 
