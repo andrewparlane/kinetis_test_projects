@@ -58,13 +58,9 @@ typedef struct GPIO_Info
     gpio_pin_config_t config;
 } GPIO_Info;
 
-const GPIO_Info screen_dcx_pin      = { PTB, 19, { kGPIO_DigitalOutput, 0 } };
-const GPIO_Info screen_disp_pin     = { PTC, 16, { kGPIO_DigitalOutput, 0 } };
 const GPIO_Info screen_int_pin      = { PTC,  4, { kGPIO_DigitalInput,  0 } };
 
-const GPIO_Info *pin_config[] = { &screen_dcx_pin,
-                                  &screen_disp_pin,
-                                  &screen_int_pin };
+const GPIO_Info *pin_config[] = { &screen_int_pin };
 
 #define NUM_GPIO_PINS (sizeof(pin_config) / sizeof(pin_config[0]))
 
