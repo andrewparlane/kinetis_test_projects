@@ -127,6 +127,9 @@ static void main_thread(void *arg)
     {
         DbgConsole_Printf("ft81x_initialise failed with %u\n", res);
     }
+
+
+    DbgConsole_Printf("sreen_test completed successfully\n");
 }
 
 // ----------------------------------------------------------------------------
