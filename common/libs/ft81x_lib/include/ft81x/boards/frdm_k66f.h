@@ -39,9 +39,17 @@
 // 15) AUDL                    NC
 // 16) DISP    (GPIO)          J1, pin 6   (PTC16)
 
+// gpio pins
 #define FT81X_BOARD_GPU_NOT_PD_PIN_PORT     PTB
 #define FT81X_BOARD_GPU_NOT_PD_PIN_NUM      18
 
+#define FT81X_BOARD_GPU_DCX_PIN_PORT        PTB
+#define FT81X_BOARD_GPU_DCX_PIN_NUM         19
+
+#define FT81X_BOARD_GPU_DISP_PIN_PORT       PTC
+#define FT81X_BOARD_GPU_DISP_PIN_NUM        16
+
+// spi config
 #define FT81X_BOARD_GPU_SPI_MODULE          SPI0
 #define FT81X_BOARD_DISPLAY_SPI_MODULE      SPI0
 
