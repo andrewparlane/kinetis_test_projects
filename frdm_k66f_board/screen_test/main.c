@@ -59,12 +59,10 @@ typedef struct GPIO_Info
 } GPIO_Info;
 
 const GPIO_Info screen_dcx_pin      = { PTB, 19, { kGPIO_DigitalOutput, 0 } };
-const GPIO_Info screen_not_pd_pin   = { PTB, 18, { kGPIO_DigitalOutput, 0 } }; // default to powered down
 const GPIO_Info screen_disp_pin     = { PTC, 16, { kGPIO_DigitalOutput, 0 } };
 const GPIO_Info screen_int_pin      = { PTC,  4, { kGPIO_DigitalInput,  0 } };
 
 const GPIO_Info *pin_config[] = { &screen_dcx_pin,
-                                  &screen_not_pd_pin,
                                   &screen_disp_pin,
                                   &screen_int_pin };
 
@@ -117,10 +115,6 @@ static void main_thread(void *arg)
     edma_config_t edma_config;
     EDMA_GetDefaultConfig(&edma_config);
     EDMA_Init(DMA0, &edma_config);
-
-    // first take the module out of reset
-    GPIO_WritePinOutput(screen_not_pd_pin.port, screen_not_pd_pin.pin, 1);
-    vTaskDelay(1);
 
     // set up the FT81X lib
     // this initialisers the spi module and the dma channels
