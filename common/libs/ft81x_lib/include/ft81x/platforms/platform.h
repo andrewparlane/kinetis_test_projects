@@ -19,6 +19,12 @@
 
 #include <stdint.h>
 
+typedef enum
+{
+    FT81X_PLATFORM_GPIO_DIRECTION_INPUT,
+    FT81X_PLATFORM_GPIO_DIRECTION_OUTPUT
+} ft81x_gpio_direction;
+
 // functions
 ft81x_result ft81x_platform_initialise(void *platform_user_data);
 ft81x_result ft81x_platform_gpu_spi_comms_initialise(void *platform_user_data);
@@ -28,6 +34,11 @@ ft81x_result ft81x_platform_gpu_send_command(void *platform_user_data, ft81x_com
 ft81x_result ft81x_platform_gpu_read_register(void *platform_user_data, uint32_t address, uint32_t *value);
 
 ft81x_result ft81x_platform_set_power_down_pin(void *platform_user_data, uint8_t power_down);
+
+// note: These shouldn't be used externally for the PD pin
+//       as that is managed internally
+ft81x_result ft81x_platform_initialise_gpio_pin(void *platform_user_data, void *port, uint32_t pin, ft81x_gpio_direction direction, uint8_t value);
+ft81x_result ft81x_platform_set_gpio_pin(void *platform_user_data, void *port, uint32_t pin, uint8_t value);
 
 ft81x_result ft81x_platform_delay(void *platform_user_data, uint32_t milliseconds);
 

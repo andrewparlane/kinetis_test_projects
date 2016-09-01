@@ -48,9 +48,8 @@ static void gpu_spi_transfer_complete(SPI_Type *base, dspi_master_edma_handle_t 
 ft81x_result ft81x_platform_initialise(void *platform_user_data)
 {
     // initialise the GPIO pins that connect to the GPU
-    // power down - active low
-    gpio_pin_config_t pd_config = { kGPIO_DigitalOutput, 0 }; // defaults to powered down
-    GPIO_PinInit(FT81X_BOARD_GPU_NOT_PD_PIN_PORT, FT81X_BOARD_GPU_NOT_PD_PIN_NUM, &pd_config);
+    // power down - active low (defaults to powered down)
+    ft81x_platform_initialise_gpio_pin(platform_user_data, FT81X_BOARD_GPU_NOT_PD_PIN_PORT, FT81X_BOARD_GPU_NOT_PD_PIN_NUM, FT81X_PLATFORM_GPIO_DIRECTION_OUTPUT, 0);
 
     return FT81X_RESULT_OK;
 }
@@ -249,11 +248,28 @@ ft81x_result ft81x_platform_gpu_read_register(void *platform_user_data, uint32_t
 }
 
 // ----------------------------------------------------------------------------
-// GPIO functions
+// Power functions
 // ----------------------------------------------------------------------------
 ft81x_result ft81x_platform_set_power_down_pin(void *platform_user_data, uint8_t power_down)
 {
-    GPIO_WritePinOutput(FT81X_BOARD_GPU_NOT_PD_PIN_PORT, FT81X_BOARD_GPU_NOT_PD_PIN_NUM, !power_down);
+    return ft81x_platform_set_gpio_pin(platform_user_data, FT81X_BOARD_GPU_NOT_PD_PIN_PORT, FT81X_BOARD_GPU_NOT_PD_PIN_NUM, !power_down);
+}
+
+// ----------------------------------------------------------------------------
+// GPIO functions
+// note: These shouldn't be used externally for the PD pin
+//       as that is managed internally
+// ----------------------------------------------------------------------------
+ft81x_result ft81x_platform_initialise_gpio_pin(void *platform_user_data, void *port, uint32_t pin, ft81x_gpio_direction direction, uint8_t value)
+{
+    gpio_pin_config_t config = { (direction == FT81X_PLATFORM_GPIO_DIRECTION_INPUT) ? kGPIO_DigitalInput : kGPIO_DigitalOutput, value };
+    GPIO_PinInit((GPIO_Type *)port, pin, &config);
+    return FT81X_RESULT_OK;
+}
+
+ft81x_result ft81x_platform_set_gpio_pin(void *platform_user_data, void *port, uint32_t pin, uint8_t value)
+{
+    GPIO_WritePinOutput((GPIO_Type *)port, pin, value);
     return FT81X_RESULT_OK;
 }
 
