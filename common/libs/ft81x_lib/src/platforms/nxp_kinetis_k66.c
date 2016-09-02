@@ -21,12 +21,12 @@
 // ----------------------------------------------------------------------------
 // DMA callbacks
 // ----------------------------------------------------------------------------
-static volatile uint8_t gpu_transfer_finished = 0;
-static void gpu_spi_transfer_complete(SPI_Type *base, dspi_master_edma_handle_t *handle, status_t status, void *user_data)
+static volatile uint8_t transfer_finished = 0;
+static void spi_transfer_complete(SPI_Type *base, dspi_master_edma_handle_t *handle, status_t status, void *user_data)
 {
     if (status == kStatus_Success)
     {
-        /*DbgConsole_Printf("GPU SPI tfer complete, data:");
+        /*DbgConsole_Printf("SPI tfer complete, data:");
         for (int i = 0; i < MAX_SPI_TRANSFER_SIZE; i++)
         {
             DbgConsole_Printf(" %02X", spi_rx_buffer[i]);
@@ -35,10 +35,10 @@ static void gpu_spi_transfer_complete(SPI_Type *base, dspi_master_edma_handle_t 
     }
     else
     {
-        DbgConsole_Printf("GPU SPI error: %u\n", (unsigned int)status);
+        DbgConsole_Printf("SPI error: %u\n", (unsigned int)status);
     }
 
-    gpu_transfer_finished = 1;
+    transfer_finished = 1;
 }
 
 // ----------------------------------------------------------------------------
@@ -102,7 +102,7 @@ ft81x_result ft81x_platform_gpu_spi_comms_initialise(void *platform_user_data)
     DSPI_MasterInit(FT81X_BOARD_GPU_SPI_MODULE, &config, CLOCK_GetFreq(FT81X_BOARD_GPU_SPI_CLK_SRC));
 
     // create the SPI EDMA handle
-    DSPI_MasterTransferCreateHandleEDMA(FT81X_BOARD_GPU_SPI_MODULE, &(k66_user_data->gpu_spi_edma_handle), gpu_spi_transfer_complete,
+    DSPI_MasterTransferCreateHandleEDMA(FT81X_BOARD_GPU_SPI_MODULE, &(k66_user_data->gpu_spi_edma_handle), spi_transfer_complete,
                                         NULL,
                                         &k66_user_data->gpu_spi_rx_edma_handle,
                                         &k66_user_data->gpu_spi_tx_data_to_intermediary_edma_handle,
@@ -196,8 +196,8 @@ ft81x_result ft81x_platform_gpu_send_command(void *platform_user_data, ft81x_com
     }
 
     // todo add timeout
-    while (!gpu_transfer_finished);
-    gpu_transfer_finished = 0;
+    while (!transfer_finished);
+    transfer_finished = 0;
 
     return FT81X_RESULT_OK;
 }
@@ -236,8 +236,8 @@ ft81x_result ft81x_platform_gpu_read_register(void *platform_user_data, uint32_t
     }
 
     // todo add timeout
-    while (!gpu_transfer_finished);
-    gpu_transfer_finished = 0;
+    while (!transfer_finished);
+    transfer_finished = 0;
 
     if (value != NULL)
     {
