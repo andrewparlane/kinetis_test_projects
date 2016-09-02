@@ -8,9 +8,9 @@
 typedef struct
 {
     // init parameters
-    uint32_t rx_dma_channel;
-    uint32_t tx_dma_channel;
-    uint32_t intermediary_dma_channel;
+    uint32_t gpu_rx_dma_channel;
+    uint32_t gpu_tx_dma_channel;
+    uint32_t gpu_intermediary_dma_channel;
 
     // GPU spi edmai handles
     edma_handle_t               gpu_spi_tx_data_to_intermediary_edma_handle;

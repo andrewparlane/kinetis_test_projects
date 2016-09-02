@@ -61,13 +61,13 @@ ft81x_result ft81x_platform_gpu_spi_comms_initialise(void *platform_user_data)
         return FT81X_RESULT_NO_USER_DATA;
     }
     FT81X_NXP_kinetis_k66_user_data *k66_user_data = (FT81X_NXP_kinetis_k66_user_data *)platform_user_data;
-    const uint32_t EDMA_CHANNEL_SCREEN_SPI_RX = k66_user_data->rx_dma_channel;
-    const uint32_t EDMA_CHANNEL_SCREEN_SPI_TX = k66_user_data->tx_dma_channel;
-    const uint32_t EDMA_CHANNEL_SCREEN_SPI_INTERMEDIARY = k66_user_data->intermediary_dma_channel;
+    const uint32_t EDMA_CHANNEL_SCREEN_SPI_RX = k66_user_data->gpu_rx_dma_channel;
+    const uint32_t EDMA_CHANNEL_SCREEN_SPI_TX = k66_user_data->gpu_tx_dma_channel;
+    const uint32_t EDMA_CHANNEL_SCREEN_SPI_INTERMEDIARY = k66_user_data->gpu_intermediary_dma_channel;
 
     // set up the SPI Rx EDMA
     memset(&k66_user_data->gpu_spi_rx_edma_handle, 0, sizeof(edma_handle_t));
-    DMAMUX_SetSource(DMAMUX, EDMA_CHANNEL_SCREEN_SPI_RX, FT81X_BOARD_DMAMUX_RX_SRC);
+    DMAMUX_SetSource(DMAMUX, EDMA_CHANNEL_SCREEN_SPI_RX, FT81X_BOARD_GPU_DMAMUX_RX_SRC);
     DMAMUX_EnableChannel(DMAMUX, EDMA_CHANNEL_SCREEN_SPI_RX);
     EDMA_CreateHandle(&k66_user_data->gpu_spi_rx_edma_handle, DMA0, EDMA_CHANNEL_SCREEN_SPI_RX);
 
@@ -76,7 +76,7 @@ ft81x_result ft81x_platform_gpu_spi_comms_initialise(void *platform_user_data)
     // TODO: research more
     memset(&k66_user_data->gpu_spi_tx_data_to_intermediary_edma_handle, 0, sizeof(edma_handle_t));
     memset(&k66_user_data->gpu_spi_intermediary_to_tx_reg_edma_handle, 0, sizeof(edma_handle_t));
-    DMAMUX_SetSource(DMAMUX, EDMA_CHANNEL_SCREEN_SPI_TX, FT81X_BOARD_DMAMUX_TX_SRC);
+    DMAMUX_SetSource(DMAMUX, EDMA_CHANNEL_SCREEN_SPI_TX, FT81X_BOARD_GPU_DMAMUX_TX_SRC);
     DMAMUX_EnableChannel(DMAMUX, EDMA_CHANNEL_SCREEN_SPI_TX);
     EDMA_CreateHandle(&k66_user_data->gpu_spi_tx_data_to_intermediary_edma_handle, DMA0, EDMA_CHANNEL_SCREEN_SPI_INTERMEDIARY);
     EDMA_CreateHandle(&k66_user_data->gpu_spi_intermediary_to_tx_reg_edma_handle, DMA0, EDMA_CHANNEL_SCREEN_SPI_TX);
@@ -99,7 +99,7 @@ ft81x_result ft81x_platform_gpu_spi_comms_initialise(void *platform_user_data)
     config.enableModifiedTimingFormat = false;
     config.samplePoint = kDSPI_SckToSin0Clock;
 
-    DSPI_MasterInit(FT81X_BOARD_GPU_SPI_MODULE, &config, CLOCK_GetFreq(FT81X_BOARD_SPI_CLK_SRC));
+    DSPI_MasterInit(FT81X_BOARD_GPU_SPI_MODULE, &config, CLOCK_GetFreq(FT81X_BOARD_GPU_SPI_CLK_SRC));
 
     // create the SPI EDMA handle
     DSPI_MasterTransferCreateHandleEDMA(FT81X_BOARD_GPU_SPI_MODULE, &(k66_user_data->gpu_spi_edma_handle), gpu_spi_transfer_complete,
@@ -161,7 +161,7 @@ ft81x_result ft81x_platform_display_spi_comms_initialise(void *platform_user_dat
     config.enableModifiedTimingFormat = false;
     config.samplePoint = kDSPI_SckToSin0Clock;
 
-    DSPI_MasterInit(FT81X_BOARD_DISPLAY_SPI_MODULE, &config, CLOCK_GetFreq(FT81X_BOARD_SPI_CLK_SRC));
+    DSPI_MasterInit(FT81X_BOARD_DISPLAY_SPI_MODULE, &config, CLOCK_GetFreq(FT81X_BOARD_DISPLAY_SPI_CLK_SRC));
 
     return FT81X_RESULT_OK;
 }

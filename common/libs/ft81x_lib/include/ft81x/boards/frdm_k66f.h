@@ -53,10 +53,11 @@
 #define FT81X_BOARD_GPU_SPI_MODULE          SPI0
 #define FT81X_BOARD_DISPLAY_SPI_MODULE      SPI0
 
-#define FT81X_BOARD_DMAMUX_RX_SRC           (uint8_t)kDmaRequestMux0SPI0Rx
-#define FT81X_BOARD_DMAMUX_TX_SRC           (uint8_t)kDmaRequestMux0SPI0Tx
+#define FT81X_BOARD_GPU_DMAMUX_RX_SRC       (uint8_t)kDmaRequestMux0SPI0Rx
+#define FT81X_BOARD_GPU_DMAMUX_TX_SRC       (uint8_t)kDmaRequestMux0SPI0Tx
 
-#define FT81X_BOARD_SPI_CLK_SRC             DSPI0_CLK_SRC
+#define FT81X_BOARD_GPU_SPI_CLK_SRC         DSPI0_CLK_SRC
+#define FT81X_BOARD_DISPLAY_SPI_CLK_SRC     DSPI0_CLK_SRC
 
 // note for init we use kDSPI_CtarX
 // but in the tfer we use kDSPI_MasterCtarX
