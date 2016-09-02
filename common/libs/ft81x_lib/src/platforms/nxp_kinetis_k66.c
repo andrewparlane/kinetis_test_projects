@@ -26,7 +26,7 @@ static void gpu_spi_transfer_complete(SPI_Type *base, dspi_master_edma_handle_t 
 {
     if (status == kStatus_Success)
     {
-        /*DbgConsole_Printf("Screen SPI tfer complete, data:");
+        /*DbgConsole_Printf("GPU SPI tfer complete, data:");
         for (int i = 0; i < MAX_SPI_TRANSFER_SIZE; i++)
         {
             DbgConsole_Printf(" %02X", spi_rx_buffer[i]);
@@ -35,7 +35,7 @@ static void gpu_spi_transfer_complete(SPI_Type *base, dspi_master_edma_handle_t 
     }
     else
     {
-        DbgConsole_Printf("Screen SPI error: %u\n", (unsigned int)status);
+        DbgConsole_Printf("GPU SPI error: %u\n", (unsigned int)status);
     }
 
     gpu_transfer_finished = 1;
