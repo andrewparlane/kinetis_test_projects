@@ -24,16 +24,7 @@
 static volatile uint8_t transfer_finished = 0;
 static void spi_transfer_complete(SPI_Type *base, dspi_master_edma_handle_t *handle, status_t status, void *user_data)
 {
-    if (status == kStatus_Success)
-    {
-        /*DbgConsole_Printf("SPI tfer complete, data:");
-        for (int i = 0; i < MAX_SPI_TRANSFER_SIZE; i++)
-        {
-            DbgConsole_Printf(" %02X", spi_rx_buffer[i]);
-        }
-        DbgConsole_Printf("\n");*/
-    }
-    else
+    if (status != kStatus_Success)
     {
         DbgConsole_Printf("SPI error: %u\n", (unsigned int)status);
     }
