@@ -33,6 +33,8 @@ ft81x_result ft81x_platform_display_spi_comms_initialise(void *platform_user_dat
 ft81x_result ft81x_platform_gpu_send_command(void *platform_user_data, ft81x_command command, uint8_t param);
 ft81x_result ft81x_platform_gpu_read_register(void *platform_user_data, uint32_t address, uint32_t *value);
 
+ft81x_result ft81x_platform_display_spi_transfer(void *platform_user_data, uint32_t count, uint8_t *tx_data, uint8_t *rx_data);
+
 ft81x_result ft81x_platform_set_power_down_pin(void *platform_user_data, uint8_t power_down);
 
 // note: These shouldn't be used externally for the PD pin

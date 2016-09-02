@@ -250,6 +250,39 @@ ft81x_result ft81x_platform_gpu_read_register(void *platform_user_data, uint32_t
 }
 
 // ----------------------------------------------------------------------------
+// Display transfer functions
+// ----------------------------------------------------------------------------
+#if ((FT81X_DISPLAY_COMMS_TYPE) == (FT81X_DISPLAY_COMMS_TYPE_SPI))
+ft81x_result ft81x_platform_display_spi_transfer(void *platform_user_data, uint32_t count, uint8_t *tx_data, uint8_t *rx_data)
+{
+    if (platform_user_data == NULL)
+    {
+        return FT81X_RESULT_NO_USER_DATA;
+    }
+    FT81X_NXP_kinetis_k66_user_data *k66_user_data = (FT81X_NXP_kinetis_k66_user_data *)platform_user_data;
+
+    dspi_transfer_t tfer;
+    tfer.txData = tx_data;
+    tfer.rxData = rx_data;
+    tfer.dataSize = count;
+    tfer.configFlags = FT81X_BOARD_DISPLAY_SPI_TFER_CTAR | FT81X_BOARD_DISPLAY_SPI_TFER_CS | kDSPI_MasterPcsContinuous;
+
+    status_t ret = DSPI_MasterTransferEDMA(FT81X_BOARD_GPU_SPI_MODULE, k66_user_data->display_spi_edma_handle, &tfer);
+    if (ret != kStatus_Success)
+    {
+        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to write to the display\n", (unsigned int)ret);
+        return FT81X_RESULT_GPU_TFER_FAILED;
+    }
+
+    // todo add timeout
+    while (!transfer_finished);
+    transfer_finished = 0;
+
+    return FT81X_RESULT_OK;
+}
+#endif
+
+// ----------------------------------------------------------------------------
 // Power functions
 // ----------------------------------------------------------------------------
 ft81x_result ft81x_platform_set_power_down_pin(void *platform_user_data, uint8_t power_down)
