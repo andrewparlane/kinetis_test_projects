@@ -233,7 +233,7 @@ ft81x_result ft81x_platform_gpu_read_register(void *platform_user_data, uint32_t
     status_t ret = DSPI_MasterTransferEDMA(FT81X_BOARD_GPU_SPI_MODULE, &(k66_user_data->gpu_spi_edma_handle), &tfer);
     if (ret != kStatus_Success)
     {
-        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to send ACTIVE command\n", (unsigned int)ret);
+        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to read a GPU register\n", (unsigned int)ret);
         return FT81X_RESULT_GPU_TFER_FAILED;
     }
 
