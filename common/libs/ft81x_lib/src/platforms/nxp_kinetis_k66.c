@@ -114,7 +114,6 @@ ft81x_result ft81x_platform_gpu_spi_comms_initialise(void *platform_user_data)
 #if ((FT81X_DISPLAY_COMMS_TYPE) == (FT81X_DISPLAY_COMMS_TYPE_SPI))
 ft81x_result ft81x_platform_display_spi_comms_initialise(void *platform_user_data)
 {
-    // TODO: use correct values for the display
     dspi_master_config_t config;
     config.whichCtar = FT81X_BOARD_DISPLAY_SPI_INIT_CTAR;
     config.ctarConfig.baudRate = FT81X_DISPLAY_SPI_BAUD_RATE;
