@@ -115,9 +115,9 @@ static void main_thread(void *arg)
     // set up the FT81X lib
     // this initialisers the spi module and the dma channels
     FT81X_NXP_kinetis_k66_user_data ft81x_platform_user_data;
-    ft81x_platform_user_data.intermediary_dma_channel = EDMA_CHANNEL_SCREEN_SPI_INTERMEDIARY;
-    ft81x_platform_user_data.tx_dma_channel = EDMA_CHANNEL_SCREEN_SPI_TX;
-    ft81x_platform_user_data.rx_dma_channel = EDMA_CHANNEL_SCREEN_SPI_RX;
+    ft81x_platform_user_data.gpu_intermediary_dma_channel = EDMA_CHANNEL_SCREEN_SPI_INTERMEDIARY;
+    ft81x_platform_user_data.gpu_tx_dma_channel = EDMA_CHANNEL_SCREEN_SPI_TX;
+    ft81x_platform_user_data.gpu_rx_dma_channel = EDMA_CHANNEL_SCREEN_SPI_RX;
     ft81x_result res = ft81x_initialise((void *)&ft81x_platform_user_data);
     if (res != FT81X_RESULT_OK)
     {
