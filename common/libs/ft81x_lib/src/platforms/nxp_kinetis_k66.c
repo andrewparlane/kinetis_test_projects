@@ -114,6 +114,12 @@ ft81x_result ft81x_platform_gpu_spi_comms_initialise(void *platform_user_data)
 #if ((FT81X_DISPLAY_COMMS_TYPE) == (FT81X_DISPLAY_COMMS_TYPE_SPI))
 ft81x_result ft81x_platform_display_spi_comms_initialise(void *platform_user_data)
 {
+    if (platform_user_data == NULL)
+    {
+        return FT81X_RESULT_NO_USER_DATA;
+    }
+    FT81X_NXP_kinetis_k66_user_data *k66_user_data = (FT81X_NXP_kinetis_k66_user_data *)platform_user_data;
+
     dspi_master_config_t config;
     config.whichCtar = FT81X_BOARD_DISPLAY_SPI_INIT_CTAR;
     config.ctarConfig.baudRate = FT81X_DISPLAY_SPI_BAUD_RATE;
@@ -161,6 +167,12 @@ ft81x_result ft81x_platform_display_spi_comms_initialise(void *platform_user_dat
     config.samplePoint = kDSPI_SckToSin0Clock;
 
     DSPI_MasterInit(FT81X_BOARD_DISPLAY_SPI_MODULE, &config, CLOCK_GetFreq(FT81X_BOARD_DISPLAY_SPI_CLK_SRC));
+
+#if ((FT81X_BOARD_GPU_SPI_BASE) != (FT81X_BOARD_DISPLAY_SPI_BASE))
+#  error TODO: Set up DMA if we use a different SPI module to the GPU
+#else
+    k66_user_data->display_spi_edma_handle = &k66_user_data->gpu_spi_edma_handle;
+#endif
 
     return FT81X_RESULT_OK;
 }

@@ -17,6 +17,9 @@ typedef struct
     edma_handle_t               gpu_spi_intermediary_to_tx_reg_edma_handle;
     edma_handle_t               gpu_spi_rx_edma_handle;
     dspi_master_edma_handle_t   gpu_spi_edma_handle;
+
+    // display spi edma handles (pointers so we can use tha same as the gpu if needed)
+    dspi_master_edma_handle_t   *display_spi_edma_handle;
 } FT81X_NXP_kinetis_k66_user_data;
 
 #endif
