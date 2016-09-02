@@ -10,14 +10,14 @@ ft81x_result ft81x_display_initialise(void *platform_user_data)
     ft81x_result res;
 
     // This display uses a DCX pin as part of it's SPI comms
-    res = ft81x_platform_initialise_gpio_pin(platform_user_data, FT81X_BOARD_GPU_DCX_PIN_PORT, FT81X_BOARD_GPU_DCX_PIN_NUM, FT81X_PLATFORM_GPIO_DIRECTION_OUTPUT, 0);
+    res = ft81x_platform_initialise_gpio_pin(platform_user_data, FT81X_BOARD_DISPLAY_DCX_PIN_PORT, FT81X_BOARD_DISPLAY_DCX_PIN_NUM, FT81X_PLATFORM_GPIO_DIRECTION_OUTPUT, 0);
     if (res != FT81X_RESULT_OK)
     {
         return res;
     }
 
     // We also have a disp pin that determines if the display is on or off
-    res = ft81x_platform_initialise_gpio_pin(platform_user_data, FT81X_BOARD_GPU_DISP_PIN_PORT, FT81X_BOARD_GPU_DISP_PIN_NUM, FT81X_PLATFORM_GPIO_DIRECTION_OUTPUT, 0);
+    res = ft81x_platform_initialise_gpio_pin(platform_user_data, FT81X_BOARD_DISPLAY_DISP_PIN_PORT, FT81X_BOARD_DISPLAY_DISP_PIN_NUM, FT81X_PLATFORM_GPIO_DIRECTION_OUTPUT, 0);
     if (res != FT81X_RESULT_OK)
     {
         return res;
