@@ -45,6 +45,13 @@ ft81x_result ft81x_initialise(void *platform_user_data)
         return res;
     }
 
+    // reset the GPU
+    res = ft81x_reset(platform_user_data);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
     // send the active command to the GPU to wake it up
     res = ft81x_set_active(platform_user_data);
     if (res != FT81X_RESULT_OK)
@@ -79,32 +86,53 @@ ft81x_result ft81x_initialise(void *platform_user_data)
     return FT81X_RESULT_OK;
 }
 
-ft81x_result ft81x_set_active(void *platform_user_data)
+ft81x_result ft81x_reset(void *platform_user_data)
 {
     ft81x_result res;
 
-    // first take out of reset using the PD pin
-    res = ft81x_platform_set_power_down_pin(platform_user_data, 0);
+    // First assert power down
+    res = ft81x_platform_set_power_down_pin(platform_user_data, 1);
     if (res != FT81X_RESULT_OK)
     {
         return res;
     }
 
-    // next wait a bit for it to come out of reset
+    // Wait a bit
     res = ft81x_platform_delay(platform_user_data, 1);
     if (res != FT81X_RESULT_OK)
     {
         return res;
     }
 
-    // then send the ACTIVE command to wake it up
+    // Then take out of reset using the PD pin
+    res = ft81x_platform_set_power_down_pin(platform_user_data, 0);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // Wait a bit
+    res = ft81x_platform_delay(platform_user_data, 1);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    return res;
+}
+
+ft81x_result ft81x_set_active(void *platform_user_data)
+{
+    ft81x_result res;
+
+    // Send the ACTIVE command to wake it up
     res = ft81x_platform_gpu_send_command(platform_user_data, FT81X_COMMAND_ACTIVE, 0);
     if (res != FT81X_RESULT_OK)
     {
         return res;
     }
 
-    // finally wait a bit more for it to wake up
+    // wait a bit more for it to wake up
     res = ft81x_platform_delay(platform_user_data, 1);
     if (res != FT81X_RESULT_OK)
     {
