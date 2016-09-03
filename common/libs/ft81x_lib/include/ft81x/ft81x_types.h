@@ -7,6 +7,7 @@ typedef enum
     FT81X_RESULT_NO_USER_DATA,
     FT81X_RESULT_GPU_TFER_FAILED,
     FT81X_RESULT_INVALID_ID,
+    FT81X_RESULT_INVALID_ARG,
 } ft81x_result;
 
 #endif
