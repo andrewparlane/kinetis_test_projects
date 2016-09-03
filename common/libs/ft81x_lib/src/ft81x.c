@@ -60,8 +60,8 @@ ft81x_result ft81x_initialise(void *platform_user_data)
     }
 
     // read the ID register
-    uint32_t id;
-    res = ft81x_read_gpu_register(platform_user_data, FT81X_REG_ID_ADDR, &id);
+    uint8_t id;
+    res = ft81x_platform_gpu_read_register_8(platform_user_data, FT81X_REG_ID_ADDR, &id);
     if (res != FT81X_RESULT_OK)
     {
         return res;
@@ -140,9 +140,4 @@ ft81x_result ft81x_set_active(void *platform_user_data)
     }
 
     return FT81X_RESULT_OK;
-}
-
-ft81x_result ft81x_read_gpu_register(void *platform_user_data, uint32_t addr, uint32_t *val)
-{
-    return ft81x_platform_gpu_read_register_32(platform_user_data, addr, val);
 }
