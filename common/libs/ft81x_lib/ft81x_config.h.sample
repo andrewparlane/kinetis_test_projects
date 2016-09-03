@@ -3,12 +3,19 @@
 
 // copy this file to your project directory and rename to ft81x_config.h
 
+#include "ft81x/ft81x_types.h"
 #include "ft81x/boards/board_types.h"
 
 // ----------------------------------------------------------------------------
 // Board type
 // ----------------------------------------------------------------------------
 #define FT81X_BOARD                             FT81X_BOARD_FRDM_K66F
+
+// ----------------------------------------------------------------------------
+// GPU parameters
+// ----------------------------------------------------------------------------
+#define FT81X_GPU_TYPE                          FT81X_GPU_TYPE_FT810
+// for resistive touch displays only, determine by experimentation
 
 // ----------------------------------------------------------------------------
 // Comms parameters

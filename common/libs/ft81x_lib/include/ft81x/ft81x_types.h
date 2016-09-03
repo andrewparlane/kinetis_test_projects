@@ -10,4 +10,12 @@ typedef enum
     FT81X_RESULT_INVALID_ARG,
 } ft81x_result;
 
+enum
+{
+    FT81X_GPU_TYPE_FT810 = 0,
+    FT81X_GPU_TYPE_FT811,
+    FT81X_GPU_TYPE_FT812,
+    FT81X_GPU_TYPE_FT813,
+};
+
 #endif
