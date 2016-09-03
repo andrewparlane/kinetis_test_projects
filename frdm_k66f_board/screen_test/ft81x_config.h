@@ -12,4 +12,8 @@
 #define FT81X_GPU_SPI_BAUD_RATE     10000   // 10KHz
 #define FT81X_DISPLAY_SPI_BAUD_RATE 10000   // 10KHz
 
+// screen parameters
+#define FT81X_SCREEN_WIDTH          320     // in pixels
+#define FT81X_SCREEN_HEIGHT         480     // in pixels
+
 #endif
