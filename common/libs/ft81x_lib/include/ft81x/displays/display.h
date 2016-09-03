@@ -40,4 +40,6 @@
 ft81x_result ft81x_display_initialise(void *platform_user_data);
 ft81x_result ft81x_display_comms_initialise(void *platform_user_data);
 
+ft81x_result ft81x_display_read_id(void *platform_user_data, uint32_t *id);
+
 #endif
