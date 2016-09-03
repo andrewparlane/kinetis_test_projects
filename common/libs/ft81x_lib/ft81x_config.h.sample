@@ -5,15 +5,21 @@
 
 #include "ft81x/boards/board_types.h"
 
-// board
-#define FT81X_BOARD FT81X_BOARD_FRDM_K66F
+// ----------------------------------------------------------------------------
+// Board type
+// ----------------------------------------------------------------------------
+#define FT81X_BOARD                             FT81X_BOARD_FRDM_K66F
 
-// comms parameters
-#define FT81X_GPU_SPI_BAUD_RATE     10000   // 10KHz
-#define FT81X_DISPLAY_SPI_BAUD_RATE 10000   // 10KHz
+// ----------------------------------------------------------------------------
+// Comms parameters
+// ----------------------------------------------------------------------------
+#define FT81X_GPU_SPI_BAUD_RATE                 10000   // 10KHz
+#define FT81X_DISPLAY_SPI_BAUD_RATE             10000   // 10KHz
 
-// screen parameters
-#define FT81X_SCREEN_WIDTH          320     // in pixels
-#define FT81X_SCREEN_HEIGHT         480     // in pixels
+// ----------------------------------------------------------------------------
+// Screen Parameters
+// ----------------------------------------------------------------------------
+#define FT81X_SCREEN_WIDTH                      320     // in pixels
+#define FT81X_SCREEN_HEIGHT                     480     // in pixels
 
 #endif
