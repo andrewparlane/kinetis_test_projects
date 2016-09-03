@@ -98,7 +98,7 @@ ft81x_result ft81x_reset(void *platform_user_data)
     }
 
     // Wait a bit
-    res = ft81x_platform_delay(platform_user_data, 1);
+    res = ft81x_platform_delay(platform_user_data, 5);
     if (res != FT81X_RESULT_OK)
     {
         return res;
@@ -112,7 +112,7 @@ ft81x_result ft81x_reset(void *platform_user_data)
     }
 
     // Wait a bit
-    res = ft81x_platform_delay(platform_user_data, 1);
+    res = ft81x_platform_delay(platform_user_data, 5);
     if (res != FT81X_RESULT_OK)
     {
         return res;
