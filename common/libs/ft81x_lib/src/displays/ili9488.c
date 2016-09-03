@@ -8,7 +8,9 @@
 // basic commands
 #define CMD_READ_ID                     0x04
 
-// helper macros
+// ----------------------------------------------------------------------------
+// Helper macros
+// ----------------------------------------------------------------------------
 #define SET_DCX(val)                                                                                                                            \
 {                                                                                                                                               \
     ft81x_result res = ft81x_platform_set_gpio_pin(platform_user_data, FT81X_BOARD_DISPLAY_DCX_PIN_PORT, FT81X_BOARD_DISPLAY_DCX_PIN_NUM, val); \
@@ -18,6 +20,48 @@
     }                                                                                                                                           \
 }
 
+static ft81x_result ili9488_write_cmd(void *platform_user_data, uint8_t cmd, uint32_t data_count, uint8_t *data);
+#define WRITE_CMD(cmd, count, data)                                             \
+{                                                                               \
+    ft81x_result res = ili9488_write_cmd(platform_user_data, cmd, count, data); \
+    if (res != FT81X_RESULT_OK)                                                 \
+    {                                                                           \
+        return res;                                                             \
+    }                                                                           \
+}
+
+// ----------------------------------------------------------------------------
+// Local functions
+// ----------------------------------------------------------------------------
+static ft81x_result ili9488_write_cmd(void *platform_user_data, uint8_t cmd, uint32_t data_count, uint8_t *data)
+{
+    ft81x_result res;
+
+    // send command byte
+    SET_DCX(0);
+    uint8_t tmp;
+    res = ft81x_platform_display_spi_transfer(platform_user_data, 1, &cmd, &tmp);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    if (data_count && data != NULL)
+    {
+        // send the data bytes
+        SET_DCX(1);
+        res = ft81x_platform_display_spi_transfer(platform_user_data, data_count, data, data);
+
+        // set DCX to default
+        SET_DCX(0);
+    }
+
+    return res;
+}
+
+// ----------------------------------------------------------------------------
+// Display functions
+// ----------------------------------------------------------------------------
 ft81x_result ft81x_display_initialise(void *platform_user_data)
 {
     ft81x_result res;
