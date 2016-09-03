@@ -220,7 +220,7 @@ ft81x_result gpu_write_register(void *platform_user_data, uint32_t address, uint
     uint8_t spi_tx_buffer[7] = { ((address >> 16) & 0x3F) | 0x80,
                                   (address >> 8)  & 0xFF,
                                    address        & 0xFF };
-    memcpy(&spi_tx_buffer[4], data, count);
+    memcpy(&spi_tx_buffer[3], data, count);
 
     dspi_transfer_t tfer;
     tfer.txData = spi_tx_buffer;
