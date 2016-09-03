@@ -35,7 +35,6 @@ static void spi_transfer_complete(SPI_Type *base, dspi_master_edma_handle_t *han
 // ----------------------------------------------------------------------------
 // Initialise functions
 // ----------------------------------------------------------------------------
-
 ft81x_result ft81x_platform_initialise(void *platform_user_data)
 {
     // initialise the GPIO pins that connect to the GPU
