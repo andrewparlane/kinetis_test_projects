@@ -259,7 +259,7 @@ ft81x_result ft81x_platform_gpu_write_register_32(void *platform_user_data, uint
     return gpu_write_register(platform_user_data, address, 4, (uint8_t *)&data);
 }
 
-ft81x_result ft81x_platform_gpu_read_register(void *platform_user_data, uint32_t address, uint32_t *value)
+ft81x_result gpu_read_register(void *platform_user_data, uint32_t address, uint8_t count, uint8_t *data)
 {
     if (platform_user_data == NULL)
     {
@@ -270,8 +270,7 @@ ft81x_result ft81x_platform_gpu_read_register(void *platform_user_data, uint32_t
     // register reads consist of:
     //  3 bytes of address (write)
     //  1 byte of dummy
-    //  4 bytes of data (read)
-
+    //  up to 4 bytes of data (read)
     uint8_t spi_tx_buffer[8] = {(uint8_t)((address >> 16) & 0x3F),
                                 (uint8_t)(address >> 8),
                                 (uint8_t)(address),
@@ -282,8 +281,10 @@ ft81x_result ft81x_platform_gpu_read_register(void *platform_user_data, uint32_t
     dspi_transfer_t tfer;
     tfer.txData = spi_tx_buffer;
     tfer.rxData = spi_rx_buffer;
-    tfer.dataSize = 8;
-    tfer.configFlags = FT81X_BOARD_GPU_SPI_TFER_CTAR | FT81X_BOARD_GPU_SPI_TFER_CS | kDSPI_MasterPcsContinuous;
+    tfer.dataSize = 4 + count;
+    tfer.configFlags = FT81X_BOARD_GPU_SPI_TFER_CTAR |
+                       FT81X_BOARD_GPU_SPI_TFER_CS |
+                       kDSPI_MasterPcsContinuous;
 
     status_t ret = DSPI_MasterTransferEDMA(FT81X_BOARD_GPU_SPI_MODULE, &(k66_user_data->gpu_spi_edma_handle), &tfer);
     if (ret != kStatus_Success)
@@ -296,12 +297,24 @@ ft81x_result ft81x_platform_gpu_read_register(void *platform_user_data, uint32_t
     while (!transfer_finished);
     transfer_finished = 0;
 
-    if (value != NULL)
-    {
-        memcpy(value, &spi_rx_buffer[4], 4);
-    }
+    memcpy(data, &spi_rx_buffer[4], count);
 
     return FT81X_RESULT_OK;
+}
+
+ft81x_result ft81x_platform_gpu_read_register_8(void *platform_user_data, uint32_t address, uint8_t *value)
+{
+    return gpu_read_register(platform_user_data, address, 1, (uint8_t *)value);
+}
+
+ft81x_result ft81x_platform_gpu_read_register_16(void *platform_user_data, uint32_t address, uint16_t *value)
+{
+    return gpu_read_register(platform_user_data, address, 2, (uint8_t *)value);
+}
+
+ft81x_result ft81x_platform_gpu_read_register_32(void *platform_user_data, uint32_t address, uint32_t *value)
+{
+    return gpu_read_register(platform_user_data, address, 4, (uint8_t *)value);
 }
 
 // ----------------------------------------------------------------------------

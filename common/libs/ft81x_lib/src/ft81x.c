@@ -144,5 +144,5 @@ ft81x_result ft81x_set_active(void *platform_user_data)
 
 ft81x_result ft81x_read_gpu_register(void *platform_user_data, uint32_t addr, uint32_t *val)
 {
-    return ft81x_platform_gpu_read_register(platform_user_data, addr, val);
+    return ft81x_platform_gpu_read_register_32(platform_user_data, addr, val);
 }
