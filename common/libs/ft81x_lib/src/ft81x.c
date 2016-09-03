@@ -66,6 +66,16 @@ ft81x_result ft81x_initialise(void *platform_user_data)
         return FT81X_RESULT_INVALID_ID;
     }
 
+    // configure the GPU
+#warning TODO
+
+    // configure the display
+    res = ft81x_display_send_configuration(platform_user_data);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
     return FT81X_RESULT_OK;
 }
 
