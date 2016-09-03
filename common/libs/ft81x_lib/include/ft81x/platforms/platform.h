@@ -31,9 +31,11 @@ ft81x_result ft81x_platform_gpu_spi_comms_initialise(void *platform_user_data);
 ft81x_result ft81x_platform_display_spi_comms_initialise(void *platform_user_data);
 
 ft81x_result ft81x_platform_gpu_send_command(void *platform_user_data, ft81x_command command, uint8_t param);
+ft81x_result ft81x_platform_gpu_write_mem(void *platform_user_data, uint32_t address, uint32_t count, uint8_t *data);
 ft81x_result ft81x_platform_gpu_write_register_8(void *platform_user_data, uint32_t address, uint8_t data);
 ft81x_result ft81x_platform_gpu_write_register_16(void *platform_user_data, uint32_t address, uint16_t data);
 ft81x_result ft81x_platform_gpu_write_register_32(void *platform_user_data, uint32_t address, uint32_t data);
+ft81x_result ft81x_platform_gpu_read_mem(void *platform_user_data, uint32_t address, uint32_t count, uint8_t *data);
 ft81x_result ft81x_platform_gpu_read_register_8(void *platform_user_data, uint32_t address, uint8_t *value);
 ft81x_result ft81x_platform_gpu_read_register_16(void *platform_user_data, uint32_t address, uint16_t *value);
 ft81x_result ft81x_platform_gpu_read_register_32(void *platform_user_data, uint32_t address, uint32_t *value);

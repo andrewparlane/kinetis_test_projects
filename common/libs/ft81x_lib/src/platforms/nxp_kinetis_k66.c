@@ -203,6 +203,62 @@ ft81x_result ft81x_platform_gpu_send_command(void *platform_user_data, ft81x_com
     return FT81X_RESULT_OK;
 }
 
+ft81x_result ft81x_platform_gpu_write_mem(void *platform_user_data, uint32_t address, uint32_t count, uint8_t *data)
+{
+    if (platform_user_data == NULL)
+    {
+        return FT81X_RESULT_NO_USER_DATA;
+    }
+    FT81X_NXP_kinetis_k66_user_data *k66_user_data = (FT81X_NXP_kinetis_k66_user_data *)platform_user_data;
+
+    // first send the address
+    // the | 0x80 is because we are writing
+    uint8_t spi_tx_buffer[3] = { ((address >> 16) & 0x3F) | 0x80,
+                                  (address >> 8)  & 0xFF,
+                                   address        & 0xFF };
+
+    dspi_transfer_t tfer;
+    tfer.txData = spi_tx_buffer;
+    tfer.rxData = NULL;
+    tfer.dataSize = 3;
+    tfer.configFlags = FT81X_BOARD_GPU_SPI_TFER_CTAR |
+                       FT81X_BOARD_GPU_SPI_TFER_CS |
+                       kDSPI_MasterPcsContinuous |
+                       kDSPI_MasterActiveAfterTransfer;
+
+    status_t ret = DSPI_MasterTransferEDMA(FT81X_BOARD_GPU_SPI_MODULE, &(k66_user_data->gpu_spi_edma_handle), &tfer);
+    if (ret != kStatus_Success)
+    {
+        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to send ACTIVE command\n", (unsigned int)ret);
+        return FT81X_RESULT_GPU_TFER_FAILED;
+    }
+
+    // todo add timeout
+    while (!transfer_finished);
+    transfer_finished = 0;
+
+    // now send the data
+    tfer.txData = data;
+    tfer.rxData = NULL;
+    tfer.dataSize = count;
+    tfer.configFlags = FT81X_BOARD_GPU_SPI_TFER_CTAR |
+                       FT81X_BOARD_GPU_SPI_TFER_CS |
+                       kDSPI_MasterPcsContinuous;
+
+    ret = DSPI_MasterTransferEDMA(FT81X_BOARD_GPU_SPI_MODULE, &(k66_user_data->gpu_spi_edma_handle), &tfer);
+    if (ret != kStatus_Success)
+    {
+        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to send ACTIVE command\n", (unsigned int)ret);
+        return FT81X_RESULT_GPU_TFER_FAILED;
+    }
+
+    // todo add timeout
+    while (!transfer_finished);
+    transfer_finished = 0;
+
+    return FT81X_RESULT_OK;
+}
+
 ft81x_result gpu_write_register(void *platform_user_data, uint32_t address, uint8_t count, uint8_t *data)
 {
     if (platform_user_data == NULL)
@@ -257,6 +313,62 @@ ft81x_result ft81x_platform_gpu_write_register_16(void *platform_user_data, uint
 ft81x_result ft81x_platform_gpu_write_register_32(void *platform_user_data, uint32_t address, uint32_t data)
 {
     return gpu_write_register(platform_user_data, address, 4, (uint8_t *)&data);
+}
+
+ft81x_result ft81x_platform_gpu_read_mem(void *platform_user_data, uint32_t address, uint32_t count, uint8_t *data)
+{
+    if (platform_user_data == NULL)
+    {
+        return FT81X_RESULT_NO_USER_DATA;
+    }
+    FT81X_NXP_kinetis_k66_user_data *k66_user_data = (FT81X_NXP_kinetis_k66_user_data *)platform_user_data;
+
+    // first send the address and a dummy byte
+    uint8_t spi_tx_buffer[4] = { ((address >> 16) & 0x3F),
+                                  (address >> 8)  & 0xFF,
+                                   address        & 0xFF,
+                                   0 };
+
+    dspi_transfer_t tfer;
+    tfer.txData = spi_tx_buffer;
+    tfer.rxData = NULL;
+    tfer.dataSize = 4;
+    tfer.configFlags = FT81X_BOARD_GPU_SPI_TFER_CTAR |
+                       FT81X_BOARD_GPU_SPI_TFER_CS |
+                       kDSPI_MasterPcsContinuous |
+                       kDSPI_MasterActiveAfterTransfer;
+
+    status_t ret = DSPI_MasterTransferEDMA(FT81X_BOARD_GPU_SPI_MODULE, &(k66_user_data->gpu_spi_edma_handle), &tfer);
+    if (ret != kStatus_Success)
+    {
+        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to send ACTIVE command\n", (unsigned int)ret);
+        return FT81X_RESULT_GPU_TFER_FAILED;
+    }
+
+    // todo add timeout
+    while (!transfer_finished);
+    transfer_finished = 0;
+
+    // now read the data
+    tfer.txData = NULL;
+    tfer.rxData = data;
+    tfer.dataSize = count;
+    tfer.configFlags = FT81X_BOARD_GPU_SPI_TFER_CTAR |
+                       FT81X_BOARD_GPU_SPI_TFER_CS |
+                       kDSPI_MasterPcsContinuous;
+
+    ret = DSPI_MasterTransferEDMA(FT81X_BOARD_GPU_SPI_MODULE, &(k66_user_data->gpu_spi_edma_handle), &tfer);
+    if (ret != kStatus_Success)
+    {
+        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to send ACTIVE command\n", (unsigned int)ret);
+        return FT81X_RESULT_GPU_TFER_FAILED;
+    }
+
+    // todo add timeout
+    while (!transfer_finished);
+    transfer_finished = 0;
+
+    return FT81X_RESULT_OK;
 }
 
 ft81x_result gpu_read_register(void *platform_user_data, uint32_t address, uint8_t count, uint8_t *data)
