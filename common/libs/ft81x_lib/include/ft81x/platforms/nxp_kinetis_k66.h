@@ -20,6 +20,10 @@ typedef struct
 
     // display spi edma handles (pointers so we can use tha same as the gpu if needed)
     dspi_master_edma_handle_t   *display_spi_edma_handle;
+
+    // internal flags
+    volatile uint8_t            spi_transfer_complete;
+    volatile status_t           spi_transfer_status;
 } FT81X_NXP_kinetis_k66_user_data;
 
 #endif

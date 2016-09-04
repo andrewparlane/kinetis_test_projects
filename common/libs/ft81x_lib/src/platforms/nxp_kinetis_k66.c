@@ -21,15 +21,15 @@
 // ----------------------------------------------------------------------------
 // DMA callbacks
 // ----------------------------------------------------------------------------
-static volatile uint8_t transfer_finished = 0;
 static void spi_transfer_complete(SPI_Type *base, dspi_master_edma_handle_t *handle, status_t status, void *user_data)
 {
-    if (status != kStatus_Success)
-    {
-        DbgConsole_Printf("SPI error: %u\n", (unsigned int)status);
-    }
+    FT81X_NXP_kinetis_k66_user_data *k66_user_data = (FT81X_NXP_kinetis_k66_user_data *)user_data;
 
-    transfer_finished = 1;
+    if (k66_user_data)
+    {
+        k66_user_data->spi_transfer_complete = 1;
+        k66_user_data->spi_transfer_status = status;
+    }
 }
 
 // ----------------------------------------------------------------------------
@@ -93,10 +93,13 @@ ft81x_result ft81x_platform_gpu_spi_comms_initialise(void *platform_user_data)
 
     // create the SPI EDMA handle
     DSPI_MasterTransferCreateHandleEDMA(FT81X_BOARD_GPU_SPI_MODULE, &(k66_user_data->gpu_spi_edma_handle), spi_transfer_complete,
-                                        NULL,
+                                        k66_user_data,
                                         &k66_user_data->gpu_spi_rx_edma_handle,
                                         &k66_user_data->gpu_spi_tx_data_to_intermediary_edma_handle,
                                         &k66_user_data->gpu_spi_intermediary_to_tx_reg_edma_handle);
+
+    // initialise flags
+    k66_user_data->spi_transfer_complete = 0;
 
     return FT81X_RESULT_OK;
 }
@@ -197,8 +200,14 @@ ft81x_result ft81x_platform_gpu_send_command(void *platform_user_data, ft81x_com
     }
 
     // todo add timeout
-    while (!transfer_finished);
-    transfer_finished = 0;
+    while (!k66_user_data->spi_transfer_complete);
+    k66_user_data->spi_transfer_complete = 0;
+
+    if (k66_user_data->spi_transfer_status != kStatus_Success)
+    {
+        DbgConsole_Printf("SPI tfer failed with %u, trying to send GPU command\n", (unsigned int)k66_user_data->spi_transfer_status);
+        return FT81X_RESULT_GPU_TFER_FAILED;
+    }
 
     return FT81X_RESULT_OK;
 }
@@ -234,8 +243,14 @@ ft81x_result ft81x_platform_gpu_write_mem(void *platform_user_data, uint32_t add
     }
 
     // todo add timeout
-    while (!transfer_finished);
-    transfer_finished = 0;
+    while (!k66_user_data->spi_transfer_complete);
+    k66_user_data->spi_transfer_complete = 0;
+
+    if (k66_user_data->spi_transfer_status != kStatus_Success)
+    {
+        DbgConsole_Printf("SPI tfer failed with %u, trying to write GPU memory address\n", (unsigned int)k66_user_data->spi_transfer_status);
+        return FT81X_RESULT_GPU_TFER_FAILED;
+    }
 
     // now send the data
     tfer.txData = data;
@@ -253,8 +268,14 @@ ft81x_result ft81x_platform_gpu_write_mem(void *platform_user_data, uint32_t add
     }
 
     // todo add timeout
-    while (!transfer_finished);
-    transfer_finished = 0;
+    while (!k66_user_data->spi_transfer_complete);
+    k66_user_data->spi_transfer_complete = 0;
+
+    if (k66_user_data->spi_transfer_status != kStatus_Success)
+    {
+        DbgConsole_Printf("SPI tfer failed with %u, trying to write GPU memory\n", (unsigned int)k66_user_data->spi_transfer_status);
+        return FT81X_RESULT_GPU_TFER_FAILED;
+    }
 
     return FT81X_RESULT_OK;
 }
@@ -294,8 +315,14 @@ ft81x_result gpu_write_register(void *platform_user_data, uint32_t address, uint
     }
 
     // todo add timeout
-    while (!transfer_finished);
-    transfer_finished = 0;
+    while (!k66_user_data->spi_transfer_complete);
+    k66_user_data->spi_transfer_complete = 0;
+
+    if (k66_user_data->spi_transfer_status != kStatus_Success)
+    {
+        DbgConsole_Printf("SPI tfer failed with %u, trying to write a GPU register\n", (unsigned int)k66_user_data->spi_transfer_status);
+        return FT81X_RESULT_GPU_TFER_FAILED;
+    }
 
     return FT81X_RESULT_OK;
 }
@@ -346,8 +373,14 @@ ft81x_result ft81x_platform_gpu_read_mem(void *platform_user_data, uint32_t addr
     }
 
     // todo add timeout
-    while (!transfer_finished);
-    transfer_finished = 0;
+    while (!k66_user_data->spi_transfer_complete);
+    k66_user_data->spi_transfer_complete = 0;
+
+    if (k66_user_data->spi_transfer_status != kStatus_Success)
+    {
+        DbgConsole_Printf("SPI tfer failed with %u, trying to read GPU memory (sending addr)\n", (unsigned int)k66_user_data->spi_transfer_status);
+        return FT81X_RESULT_GPU_TFER_FAILED;
+    }
 
     // now read the data
     tfer.txData = NULL;
@@ -365,8 +398,14 @@ ft81x_result ft81x_platform_gpu_read_mem(void *platform_user_data, uint32_t addr
     }
 
     // todo add timeout
-    while (!transfer_finished);
-    transfer_finished = 0;
+    while (!k66_user_data->spi_transfer_complete);
+    k66_user_data->spi_transfer_complete = 0;
+
+    if (k66_user_data->spi_transfer_status != kStatus_Success)
+    {
+        DbgConsole_Printf("SPI tfer failed with %u, trying to read GPU memory\n", (unsigned int)k66_user_data->spi_transfer_status);
+        return FT81X_RESULT_GPU_TFER_FAILED;
+    }
 
     return FT81X_RESULT_OK;
 }
@@ -406,8 +445,14 @@ ft81x_result gpu_read_register(void *platform_user_data, uint32_t address, uint8
     }
 
     // todo add timeout
-    while (!transfer_finished);
-    transfer_finished = 0;
+    while (!k66_user_data->spi_transfer_complete);
+    k66_user_data->spi_transfer_complete = 0;
+
+    if (k66_user_data->spi_transfer_status != kStatus_Success)
+    {
+        DbgConsole_Printf("SPI tfer failed with %u, trying to read a GPU register\n", (unsigned int)k66_user_data->spi_transfer_status);
+        return FT81X_RESULT_GPU_TFER_FAILED;
+    }
 
     memcpy(data, &spi_rx_buffer[4], count);
 
@@ -455,8 +500,14 @@ ft81x_result ft81x_platform_display_spi_transfer(void *platform_user_data, uint3
     }
 
     // todo add timeout
-    while (!transfer_finished);
-    transfer_finished = 0;
+    while (!k66_user_data->spi_transfer_complete);
+    k66_user_data->spi_transfer_complete = 0;
+
+    if (k66_user_data->spi_transfer_status != kStatus_Success)
+    {
+        DbgConsole_Printf("SPI tfer failed with %u, trying to transfer to the display\n", (unsigned int)k66_user_data->spi_transfer_status);
+        return FT81X_RESULT_GPU_TFER_FAILED;
+    }
 
     return FT81X_RESULT_OK;
 }
