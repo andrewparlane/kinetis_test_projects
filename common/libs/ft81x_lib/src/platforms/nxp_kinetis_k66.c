@@ -195,7 +195,7 @@ ft81x_result ft81x_platform_gpu_send_command(void *platform_user_data, ft81x_com
     status_t ret = DSPI_MasterTransferEDMA(FT81X_BOARD_GPU_SPI_MODULE, &(k66_user_data->gpu_spi_edma_handle), &tfer);
     if (ret != kStatus_Success)
     {
-        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to send ACTIVE command\n", (unsigned int)ret);
+        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to send GPU command\n", (unsigned int)ret);
         return FT81X_RESULT_GPU_TFER_FAILED;
     }
 
@@ -238,7 +238,7 @@ ft81x_result ft81x_platform_gpu_write_mem(void *platform_user_data, uint32_t add
     status_t ret = DSPI_MasterTransferEDMA(FT81X_BOARD_GPU_SPI_MODULE, &(k66_user_data->gpu_spi_edma_handle), &tfer);
     if (ret != kStatus_Success)
     {
-        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to send ACTIVE command\n", (unsigned int)ret);
+        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to write to GPU memory address\n", (unsigned int)ret);
         return FT81X_RESULT_GPU_TFER_FAILED;
     }
 
@@ -263,7 +263,7 @@ ft81x_result ft81x_platform_gpu_write_mem(void *platform_user_data, uint32_t add
     ret = DSPI_MasterTransferEDMA(FT81X_BOARD_GPU_SPI_MODULE, &(k66_user_data->gpu_spi_edma_handle), &tfer);
     if (ret != kStatus_Success)
     {
-        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to send ACTIVE command\n", (unsigned int)ret);
+        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to write GPU memory\n", (unsigned int)ret);
         return FT81X_RESULT_GPU_TFER_FAILED;
     }
 
@@ -310,7 +310,7 @@ ft81x_result gpu_write_register(void *platform_user_data, uint32_t address, uint
     status_t ret = DSPI_MasterTransferEDMA(FT81X_BOARD_GPU_SPI_MODULE, &(k66_user_data->gpu_spi_edma_handle), &tfer);
     if (ret != kStatus_Success)
     {
-        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to send ACTIVE command\n", (unsigned int)ret);
+        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to write a GPU register\n", (unsigned int)ret);
         return FT81X_RESULT_GPU_TFER_FAILED;
     }
 
@@ -368,7 +368,7 @@ ft81x_result ft81x_platform_gpu_read_mem(void *platform_user_data, uint32_t addr
     status_t ret = DSPI_MasterTransferEDMA(FT81X_BOARD_GPU_SPI_MODULE, &(k66_user_data->gpu_spi_edma_handle), &tfer);
     if (ret != kStatus_Success)
     {
-        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to send ACTIVE command\n", (unsigned int)ret);
+        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to read GPU memory (sending addr)\n", (unsigned int)ret);
         return FT81X_RESULT_GPU_TFER_FAILED;
     }
 
@@ -393,7 +393,7 @@ ft81x_result ft81x_platform_gpu_read_mem(void *platform_user_data, uint32_t addr
     ret = DSPI_MasterTransferEDMA(FT81X_BOARD_GPU_SPI_MODULE, &(k66_user_data->gpu_spi_edma_handle), &tfer);
     if (ret != kStatus_Success)
     {
-        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to send ACTIVE command\n", (unsigned int)ret);
+        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to read GPU memory\n", (unsigned int)ret);
         return FT81X_RESULT_GPU_TFER_FAILED;
     }
 
@@ -495,7 +495,7 @@ ft81x_result ft81x_platform_display_spi_transfer(void *platform_user_data, uint3
     status_t ret = DSPI_MasterTransferEDMA(FT81X_BOARD_GPU_SPI_MODULE, k66_user_data->display_spi_edma_handle, &tfer);
     if (ret != kStatus_Success)
     {
-        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to write to the display\n", (unsigned int)ret);
+        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to transfer to the display\n", (unsigned int)ret);
         return FT81X_RESULT_GPU_TFER_FAILED;
     }
 
