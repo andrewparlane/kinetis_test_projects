@@ -123,6 +123,11 @@ static void main_thread(void *arg)
     {
         DbgConsole_Printf("ft81x_initialise failed with %u\n", res);
     }
+    res = ft81x_configure(&ft81x_platform_user_data);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_configure failed with %u\n", res);
+    }
 
 
     DbgConsole_Printf("sreen_test completed successfully\n");
