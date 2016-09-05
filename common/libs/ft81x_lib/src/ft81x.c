@@ -110,37 +110,33 @@ ft81x_result configure_gpu(void *platform_user_data)
 
 #warning TODO Clock trimming?
 
-#warning TODO set these based off defines
-    uint16_t FT_DispWidth = 320;
-    uint16_t FT_DispHeight = 480;
-    uint16_t FT_DispHCycle =  400;
-    uint16_t FT_DispHOffset = 40;
-    uint16_t FT_DispHSync0 = 0;
-    uint16_t FT_DispHSync1 = 10;
-    uint16_t FT_DispVCycle = 500;
-    uint16_t FT_DispVOffset = 10;
-    uint16_t FT_DispVSync0 = 0;
-    uint16_t FT_DispVSync1 = 5;
-    uint8_t FT_DispPCLK = 5;
-    uint8_t FT_DispSwizzle = 2;
-    uint8_t FT_DispPCLKPol = 1;
-    uint16_t FT_DispCSpread = 1;
-    uint16_t FT_DispDither = 1;
+    // Horizontal parameters
+    // total pixels per line (visible + not visible)
+    WRITE_GPU_REG_16(FT81X_REG_HCYCLE, (FT81X_SCREEN_TOTAL_WIDTH));
+    // horizontal resolution
+    WRITE_GPU_REG_16(FT81X_REG_HSIZE, (FT81X_SCREEN_WIDTH));
+    // non visible section
+    WRITE_GPU_REG_16(FT81X_REG_HOFFSET, (FT81X_SCREEN_HORIZ_NON_VISIBLE));
+    // front porch
+    WRITE_GPU_REG_16(FT81X_REG_HSYNC0, (FT81X_SCREEN_HORIZ_FRONT_PORCH));
+    // front porch + hsync pulse
+    WRITE_GPU_REG_16(FT81X_REG_HSYNC1, (FT81X_SCREEN_HORIZ_FRONT_PORCH) + (FT81X_SCREEN_HSYNC));
 
-    WRITE_GPU_REG_16(FT81X_REG_HCYCLE, FT_DispHCycle);
-    WRITE_GPU_REG_16(FT81X_REG_HOFFSET, FT_DispHOffset);
-    WRITE_GPU_REG_16(FT81X_REG_HSYNC0, FT_DispHSync0);
-    WRITE_GPU_REG_16(FT81X_REG_HSYNC1, FT_DispHSync1);
-    WRITE_GPU_REG_16(FT81X_REG_VCYCLE, FT_DispVCycle);
-    WRITE_GPU_REG_16(FT81X_REG_VOFFSET, FT_DispVOffset);
-    WRITE_GPU_REG_16(FT81X_REG_VSYNC0, FT_DispVSync0);
-    WRITE_GPU_REG_16(FT81X_REG_VSYNC1, FT_DispVSync1);
-    WRITE_GPU_REG_8(FT81X_REG_SWIZZLE, FT_DispSwizzle);
-    WRITE_GPU_REG_8(FT81X_REG_PCLK_POL, FT_DispPCLKPol);
-    WRITE_GPU_REG_16(FT81X_REG_HSIZE, FT_DispWidth);
-    WRITE_GPU_REG_16(FT81X_REG_VSIZE, FT_DispHeight);
-    WRITE_GPU_REG_16(FT81X_REG_CSPREAD, FT_DispCSpread);
-    WRITE_GPU_REG_16(FT81X_REG_DITHER, FT_DispDither);
+    // vertical parameters
+    // total lines per frame (visible + not visible)
+    WRITE_GPU_REG_16(FT81X_REG_VCYCLE, (FT81X_SCREEN_TOTAL_HEIGHT));
+    // vertical resolution
+    WRITE_GPU_REG_16(FT81X_REG_VSIZE, (FT81X_SCREEN_HEIGHT));
+    // non visible section
+    WRITE_GPU_REG_16(FT81X_REG_VOFFSET, (FT81X_SCREEN_VERT_NON_VISIBLE));
+    // front porch
+    WRITE_GPU_REG_16(FT81X_REG_VSYNC0, (FT81X_SCREEN_VERT_FRONT_PORCH));
+    // front porch + hsync pulse
+    WRITE_GPU_REG_16(FT81X_REG_VSYNC1, (FT81X_SCREEN_VERT_FRONT_PORCH) + (FT81X_SCREEN_VSYNC));
+
+    // misc parameters
+    WRITE_GPU_REG_8(FT81X_REG_SWIZZLE, FT81X_SCREEN_SWIZZLE);
+    WRITE_GPU_REG_8(FT81X_REG_PCLK_POL, FT81X_SCREEN_PCLK_POL);
 
 #if (FT81X_RESISTIVE_TOUCH)
     // Set the touch sensitivity for resistive touch screens
@@ -161,7 +157,7 @@ ft81x_result configure_gpu(void *platform_user_data)
     WRITE_GPU_REG_8(FT81X_REG_DLSWAP, FT81X_REG_DLSWAP_SWAP_FRAME);
 
     // after this display is visible on the LCD
-    WRITE_GPU_REG_8(FT81X_REG_PCLK, FT_DispPCLK);
+    WRITE_GPU_REG_8(FT81X_REG_PCLK, FT81X_SCREEN_PCLK_DIVISOR);
 
     // Wait 120mS
     res = ft81x_platform_delay(platform_user_data, 120);
