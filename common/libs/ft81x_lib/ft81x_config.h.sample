@@ -46,6 +46,13 @@
 #define FT81X_RESISTIVE_TOUCH                   (((FT81X_GPU_TYPE) == (FT81X_GPU_TYPE_FT810)) || \
                                                  ((FT81X_GPU_TYPE) == (FT81X_GPU_TYPE_FT812)))
 
+#if ((FT81X_GPU_TYPE) == (FT81X_GPU_TYPE_FT810)) || \
+    ((FT81X_GPU_TYPE) == (FT81X_GPU_TYPE_FT811))
+#define FT81X_BITS_PER_PIXEL                    18
+#else
+#define FT81X_BITS_PER_PIXEL                    24
+#endif
+
 #define FT81X_SCREEN_HORIZ_NON_VISIBLE          ((FT81X_SCREEN_HORIZ_FRONT_PORCH) + \
                                                  (FT81X_SCREEN_HSYNC) + \
                                                  (FT81X_SCREEN_HORIZ_BACK_PORCH))
