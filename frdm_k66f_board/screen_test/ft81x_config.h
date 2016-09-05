@@ -29,12 +29,40 @@
 // ----------------------------------------------------------------------------
 #define FT81X_SCREEN_WIDTH                      320     // in pixels
 #define FT81X_SCREEN_HEIGHT                     480     // in pixels
+#define FT81X_SCREEN_HORIZ_FRONT_PORCH          0       // REG_HSYNC0 (number of pixel cycles after image data and before hsync pulse)
+#define FT81X_SCREEN_HSYNC                      10      // REG_HSYNC1 = this + FT81X_SCREEN_HORIZ_FRONT_PORCH (number of pixel cycles the hsync signal is low)
+#define FT81X_SCREEN_HORIZ_BACK_PORCH           30      // REG_HOFFSET = this + FT81X_SCREEN_HSYNC (number of pixel cycles after the hsync pulse and before image data)
+#define FT81X_SCREEN_VERT_FRONT_PORCH           0       // REG_VSYNC0 (number of lines after image data and before vsync pulse)
+#define FT81X_SCREEN_VSYNC                      5       // REG_VSYNC1 = this + FT81X_SCREEN_VERT_FRONT_PORCH (number of lines the vsync signal is low)
+#define FT81X_SCREEN_VERT_BACK_PORCH            5       // REG_VOFFSET = this + FT81X_SCREEN_VSYNC (number of lines after the hsync pulse and before image data)
 
+#define FT81X_SCREEN_PCLK_POL                   1       // 0 = output data on rising edge, 1 = output data on falling edge
+#define FT81X_SCREEN_SWIZZLE                    2       // change what colour / bit is outputed on each pin. See the datasheet Table 4-12 for meanings
+#define FT81X_SCREEN_PCLK_DIVISOR               5       // frame rate = (internalClk (default 60MHz) / this) / (TOTAL_WIDTH * TOTAL_HEIGHT)
 
 // ----------------------------------------------------------------------------
 // Auto calculated parameters, do not edit
 // ----------------------------------------------------------------------------
 #define FT81X_RESISTIVE_TOUCH                   (((FT81X_GPU_TYPE) == FT81X_GPU_TYPE_FT810) || \
                                                  ((FT81X_GPU_TYPE) == FT81X_GPU_TYPE_FT812))
+
+#define FT81X_SCREEN_HORIZ_NON_VISIBLE          ((FT81X_SCREEN_HORIZ_FRONT_PORCH) + \
+                                                 (FT81X_SCREEN_HSYNC) + \
+                                                 (FT81X_SCREEN_HORIZ_BACK_PORCH))
+
+#define FT81X_SCREEN_TOTAL_WIDTH                ((FT81X_SCREEN_WIDTH) + \
+                                                 (FT81X_SCREEN_HORIZ_NON_VISIBLE))
+
+#define FT81X_SCREEN_VERT_NON_VISIBLE           ((FT81X_SCREEN_VERT_FRONT_PORCH) + \
+                                                 (FT81X_SCREEN_VSYNC) + \
+                                                 (FT81X_SCREEN_VERT_BACK_PORCH))
+
+#define FT81X_SCREEN_TOTAL_HEIGHT               ((FT81X_SCREEN_HEIGHT) + \
+                                                 (FT81X_SCREEN_VERT_NON_VISIBLE))
+
+#define FT81X_SCREEN_TOTAL_PIXELS               ((FT81X_TOTAL_WIDTH) * \
+                                                 (FT81X_TOTAL_HEIGHT))
+
+#define FT81X_SCREEN_FRAME_RATE                 ((60000000 / (FT81X_SCREEN_PCLK_DIVISOR)) / (FT81X_SCREEN_TOTAL_PIXELS))
 
 #endif
