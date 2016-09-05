@@ -4,7 +4,7 @@
 #include "fsl_common.h"
 
 // this board requires the FT81X_PLATFORM_NXP_KINETIS_K66 platform
-#define FT81X_PLATFORM FT81X_PLATFORM_NXP_KINETIS_K66
+#define FT81X_PLATFORM (FT81X_PLATFORM_NXP_KINETIS_K66)
 
 // note this board is an eval board with IO headers
 // that can be used to connect to a board with a FT81X and a display
@@ -19,7 +19,7 @@
 // the below pinout is how I connect the FRDM_K66F
 // to a ME810A-HV35R eval board, which has a ILI9488 display
 
-#define FT81X_DISPLAY FT81X_DISPLAY_ILI9488
+#define FT81X_DISPLAY (FT81X_DISPLAY_ILI9488)
 
 // ME810A-HV35R header J1      FRDM-K66F
 // 1) SCK      (SPI)           J2, pin 12  (SPI0_SCK, PTD1)

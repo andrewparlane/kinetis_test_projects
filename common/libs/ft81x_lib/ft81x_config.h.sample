@@ -14,7 +14,7 @@
 // ----------------------------------------------------------------------------
 // GPU parameters
 // ----------------------------------------------------------------------------
-#define FT81X_GPU_TYPE                          FT81X_GPU_TYPE_FT810
+#define FT81X_GPU_TYPE                          (FT81X_GPU_TYPE_FT810)
 // for resistive touch displays only, determine by experimentation
 #define FT81X_RESISTIVE_TOUCH_THRESHOLD         1800
 
@@ -37,14 +37,14 @@
 #define FT81X_SCREEN_VERT_BACK_PORCH            5       // REG_VOFFSET = this + FT81X_SCREEN_VSYNC (number of lines after the hsync pulse and before image data)
 
 #define FT81X_SCREEN_PCLK_POL                   1       // 0 = output data on rising edge, 1 = output data on falling edge
-#define FT81X_SCREEN_SWIZZLE                    FT81X_COLOUR_FORMAT_BGR // change what colour / bit is outputed on each pin.
+#define FT81X_SCREEN_SWIZZLE                    (FT81X_COLOUR_FORMAT_RGB) // change what colour / bit is outputed on each pin.
 #define FT81X_SCREEN_PCLK_DIVISOR               5       // frame rate = (internalClk (default 60MHz) / this) / (TOTAL_WIDTH * TOTAL_HEIGHT)
 
 // ----------------------------------------------------------------------------
 // Auto calculated parameters, do not edit
 // ----------------------------------------------------------------------------
-#define FT81X_RESISTIVE_TOUCH                   (((FT81X_GPU_TYPE) == FT81X_GPU_TYPE_FT810) || \
-                                                 ((FT81X_GPU_TYPE) == FT81X_GPU_TYPE_FT812))
+#define FT81X_RESISTIVE_TOUCH                   (((FT81X_GPU_TYPE) == (FT81X_GPU_TYPE_FT810)) || \
+                                                 ((FT81X_GPU_TYPE) == (FT81X_GPU_TYPE_FT812)))
 
 #define FT81X_SCREEN_HORIZ_NON_VISIBLE          ((FT81X_SCREEN_HORIZ_FRONT_PORCH) + \
                                                  (FT81X_SCREEN_HSYNC) + \

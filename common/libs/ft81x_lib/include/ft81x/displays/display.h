@@ -21,13 +21,13 @@
 #  error Display must define FT81X_DISPLAY_COMMS_TYPE
 #elif ((FT81X_DISPLAY_COMMS_TYPE) == (FT81X_DISPLAY_COMMS_TYPE_SPI))
 // spi comms type specific defines
-#  if !defined(FT81X_DISPLAY_SPI_MODE)// || ((FT81X_DISPLAY_SPI_MODE) >= (FT81X_DISPLAY_SPI_MODE_COUNT))
+#  if !defined(FT81X_DISPLAY_SPI_MODE)
 #    error Display comms type is SPI but SPI mode is not valid
 #  endif
-#  if !defined(FT81X_DISPLAY_SPI_BIT_ORDER)// || ((FT81X_DISPLAY_SPI_BIT_ORDER) >= (FT81X_DISPLAY_SPI_BIT_ORDER_COUNT))
+#  if !defined(FT81X_DISPLAY_SPI_BIT_ORDER)
 #    error Display comms type is SPI but SPI bit order is not valid
 #  endif
-#  if !defined(FT81X_DISPLAY_SPI_CS_POLARITY)// || ((FT81X_DISPLAY_SPI_CS_POLARITY) >= (FT81X_DISPLAY_SPI_CS_POLARITY_COUNT))
+#  if !defined(FT81X_DISPLAY_SPI_CS_POLARITY)
 #    error Display comms type is SPI but SPI CS polarity is not valid
 #  endif
 #else
