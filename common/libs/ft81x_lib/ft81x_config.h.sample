@@ -37,7 +37,7 @@
 #define FT81X_SCREEN_VERT_BACK_PORCH            5       // REG_VOFFSET = this + FT81X_SCREEN_VSYNC (number of lines after the hsync pulse and before image data)
 
 #define FT81X_SCREEN_PCLK_POL                   1       // 0 = output data on rising edge, 1 = output data on falling edge
-#define FT81X_SCREEN_SWIZZLE                    2       // change what colour / bit is outputed on each pin. See the datasheet Table 4-12 for meanings
+#define FT81X_SCREEN_SWIZZLE                    FT81X_COLOUR_FORMAT_BGR // change what colour / bit is outputed on each pin.
 #define FT81X_SCREEN_PCLK_DIVISOR               5       // frame rate = (internalClk (default 60MHz) / this) / (TOTAL_WIDTH * TOTAL_HEIGHT)
 
 // ----------------------------------------------------------------------------

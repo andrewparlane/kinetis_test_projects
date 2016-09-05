@@ -18,4 +18,21 @@ enum
     FT81X_GPU_TYPE_FT813,
 };
 
+// See the FT81x datasheet Table 4-12.
+enum
+{
+    FT81X_COLOUR_FORMAT_RGB = 0,        // correct colour on each pin, MSb on MSb pin
+    FT81X_COLOUR_FORMAT_RGB_REVERSED,   // correct colour on each pin, MSb on LSb pin
+    FT81X_COLOUR_FORMAT_BGR,            // blue on red, and red on blue, green as normal, MSb on MSb pin
+    FT81X_COLOUR_FORMAT_BGR_REVERSED,   // ... MSb on LSb pin
+    FT81X_COLOUR_FORMAT_BRG = 8,        // MSb on MSb pin
+    FT81X_COLOUR_FORMAT_BRG_REVERSED,   // MSb on LSb pin
+    FT81X_COLOUR_FORMAT_GRB,            // MSb on MSb pin
+    FT81X_COLOUR_FORMAT_GRB_REVERSED,   // MSb on LSb pin
+    FT81X_COLOUR_FORMAT_GBR,            // MSb on MSb pin
+    FT81X_COLOUR_FORMAT_GBR_REVERSED,   // MSb on LSb pin
+    FT81X_COLOUR_FORMAT_RBG,            // MSb on MSb pin
+    FT81X_COLOUR_FORMAT_RBG_REVERSED,   // MSb on LSb pin
+};
+
 #endif
