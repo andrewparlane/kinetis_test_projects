@@ -1,8 +1,12 @@
 #include "ft81x/boards/board.h" // defines the platform type
+
 #include "ft81x/platforms/platform.h"
 #include "ft81x/displays/display.h"
 
 #include "ft81x/ft81x_types.h"
+
+// only compile this file if we have the nxp kinetis k66 platform defined
+#if ((FT81X_PLATFORM) == (FT81X_PLATFORM_NXP_KINETIS_K66))
 
 // freeRTOS includes
 #include "FreeRTOS.h"
@@ -16,9 +20,6 @@
 #include "fsl_dspi_edma.h"
 
 #include <stdlib.h>
-
-// only compile this file if we have the nxp kinetis k66 platform defined
-#if ((FT81X_PLATFORM) == (FT81X_PLATFORM_NXP_KINETIS_K66))
 
 // ----------------------------------------------------------------------------
 // DMA callbacks
