@@ -34,6 +34,7 @@
 #include "pin_mux.h"
 #include "clock_config.h"
 #include "fsl_debug_console.h"
+#include "dma_channels.h"
 
 // freeRTOS includes
 #include "FreeRTOS.h"
@@ -45,7 +46,6 @@
 
 // ft81x lib includes
 #include "ft81x/ft81x.h"
-#include "ft81x/platforms/platform.h"
 
 // ----------------------------------------------------------------------------
 // GPIO pins
@@ -63,21 +63,6 @@ const GPIO_Info screen_int_pin      = { PTC,  4, { kGPIO_DigitalInput,  0 } };
 const GPIO_Info *pin_config[] = { &screen_int_pin };
 
 #define NUM_GPIO_PINS (sizeof(pin_config) / sizeof(pin_config[0]))
-
-// ----------------------------------------------------------------------------
-// DMA channels
-// ----------------------------------------------------------------------------
-enum
-{
-    EDMA_CHANNEL_SCREEN_SPI_RX = 0,
-    EDMA_CHANNEL_SCREEN_SPI_TX,
-    EDMA_CHANNEL_SCREEN_SPI_INTERMEDIARY,   // note: no idea why we need this
-
-    // count of how many channels we want to use
-    // used to check that we aren't trying to use
-    // more than are available
-    NUM_EDMA_CHANNELS
-};
 
 // ----------------------------------------------------------------------------
 // Main thread
@@ -114,16 +99,14 @@ static void main_thread(void *arg)
 
     // set up the FT81X lib
     // this initialisers the spi module and the dma channels
-    FT81X_NXP_kinetis_k66_user_data ft81x_platform_user_data;
-    ft81x_platform_user_data.gpu_intermediary_dma_channel = EDMA_CHANNEL_SCREEN_SPI_INTERMEDIARY;
-    ft81x_platform_user_data.gpu_tx_dma_channel = EDMA_CHANNEL_SCREEN_SPI_TX;
-    ft81x_platform_user_data.gpu_rx_dma_channel = EDMA_CHANNEL_SCREEN_SPI_RX;
-    ft81x_result res = ft81x_initialise((void *)&ft81x_platform_user_data);
+    FT81X_Handle handle;
+    memset(&handle, 0, sizeof(FT81X_Handle));
+    ft81x_result res = ft81x_initialise(&handle);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_initialise failed with %u\n", res);
     }
-    res = ft81x_configure(&ft81x_platform_user_data);
+    res = ft81x_configure(&handle);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_configure failed with %u\n", res);

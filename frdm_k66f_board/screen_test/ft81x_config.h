@@ -12,6 +12,14 @@
 #define FT81X_BOARD                             FT81X_BOARD_FRDM_K66F
 
 // ----------------------------------------------------------------------------
+// Platform parameters for K66 platform
+// ----------------------------------------------------------------------------
+#include "dma_channels.h"
+#define FT81X_NXP_K66_EDMA_CHANNEL_GPU_SPI_RX               EDMA_CHANNEL_GPU_SPI_RX
+#define FT81X_NXP_K66_EDMA_CHANNEL_GPU_SPI_TX               EDMA_CHANNEL_GPU_SPI_TX
+#define FT81X_NXP_K66_EDMA_CHANNEL_GPU_SPI_INTERMEDIARY     EDMA_CHANNEL_GPU_SPI_INTERMEDIARY
+
+// ----------------------------------------------------------------------------
 // GPU parameters
 // ----------------------------------------------------------------------------
 #define FT81X_GPU_TYPE                          (FT81X_GPU_TYPE_FT810)
