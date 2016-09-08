@@ -39,11 +39,20 @@ typedef struct
     void *platform_user_data;
 } FT81X_Handle;
 
+typedef enum
+{
+    FT81X_BACKLIGHT_LEVEL_OFF   = 0,
+
+    FT81X_BACKLIGHT_LEVEL_MAX   = 128
+} ft81x_backlight_level;
+
 ft81x_result ft81x_initialise(FT81X_Handle *handle);
 void ft81x_cleanup(FT81X_Handle *handle);
 ft81x_result ft81x_configure(FT81X_Handle *handle);
 
 ft81x_result ft81x_reset(FT81X_Handle *handle);
 ft81x_result ft81x_set_active(FT81X_Handle *handle);
+
+ft81x_result ft81x_backlight(FT81X_Handle *handle, ft81x_backlight_level level);
 
 #endif

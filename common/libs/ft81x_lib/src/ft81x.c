@@ -143,6 +143,13 @@ ft81x_result configure_gpu(FT81X_Handle *handle)
     WRITE_GPU_REG_16(FT81X_REG_TOUCH_RZTHRESH, (FT81X_RESISTIVE_TOUCH_THRESHOLD));
 #endif
 
+    // disable the backlight for now
+    res = ft81x_backlight(handle, FT81X_BACKLIGHT_LEVEL_OFF);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
     // configure the GPIO pins
     // DISP is an output, the rest are inputs
     // DISP starts as 1 (enable)
@@ -236,7 +243,20 @@ ft81x_result ft81x_configure(FT81X_Handle *handle)
     }
 
     // configure the display
-    return ft81x_display_send_configuration(handle);
+    res = ft81x_display_send_configuration(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // enable the backlight
+    res = ft81x_backlight(handle, FT81X_BACKLIGHT_LEVEL_MAX);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    return res;
 }
 
 ft81x_result ft81x_reset(FT81X_Handle *handle)
@@ -292,5 +312,11 @@ ft81x_result ft81x_set_active(FT81X_Handle *handle)
         return res;
     }
 
+    return FT81X_RESULT_OK;
+}
+
+ft81x_result ft81x_backlight(FT81X_Handle *handle, ft81x_backlight_level level)
+{
+    WRITE_GPU_REG_8(FT81X_REG_PWM_DUTY, level);
     return FT81X_RESULT_OK;
 }

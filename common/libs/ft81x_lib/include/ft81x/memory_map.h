@@ -25,6 +25,9 @@
 #define FT81X_REG_GPIO_DIR          0x302090
 #define FT81X_REG_GPIO              0x302094
 #define     FT81X_REG_GPIO_DISP             0x80
+#define FT81X_REG_PWM_DUTY          0x3020D4
+#define     FT81X_REG_PWM_DUTY_OFF          0
+#define     FT81X_REG_PWM_DUTY_MAX          128
 #define FT81X_REG_TOUCH_RZTHRESH    0x302118
 
 #endif
