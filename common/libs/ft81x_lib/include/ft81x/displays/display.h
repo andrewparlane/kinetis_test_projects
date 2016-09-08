@@ -37,11 +37,11 @@
 #include "ft81x/ft81x_types.h"
 
 // functions
-ft81x_result ft81x_display_initialise(void *platform_user_data);
-ft81x_result ft81x_display_comms_initialise(void *platform_user_data);
+ft81x_result ft81x_display_initialise(FT81X_Handle *handle);
+ft81x_result ft81x_display_comms_initialise(FT81X_Handle *handle);
 
-ft81x_result ft81x_display_read_id(void *platform_user_data, uint32_t *id);
+ft81x_result ft81x_display_read_id(FT81X_Handle *handle, uint32_t *id);
 
-ft81x_result ft81x_display_send_configuration(void *platform_user_data);
+ft81x_result ft81x_display_send_configuration(FT81X_Handle *handle);
 
 #endif

@@ -13,7 +13,6 @@ Currently supported platforms:
     NXP Kinetis K66
         note: requires FreeRTOS
               requires edma and the dmamux to have been configured before initialise() is called.
-              requires platform_user_data to be a struct of type FT81X_NXP_kinetis_k66_user_data (see platforms/nxp_kinetis_k66.h)
 
 
 To get started

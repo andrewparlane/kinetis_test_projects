@@ -15,6 +15,8 @@
 #include "fsl_edma.h"
 #include "fsl_dspi_edma.h"
 
+#include <stdlib.h>
+
 // only compile this file if we have the nxp kinetis k66 platform defined
 #if ((FT81X_PLATFORM) == (FT81X_PLATFORM_NXP_KINETIS_K66))
 
@@ -35,41 +37,56 @@ static void spi_transfer_complete(SPI_Type *base, dspi_master_edma_handle_t *han
 // ----------------------------------------------------------------------------
 // Initialise functions
 // ----------------------------------------------------------------------------
-ft81x_result ft81x_platform_initialise(void *platform_user_data)
+ft81x_result ft81x_platform_initialise(FT81X_Handle *handle)
 {
+    if (handle == NULL)
+    {
+        return FT81X_RESULT_NO_HANDLE;
+    }
+
+    if (handle->platform_user_data != NULL)
+    {
+        return FT81X_RESULT_AREADY_INITIALISED;
+    }
+
+    handle->platform_user_data = (void *)malloc(sizeof(FT81X_NXP_kinetis_k66_user_data));
+
+    if (handle->platform_user_data == NULL)
+    {
+        return FT81X_RESULT_OUT_OF_MEMORY;
+    }
+
     // initialise the GPIO pins that connect to the GPU
     // power down - active low (defaults to powered down)
-    ft81x_platform_initialise_gpio_pin(platform_user_data, FT81X_BOARD_GPU_NOT_PD_PIN_PORT, FT81X_BOARD_GPU_NOT_PD_PIN_NUM, FT81X_PLATFORM_GPIO_DIRECTION_OUTPUT, 0);
+    ft81x_platform_initialise_gpio_pin(handle, FT81X_BOARD_GPU_NOT_PD_PIN_PORT, FT81X_BOARD_GPU_NOT_PD_PIN_NUM, FT81X_PLATFORM_GPIO_DIRECTION_OUTPUT, 0);
 
     return FT81X_RESULT_OK;
 }
 
-ft81x_result ft81x_platform_gpu_spi_comms_initialise(void *platform_user_data)
+ft81x_result ft81x_platform_gpu_spi_comms_initialise(FT81X_Handle *handle)
 {
-    if (platform_user_data == NULL)
+    if (handle == NULL)
     {
-        return FT81X_RESULT_NO_USER_DATA;
+        return FT81X_RESULT_NO_HANDLE;
     }
-    FT81X_NXP_kinetis_k66_user_data *k66_user_data = (FT81X_NXP_kinetis_k66_user_data *)platform_user_data;
-    const uint32_t EDMA_CHANNEL_SCREEN_SPI_RX = k66_user_data->gpu_rx_dma_channel;
-    const uint32_t EDMA_CHANNEL_SCREEN_SPI_TX = k66_user_data->gpu_tx_dma_channel;
-    const uint32_t EDMA_CHANNEL_SCREEN_SPI_INTERMEDIARY = k66_user_data->gpu_intermediary_dma_channel;
+
+    FT81X_NXP_kinetis_k66_user_data *k66_user_data = (FT81X_NXP_kinetis_k66_user_data *)handle->platform_user_data;
 
     // set up the SPI Rx EDMA
     memset(&k66_user_data->gpu_spi_rx_edma_handle, 0, sizeof(edma_handle_t));
-    DMAMUX_SetSource(DMAMUX, EDMA_CHANNEL_SCREEN_SPI_RX, FT81X_BOARD_GPU_DMAMUX_RX_SRC);
-    DMAMUX_EnableChannel(DMAMUX, EDMA_CHANNEL_SCREEN_SPI_RX);
-    EDMA_CreateHandle(&k66_user_data->gpu_spi_rx_edma_handle, DMA0, EDMA_CHANNEL_SCREEN_SPI_RX);
+    DMAMUX_SetSource(DMAMUX, FT81X_NXP_K66_EDMA_CHANNEL_GPU_SPI_RX, FT81X_BOARD_GPU_DMAMUX_RX_SRC);
+    DMAMUX_EnableChannel(DMAMUX, FT81X_NXP_K66_EDMA_CHANNEL_GPU_SPI_RX);
+    EDMA_CreateHandle(&k66_user_data->gpu_spi_rx_edma_handle, DMA0, FT81X_NXP_K66_EDMA_CHANNEL_GPU_SPI_RX);
 
     // set up the SPI Tx EDMA
     // note: I don't understand the intermediary handle
     // TODO: research more
     memset(&k66_user_data->gpu_spi_tx_data_to_intermediary_edma_handle, 0, sizeof(edma_handle_t));
     memset(&k66_user_data->gpu_spi_intermediary_to_tx_reg_edma_handle, 0, sizeof(edma_handle_t));
-    DMAMUX_SetSource(DMAMUX, EDMA_CHANNEL_SCREEN_SPI_TX, FT81X_BOARD_GPU_DMAMUX_TX_SRC);
-    DMAMUX_EnableChannel(DMAMUX, EDMA_CHANNEL_SCREEN_SPI_TX);
-    EDMA_CreateHandle(&k66_user_data->gpu_spi_tx_data_to_intermediary_edma_handle, DMA0, EDMA_CHANNEL_SCREEN_SPI_INTERMEDIARY);
-    EDMA_CreateHandle(&k66_user_data->gpu_spi_intermediary_to_tx_reg_edma_handle, DMA0, EDMA_CHANNEL_SCREEN_SPI_TX);
+    DMAMUX_SetSource(DMAMUX, FT81X_NXP_K66_EDMA_CHANNEL_GPU_SPI_TX, FT81X_BOARD_GPU_DMAMUX_TX_SRC);
+    DMAMUX_EnableChannel(DMAMUX, FT81X_NXP_K66_EDMA_CHANNEL_GPU_SPI_TX);
+    EDMA_CreateHandle(&k66_user_data->gpu_spi_tx_data_to_intermediary_edma_handle, DMA0, FT81X_NXP_K66_EDMA_CHANNEL_GPU_SPI_INTERMEDIARY);
+    EDMA_CreateHandle(&k66_user_data->gpu_spi_intermediary_to_tx_reg_edma_handle, DMA0, FT81X_NXP_K66_EDMA_CHANNEL_GPU_SPI_TX);
 
     // set up the SPI module
     dspi_master_config_t config;
@@ -105,13 +122,13 @@ ft81x_result ft81x_platform_gpu_spi_comms_initialise(void *platform_user_data)
 }
 
 #if ((FT81X_DISPLAY_COMMS_TYPE) == (FT81X_DISPLAY_COMMS_TYPE_SPI))
-ft81x_result ft81x_platform_display_spi_comms_initialise(void *platform_user_data)
+ft81x_result ft81x_platform_display_spi_comms_initialise(FT81X_Handle *handle)
 {
-    if (platform_user_data == NULL)
+    if (handle == NULL)
     {
-        return FT81X_RESULT_NO_USER_DATA;
+        return FT81X_RESULT_NO_HANDLE;
     }
-    FT81X_NXP_kinetis_k66_user_data *k66_user_data = (FT81X_NXP_kinetis_k66_user_data *)platform_user_data;
+    FT81X_NXP_kinetis_k66_user_data *k66_user_data = (FT81X_NXP_kinetis_k66_user_data *)handle->platform_user_data;
 
     dspi_master_config_t config;
     config.whichCtar = FT81X_BOARD_DISPLAY_SPI_INIT_CTAR;
@@ -174,13 +191,13 @@ ft81x_result ft81x_platform_display_spi_comms_initialise(void *platform_user_dat
 // ----------------------------------------------------------------------------
 // GPU transfer functions
 // ----------------------------------------------------------------------------
-ft81x_result ft81x_platform_gpu_send_command(void *platform_user_data, ft81x_command command, uint8_t param)
+ft81x_result ft81x_platform_gpu_send_command(FT81X_Handle *handle, ft81x_command command, uint8_t param)
 {
-    if (platform_user_data == NULL)
+    if (handle == NULL)
     {
-        return FT81X_RESULT_NO_USER_DATA;
+        return FT81X_RESULT_NO_HANDLE;
     }
-    FT81X_NXP_kinetis_k66_user_data *k66_user_data = (FT81X_NXP_kinetis_k66_user_data *)platform_user_data;
+    FT81X_NXP_kinetis_k66_user_data *k66_user_data = (FT81X_NXP_kinetis_k66_user_data *)handle->platform_user_data;
 
     // commands consist of 3 bytes
     uint8_t spi_tx_buffer[3] = {(uint8_t)command, param, 0};
@@ -212,13 +229,13 @@ ft81x_result ft81x_platform_gpu_send_command(void *platform_user_data, ft81x_com
     return FT81X_RESULT_OK;
 }
 
-ft81x_result ft81x_platform_gpu_write_mem(void *platform_user_data, uint32_t address, uint32_t count, uint8_t *data)
+ft81x_result ft81x_platform_gpu_write_mem(FT81X_Handle *handle, uint32_t address, uint32_t count, uint8_t *data)
 {
-    if (platform_user_data == NULL)
+    if (handle == NULL)
     {
-        return FT81X_RESULT_NO_USER_DATA;
+        return FT81X_RESULT_NO_HANDLE;
     }
-    FT81X_NXP_kinetis_k66_user_data *k66_user_data = (FT81X_NXP_kinetis_k66_user_data *)platform_user_data;
+    FT81X_NXP_kinetis_k66_user_data *k66_user_data = (FT81X_NXP_kinetis_k66_user_data *)handle->platform_user_data;
 
     // first send the address
     // the | 0x80 is because we are writing
@@ -280,13 +297,13 @@ ft81x_result ft81x_platform_gpu_write_mem(void *platform_user_data, uint32_t add
     return FT81X_RESULT_OK;
 }
 
-ft81x_result gpu_write_register(void *platform_user_data, uint32_t address, uint8_t count, uint8_t *data)
+ft81x_result gpu_write_register(FT81X_Handle *handle, uint32_t address, uint8_t count, uint8_t *data)
 {
-    if (platform_user_data == NULL)
+    if (handle == NULL)
     {
-        return FT81X_RESULT_NO_USER_DATA;
+        return FT81X_RESULT_NO_HANDLE;
     }
-    FT81X_NXP_kinetis_k66_user_data *k66_user_data = (FT81X_NXP_kinetis_k66_user_data *)platform_user_data;
+    FT81X_NXP_kinetis_k66_user_data *k66_user_data = (FT81X_NXP_kinetis_k66_user_data *)handle->platform_user_data;
 
     if (count > 4)
     {
@@ -327,28 +344,28 @@ ft81x_result gpu_write_register(void *platform_user_data, uint32_t address, uint
     return FT81X_RESULT_OK;
 }
 
-ft81x_result ft81x_platform_gpu_write_register_8(void *platform_user_data, uint32_t address, uint8_t data)
+ft81x_result ft81x_platform_gpu_write_register_8(FT81X_Handle *handle, uint32_t address, uint8_t data)
 {
-    return gpu_write_register(platform_user_data, address, 1, &data);
+    return gpu_write_register(handle, address, 1, &data);
 }
 
-ft81x_result ft81x_platform_gpu_write_register_16(void *platform_user_data, uint32_t address, uint16_t data)
+ft81x_result ft81x_platform_gpu_write_register_16(FT81X_Handle *handle, uint32_t address, uint16_t data)
 {
-    return gpu_write_register(platform_user_data, address, 2, (uint8_t *)&data);
+    return gpu_write_register(handle, address, 2, (uint8_t *)&data);
 }
 
-ft81x_result ft81x_platform_gpu_write_register_32(void *platform_user_data, uint32_t address, uint32_t data)
+ft81x_result ft81x_platform_gpu_write_register_32(FT81X_Handle *handle, uint32_t address, uint32_t data)
 {
-    return gpu_write_register(platform_user_data, address, 4, (uint8_t *)&data);
+    return gpu_write_register(handle, address, 4, (uint8_t *)&data);
 }
 
-ft81x_result ft81x_platform_gpu_read_mem(void *platform_user_data, uint32_t address, uint32_t count, uint8_t *data)
+ft81x_result ft81x_platform_gpu_read_mem(FT81X_Handle *handle, uint32_t address, uint32_t count, uint8_t *data)
 {
-    if (platform_user_data == NULL)
+    if (handle == NULL)
     {
-        return FT81X_RESULT_NO_USER_DATA;
+        return FT81X_RESULT_NO_HANDLE;
     }
-    FT81X_NXP_kinetis_k66_user_data *k66_user_data = (FT81X_NXP_kinetis_k66_user_data *)platform_user_data;
+    FT81X_NXP_kinetis_k66_user_data *k66_user_data = (FT81X_NXP_kinetis_k66_user_data *)handle->platform_user_data;
 
     // first send the address and a dummy byte
     uint8_t spi_tx_buffer[4] = { ((address >> 16) & 0x3F),
@@ -410,13 +427,13 @@ ft81x_result ft81x_platform_gpu_read_mem(void *platform_user_data, uint32_t addr
     return FT81X_RESULT_OK;
 }
 
-ft81x_result gpu_read_register(void *platform_user_data, uint32_t address, uint8_t count, uint8_t *data)
+ft81x_result gpu_read_register(FT81X_Handle *handle, uint32_t address, uint8_t count, uint8_t *data)
 {
-    if (platform_user_data == NULL)
+    if (handle == NULL)
     {
-        return FT81X_RESULT_NO_USER_DATA;
+        return FT81X_RESULT_NO_HANDLE;
     }
-    FT81X_NXP_kinetis_k66_user_data *k66_user_data = (FT81X_NXP_kinetis_k66_user_data *)platform_user_data;
+    FT81X_NXP_kinetis_k66_user_data *k66_user_data = (FT81X_NXP_kinetis_k66_user_data *)handle->platform_user_data;
 
     // register reads consist of:
     //  3 bytes of address (write)
@@ -459,32 +476,32 @@ ft81x_result gpu_read_register(void *platform_user_data, uint32_t address, uint8
     return FT81X_RESULT_OK;
 }
 
-ft81x_result ft81x_platform_gpu_read_register_8(void *platform_user_data, uint32_t address, uint8_t *value)
+ft81x_result ft81x_platform_gpu_read_register_8(FT81X_Handle *handle, uint32_t address, uint8_t *value)
 {
-    return gpu_read_register(platform_user_data, address, 1, (uint8_t *)value);
+    return gpu_read_register(handle, address, 1, (uint8_t *)value);
 }
 
-ft81x_result ft81x_platform_gpu_read_register_16(void *platform_user_data, uint32_t address, uint16_t *value)
+ft81x_result ft81x_platform_gpu_read_register_16(FT81X_Handle *handle, uint32_t address, uint16_t *value)
 {
-    return gpu_read_register(platform_user_data, address, 2, (uint8_t *)value);
+    return gpu_read_register(handle, address, 2, (uint8_t *)value);
 }
 
-ft81x_result ft81x_platform_gpu_read_register_32(void *platform_user_data, uint32_t address, uint32_t *value)
+ft81x_result ft81x_platform_gpu_read_register_32(FT81X_Handle *handle, uint32_t address, uint32_t *value)
 {
-    return gpu_read_register(platform_user_data, address, 4, (uint8_t *)value);
+    return gpu_read_register(handle, address, 4, (uint8_t *)value);
 }
 
 // ----------------------------------------------------------------------------
 // Display transfer functions
 // ----------------------------------------------------------------------------
 #if ((FT81X_DISPLAY_COMMS_TYPE) == (FT81X_DISPLAY_COMMS_TYPE_SPI))
-ft81x_result ft81x_platform_display_spi_transfer(void *platform_user_data, uint32_t count, uint8_t *tx_data, uint8_t *rx_data)
+ft81x_result ft81x_platform_display_spi_transfer(FT81X_Handle *handle, uint32_t count, uint8_t *tx_data, uint8_t *rx_data)
 {
-    if (platform_user_data == NULL)
+    if (handle == NULL)
     {
-        return FT81X_RESULT_NO_USER_DATA;
+        return FT81X_RESULT_NO_HANDLE;
     }
-    FT81X_NXP_kinetis_k66_user_data *k66_user_data = (FT81X_NXP_kinetis_k66_user_data *)platform_user_data;
+    FT81X_NXP_kinetis_k66_user_data *k66_user_data = (FT81X_NXP_kinetis_k66_user_data *)handle->platform_user_data;
 
     dspi_transfer_t tfer;
     tfer.txData = tx_data;
@@ -516,9 +533,9 @@ ft81x_result ft81x_platform_display_spi_transfer(void *platform_user_data, uint3
 // ----------------------------------------------------------------------------
 // Power functions
 // ----------------------------------------------------------------------------
-ft81x_result ft81x_platform_set_power_down_pin(void *platform_user_data, uint8_t power_down)
+ft81x_result ft81x_platform_set_power_down_pin(FT81X_Handle *handle, uint8_t power_down)
 {
-    return ft81x_platform_set_gpio_pin(platform_user_data, FT81X_BOARD_GPU_NOT_PD_PIN_PORT, FT81X_BOARD_GPU_NOT_PD_PIN_NUM, !power_down);
+    return ft81x_platform_set_gpio_pin(handle, FT81X_BOARD_GPU_NOT_PD_PIN_PORT, FT81X_BOARD_GPU_NOT_PD_PIN_NUM, !power_down);
 }
 
 // ----------------------------------------------------------------------------
@@ -526,14 +543,14 @@ ft81x_result ft81x_platform_set_power_down_pin(void *platform_user_data, uint8_t
 // note: These shouldn't be used externally for the PD pin
 //       as that is managed internally
 // ----------------------------------------------------------------------------
-ft81x_result ft81x_platform_initialise_gpio_pin(void *platform_user_data, void *port, uint32_t pin, ft81x_gpio_direction direction, uint8_t value)
+ft81x_result ft81x_platform_initialise_gpio_pin(FT81X_Handle *handle, void *port, uint32_t pin, ft81x_gpio_direction direction, uint8_t value)
 {
     gpio_pin_config_t config = { (direction == FT81X_PLATFORM_GPIO_DIRECTION_INPUT) ? kGPIO_DigitalInput : kGPIO_DigitalOutput, value };
     GPIO_PinInit((GPIO_Type *)port, pin, &config);
     return FT81X_RESULT_OK;
 }
 
-ft81x_result ft81x_platform_set_gpio_pin(void *platform_user_data, void *port, uint32_t pin, uint8_t value)
+ft81x_result ft81x_platform_set_gpio_pin(FT81X_Handle *handle, void *port, uint32_t pin, uint8_t value)
 {
     GPIO_WritePinOutput((GPIO_Type *)port, pin, value);
     return FT81X_RESULT_OK;
@@ -542,7 +559,7 @@ ft81x_result ft81x_platform_set_gpio_pin(void *platform_user_data, void *port, u
 // ----------------------------------------------------------------------------
 // Misc platform functions
 // ----------------------------------------------------------------------------
-ft81x_result ft81x_platform_delay(void *platform_user_data, uint32_t milliseconds)
+ft81x_result ft81x_platform_delay(FT81X_Handle *handle, uint32_t milliseconds)
 {
     // todo use a better delay function
     uint8_t plusOne = 0;

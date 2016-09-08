@@ -6,24 +6,24 @@
 // only compile this file if we have the nxp kinetis k66 platform defined
 #if ((FT81X_BOARD) == (FT81X_BOARD_FRDM_K66F))
 
-ft81x_result ft81x_board_initialise(void *platform_user_data)
+ft81x_result ft81x_board_initialise(FT81X_Handle *handle)
 {
     // nothing to do here
     return FT81X_RESULT_OK;
 }
 
-ft81x_result ft81x_board_gpu_comms_initialise(void *platform_user_data)
+ft81x_result ft81x_board_gpu_comms_initialise(FT81X_Handle *handle)
 {
     // nothing special board related to do here,
     // so just forward this request to the platform
-    return ft81x_platform_gpu_spi_comms_initialise(platform_user_data);
+    return ft81x_platform_gpu_spi_comms_initialise(handle);
 }
 
-ft81x_result ft81x_board_display_comms_initialise(void *platform_user_data)
+ft81x_result ft81x_board_display_comms_initialise(FT81X_Handle *handle)
 {
     // nothing special board related to do here
     // so just forward this request to the platform
-    return ft81x_platform_display_spi_comms_initialise(platform_user_data);
+    return ft81x_platform_display_spi_comms_initialise(handle);
 }
 
 #endif

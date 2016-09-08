@@ -14,11 +14,12 @@
 #  error FT81X_BOARD is not a defined board
 #endif
 
+#include "ft81x/ft81x.h"
 #include "ft81x/ft81x_types.h"
 
 // functions
-ft81x_result ft81x_board_initialise(void *platform_user_data);
-ft81x_result ft81x_board_gpu_comms_initialise(void *platform_user_data);
-ft81x_result ft81x_board_display_comms_initialise(void *platform_user_data);
+ft81x_result ft81x_board_initialise(FT81X_Handle *handle);
+ft81x_result ft81x_board_gpu_comms_initialise(FT81X_Handle *handle);
+ft81x_result ft81x_board_display_comms_initialise(FT81X_Handle *handle);
 
 #endif

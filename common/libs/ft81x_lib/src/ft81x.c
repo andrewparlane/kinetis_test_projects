@@ -11,7 +11,7 @@
 // ----------------------------------------------------------------------------
 #define WRITE_GPU_MEM(addr, count, data)                                                    \
 {                                                                                           \
-    ft81x_result res = ft81x_platform_gpu_write_mem(platform_user_data, addr, count, data); \
+    ft81x_result res = ft81x_platform_gpu_write_mem(handle, addr, count, data); \
     if (res != FT81X_RESULT_OK)                                                             \
     {                                                                                       \
         return res;                                                                         \
@@ -20,7 +20,7 @@
 
 #define WRITE_GPU_REG_8(addr, data)                                                         \
 {                                                                                           \
-    ft81x_result res = ft81x_platform_gpu_write_register_8(platform_user_data, addr, data); \
+    ft81x_result res = ft81x_platform_gpu_write_register_8(handle, addr, data); \
     if (res != FT81X_RESULT_OK)                                                             \
     {                                                                                       \
         return res;                                                                         \
@@ -29,7 +29,7 @@
 
 #define WRITE_GPU_REG_16(addr, data)                                                            \
 {                                                                                               \
-    ft81x_result res = ft81x_platform_gpu_write_register_16(platform_user_data, addr, data);    \
+    ft81x_result res = ft81x_platform_gpu_write_register_16(handle, addr, data);    \
     if (res != FT81X_RESULT_OK)                                                                 \
     {                                                                                           \
         return res;                                                                             \
@@ -39,19 +39,19 @@
 // ----------------------------------------------------------------------------
 // Local functions
 // ----------------------------------------------------------------------------
-ft81x_result configure_gpu(void *platform_user_data)
+ft81x_result configure_gpu(FT81X_Handle *handle)
 {
     ft81x_result res;
 
     // reset the GPU
-    res = ft81x_reset(platform_user_data);
+    res = ft81x_reset(handle);
     if (res != FT81X_RESULT_OK)
     {
         return res;
     }
 
     // send the active command to the GPU to wake it up
-    res = ft81x_set_active(platform_user_data);
+    res = ft81x_set_active(handle);
     if (res != FT81X_RESULT_OK)
     {
         return res;
@@ -59,21 +59,21 @@ ft81x_result configure_gpu(void *platform_user_data)
 
     // Use the external clock
 #warning TODO use external clock
-    /*res = ft81x_platform_gpu_send_command(platform_user_data, FT81X_COMMAND_CLKEXT, 0);
+    /*res = ft81x_platform_gpu_send_command(handle, FT81X_COMMAND_CLKEXT, 0);
     if (res != FT81X_RESULT_OK)
     {
         return res;
     }
 
     // Wait 10mS
-    res = ft81x_platform_delay(platform_user_data, 10);
+    res = ft81x_platform_delay(handle, 10);
     if (res != FT81X_RESULT_OK)
     {
         return res;
     }
 
     // switching clk causes a system reset, so send the ACTIVE command again
-    res = ft81x_set_active(platform_user_data);
+    res = ft81x_set_active(handle);
     if (res != FT81X_RESULT_OK)
     {
         return res;
@@ -84,7 +84,7 @@ ft81x_result configure_gpu(void *platform_user_data)
     for (int i = 0; i < 5; i++)
     {
         uint8_t id;
-        res = ft81x_platform_gpu_read_register_8(platform_user_data, FT81X_REG_ID_ADDR, &id);
+        res = ft81x_platform_gpu_read_register_8(handle, FT81X_REG_ID_ADDR, &id);
         if (res == FT81X_RESULT_OK)
         {
             // confirm the ID register is as expected
@@ -97,7 +97,7 @@ ft81x_result configure_gpu(void *platform_user_data)
 
         // some error, wait a bit and try again
         // Wait 100mS
-        res = ft81x_platform_delay(platform_user_data, 100);
+        res = ft81x_platform_delay(handle, 100);
         if (res != FT81X_RESULT_OK)
         {
             return res;
@@ -160,7 +160,7 @@ ft81x_result configure_gpu(void *platform_user_data)
     WRITE_GPU_REG_8(FT81X_REG_PCLK, FT81X_SCREEN_PCLK_DIVISOR);
 
     // Wait 120mS
-    res = ft81x_platform_delay(platform_user_data, 120);
+    res = ft81x_platform_delay(handle, 120);
     if (res != FT81X_RESULT_OK)
     {
         return res;
@@ -172,40 +172,40 @@ ft81x_result configure_gpu(void *platform_user_data)
 // ----------------------------------------------------------------------------
 // FT81X functions
 // ----------------------------------------------------------------------------
-ft81x_result ft81x_initialise(void *platform_user_data)
+ft81x_result ft81x_initialise(FT81X_Handle *handle)
 {
     ft81x_result res;
 
     // generic board initialise
-    res = ft81x_board_initialise(platform_user_data);
+    res = ft81x_board_initialise(handle);
     if (res != FT81X_RESULT_OK)
     {
         return res;
     }
 
     // generic platform initialise
-    res = ft81x_platform_initialise(platform_user_data);
+    res = ft81x_platform_initialise(handle);
     if (res != FT81X_RESULT_OK)
     {
         return res;
     }
 
     // generic display initialise
-    res = ft81x_display_initialise(platform_user_data);
+    res = ft81x_display_initialise(handle);
     if (res != FT81X_RESULT_OK)
     {
         return res;
     }
 
     // initialise comms to the GPU
-    res = ft81x_board_gpu_comms_initialise(platform_user_data);
+    res = ft81x_board_gpu_comms_initialise(handle);
     if (res != FT81X_RESULT_OK)
     {
         return res;
     }
 
     // initialise comms to the display
-    res = ft81x_display_comms_initialise(platform_user_data);
+    res = ft81x_display_comms_initialise(handle);
     if (res != FT81X_RESULT_OK)
     {
         return res;
@@ -214,48 +214,48 @@ ft81x_result ft81x_initialise(void *platform_user_data)
     return FT81X_RESULT_OK;
 }
 
-ft81x_result ft81x_configure(void *platform_user_data)
+ft81x_result ft81x_configure(FT81X_Handle *handle)
 {
     ft81x_result res;
 
     // configure the GPU
-    res = configure_gpu(platform_user_data);
+    res = configure_gpu(handle);
     if (res != FT81X_RESULT_OK)
     {
         return res;
     }
 
     // configure the display
-    return ft81x_display_send_configuration(platform_user_data);
+    return ft81x_display_send_configuration(handle);
 }
 
-ft81x_result ft81x_reset(void *platform_user_data)
+ft81x_result ft81x_reset(FT81X_Handle *handle)
 {
     ft81x_result res;
 
     // First assert power down
-    res = ft81x_platform_set_power_down_pin(platform_user_data, 1);
+    res = ft81x_platform_set_power_down_pin(handle, 1);
     if (res != FT81X_RESULT_OK)
     {
         return res;
     }
 
     // Wait a bit
-    res = ft81x_platform_delay(platform_user_data, 10);
+    res = ft81x_platform_delay(handle, 10);
     if (res != FT81X_RESULT_OK)
     {
         return res;
     }
 
     // Then take out of reset using the PD pin
-    res = ft81x_platform_set_power_down_pin(platform_user_data, 0);
+    res = ft81x_platform_set_power_down_pin(handle, 0);
     if (res != FT81X_RESULT_OK)
     {
         return res;
     }
 
     // Wait a bit
-    res = ft81x_platform_delay(platform_user_data, 25);
+    res = ft81x_platform_delay(handle, 25);
     if (res != FT81X_RESULT_OK)
     {
         return res;
@@ -264,19 +264,19 @@ ft81x_result ft81x_reset(void *platform_user_data)
     return res;
 }
 
-ft81x_result ft81x_set_active(void *platform_user_data)
+ft81x_result ft81x_set_active(FT81X_Handle *handle)
 {
     ft81x_result res;
 
     // Send the ACTIVE command to wake it up
-    res = ft81x_platform_gpu_send_command(platform_user_data, FT81X_COMMAND_ACTIVE, 0);
+    res = ft81x_platform_gpu_send_command(handle, FT81X_COMMAND_ACTIVE, 0);
     if (res != FT81X_RESULT_OK)
     {
         return res;
     }
 
     // wait a bit more for it to wake up
-    res = ft81x_platform_delay(platform_user_data, 1);
+    res = ft81x_platform_delay(handle, 1);
     if (res != FT81X_RESULT_OK)
     {
         return res;

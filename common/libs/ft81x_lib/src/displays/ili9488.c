@@ -46,17 +46,17 @@
 // ----------------------------------------------------------------------------
 #define SET_DCX(val)                                                                                                                            \
 {                                                                                                                                               \
-    ft81x_result res = ft81x_platform_set_gpio_pin(platform_user_data, FT81X_BOARD_DISPLAY_DCX_PIN_PORT, FT81X_BOARD_DISPLAY_DCX_PIN_NUM, val); \
+    ft81x_result res = ft81x_platform_set_gpio_pin(handle, FT81X_BOARD_DISPLAY_DCX_PIN_PORT, FT81X_BOARD_DISPLAY_DCX_PIN_NUM, val); \
     if (res != FT81X_RESULT_OK)                                                                                                                 \
     {                                                                                                                                           \
         return res;                                                                                                                             \
     }                                                                                                                                           \
 }
 
-static ft81x_result ili9488_write_cmd(void *platform_user_data, uint8_t cmd, uint32_t data_count, uint8_t *data);
+static ft81x_result ili9488_write_cmd(FT81X_Handle *handle, uint8_t cmd, uint32_t data_count, uint8_t *data);
 #define WRITE_CMD(cmd, count, data)                                             \
 {                                                                               \
-    ft81x_result res = ili9488_write_cmd(platform_user_data, cmd, count, data); \
+    ft81x_result res = ili9488_write_cmd(handle, cmd, count, data); \
     if (res != FT81X_RESULT_OK)                                                 \
     {                                                                           \
         return res;                                                             \
@@ -66,14 +66,14 @@ static ft81x_result ili9488_write_cmd(void *platform_user_data, uint8_t cmd, uin
 // ----------------------------------------------------------------------------
 // Local functions
 // ----------------------------------------------------------------------------
-static ft81x_result ili9488_write_cmd(void *platform_user_data, uint8_t cmd, uint32_t data_count, uint8_t *data)
+static ft81x_result ili9488_write_cmd(FT81X_Handle *handle, uint8_t cmd, uint32_t data_count, uint8_t *data)
 {
     ft81x_result res;
 
     // send command byte
     SET_DCX(0);
     uint8_t tmp;
-    res = ft81x_platform_display_spi_transfer(platform_user_data, 1, &cmd, &tmp);
+    res = ft81x_platform_display_spi_transfer(handle, 1, &cmd, &tmp);
     if (res != FT81X_RESULT_OK)
     {
         return res;
@@ -83,7 +83,7 @@ static ft81x_result ili9488_write_cmd(void *platform_user_data, uint8_t cmd, uin
     {
         // send the data bytes
         SET_DCX(1);
-        res = ft81x_platform_display_spi_transfer(platform_user_data, data_count, data, data);
+        res = ft81x_platform_display_spi_transfer(handle, data_count, data, data);
 
         // set DCX to default
         SET_DCX(0);
@@ -95,19 +95,19 @@ static ft81x_result ili9488_write_cmd(void *platform_user_data, uint8_t cmd, uin
 // ----------------------------------------------------------------------------
 // Display functions
 // ----------------------------------------------------------------------------
-ft81x_result ft81x_display_initialise(void *platform_user_data)
+ft81x_result ft81x_display_initialise(FT81X_Handle *handle)
 {
     ft81x_result res;
 
     // This display uses a DCX pin as part of it's SPI comms
-    res = ft81x_platform_initialise_gpio_pin(platform_user_data, FT81X_BOARD_DISPLAY_DCX_PIN_PORT, FT81X_BOARD_DISPLAY_DCX_PIN_NUM, FT81X_PLATFORM_GPIO_DIRECTION_OUTPUT, 0);
+    res = ft81x_platform_initialise_gpio_pin(handle, FT81X_BOARD_DISPLAY_DCX_PIN_PORT, FT81X_BOARD_DISPLAY_DCX_PIN_NUM, FT81X_PLATFORM_GPIO_DIRECTION_OUTPUT, 0);
     if (res != FT81X_RESULT_OK)
     {
         return res;
     }
 
     // We also have a disp pin that determines if the display is on or off
-    res = ft81x_platform_initialise_gpio_pin(platform_user_data, FT81X_BOARD_DISPLAY_DISP_PIN_PORT, FT81X_BOARD_DISPLAY_DISP_PIN_NUM, FT81X_PLATFORM_GPIO_DIRECTION_OUTPUT, 0);
+    res = ft81x_platform_initialise_gpio_pin(handle, FT81X_BOARD_DISPLAY_DISP_PIN_PORT, FT81X_BOARD_DISPLAY_DISP_PIN_NUM, FT81X_PLATFORM_GPIO_DIRECTION_OUTPUT, 0);
     if (res != FT81X_RESULT_OK)
     {
         return res;
@@ -116,13 +116,13 @@ ft81x_result ft81x_display_initialise(void *platform_user_data)
     return FT81X_RESULT_OK;
 }
 
-ft81x_result ft81x_display_comms_initialise(void *platform_user_data)
+ft81x_result ft81x_display_comms_initialise(FT81X_Handle *handle)
 {
     // this display needs some set up so we need to initialise the comms
-    return ft81x_board_display_comms_initialise(platform_user_data);
+    return ft81x_board_display_comms_initialise(handle);
 }
 
-ft81x_result ft81x_display_read_id(void *platform_user_data, uint32_t *id)
+ft81x_result ft81x_display_read_id(FT81X_Handle *handle, uint32_t *id)
 {
     uint8_t tx_data[5] = { CMD_READ_ID, 0, 0, 0, 0 };
     uint8_t rx_data[5];
@@ -130,7 +130,7 @@ ft81x_result ft81x_display_read_id(void *platform_user_data, uint32_t *id)
 
     SET_DCX(0);
 
-    res = ft81x_platform_display_spi_transfer(platform_user_data, 5, tx_data, rx_data);
+    res = ft81x_platform_display_spi_transfer(handle, 5, tx_data, rx_data);
 
     // this command has a one bit dummy cycle between the command and the id
     // which means that the id starts in the second byte but
@@ -143,7 +143,7 @@ ft81x_result ft81x_display_read_id(void *platform_user_data, uint32_t *id)
     return res;
 }
 
-ft81x_result ft81x_display_send_configuration(void *platform_user_data)
+ft81x_result ft81x_display_send_configuration(FT81X_Handle *handle)
 {
     ft81x_result res;
     uint8_t data[4];
@@ -154,7 +154,7 @@ ft81x_result ft81x_display_send_configuration(void *platform_user_data)
     // requires 5ms delay after this for normal commands,
     // but 120mS for sleep commands, and since we go to sleep later
     // better do the delay here
-    res = ft81x_platform_delay(platform_user_data, 120);
+    res = ft81x_platform_delay(handle, 120);
     if (res != FT81X_RESULT_OK)
     {
         return res;
@@ -246,7 +246,7 @@ ft81x_result ft81x_display_send_configuration(void *platform_user_data)
     WRITE_CMD(CMD_SLEEP_OUT, 0, NULL);
 
     // Might require a delay (unclear)
-    res = ft81x_platform_delay(platform_user_data, 120);
+    res = ft81x_platform_delay(handle, 120);
     if (res != FT81X_RESULT_OK)
     {
         return res;

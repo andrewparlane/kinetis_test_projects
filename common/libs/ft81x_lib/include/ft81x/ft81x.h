@@ -5,10 +5,15 @@
 
 #include <stdint.h>
 
-ft81x_result ft81x_initialise(void *platform_user_data);
-ft81x_result ft81x_configure(void *platform_user_data);
+typedef struct
+{
+    void *platform_user_data;
+} FT81X_Handle;
 
-ft81x_result ft81x_reset(void *platform_user_data);
-ft81x_result ft81x_set_active(void *platform_user_data);
+ft81x_result ft81x_initialise(FT81X_Handle *handle);
+ft81x_result ft81x_configure(FT81X_Handle *handle);
+
+ft81x_result ft81x_reset(FT81X_Handle *handle);
+ft81x_result ft81x_set_active(FT81X_Handle *handle);
 
 #endif
