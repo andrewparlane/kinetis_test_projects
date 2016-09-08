@@ -1,6 +1,5 @@
 #include "ft81x/boards/board.h" // defines the display type
 #include "ft81x/platforms/platform.h"
-#include "ft81x/ft81x_types.h"
 
 // only compile this file if we have the ILI9488 display defined
 #if FT81X_DISPLAY == FT81X_DISPLAY_ILI9488

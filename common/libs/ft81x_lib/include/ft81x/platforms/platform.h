@@ -14,7 +14,6 @@
 #  error FT81X_PLATFORM is not a defined platform
 #endif
 
-#include "ft81x/ft81x_types.h"
 #include "ft81x/commands.h"
 
 #include <stdint.h>

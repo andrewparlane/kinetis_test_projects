@@ -34,8 +34,6 @@
 #  error Display defined FT81X_DISPLAY_COMMS_TYPE as an unknown comms type
 #endif
 
-#include "ft81x/ft81x_types.h"
-
 // functions
 ft81x_result ft81x_display_initialise(FT81X_Handle *handle);
 ft81x_result ft81x_display_comms_initialise(FT81X_Handle *handle);

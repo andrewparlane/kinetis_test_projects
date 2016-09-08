@@ -1,8 +1,6 @@
 #include "ft81x/boards/board.h" // defines the board type
 #include "ft81x/platforms/platform.h"
 
-#include "ft81x/ft81x_types.h"
-
 // only compile this file if we have the nxp kinetis k66 platform defined
 #if ((FT81X_BOARD) == (FT81X_BOARD_FRDM_K66F))
 

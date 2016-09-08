@@ -15,7 +15,6 @@
 #endif
 
 #include "ft81x.h"
-#include "ft81x/ft81x_types.h"
 
 // functions
 ft81x_result ft81x_board_initialise(FT81X_Handle *handle);
