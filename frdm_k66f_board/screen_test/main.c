@@ -114,6 +114,8 @@ static void main_thread(void *arg)
 
 
     DbgConsole_Printf("sreen_test completed successfully\n");
+
+    ft81x_cleanup(&handle);
 }
 
 // ----------------------------------------------------------------------------
