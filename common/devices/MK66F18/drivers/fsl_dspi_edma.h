@@ -90,7 +90,7 @@ struct _dspi_master_edma_handle
     volatile bool isPcsActiveAfterTransfer; /*!< Is PCS signal keep active after the last frame transfer.*/
     volatile bool isThereExtraByte;         /*!< Is there extra byte.*/
 
-    uint8_t *volatile txData;                  /*!< Send buffer. */
+    const uint8_t *volatile txData;            /*!< Send buffer. */
     uint8_t *volatile rxData;                  /*!< Receive buffer. */
     volatile size_t remainingSendByteCount;    /*!< Number of bytes remaining to send.*/
     volatile size_t remainingReceiveByteCount; /*!< Number of bytes remaining to receive.*/
@@ -117,7 +117,7 @@ struct _dspi_slave_edma_handle
     uint32_t bitsPerFrame;          /*!< Desired number of bits per frame. */
     volatile bool isThereExtraByte; /*!< Is there extra byte.*/
 
-    uint8_t *volatile txData;                  /*!< Send buffer. */
+    const uint8_t *volatile txData;            /*!< Send buffer. */
     uint8_t *volatile rxData;                  /*!< Receive buffer. */
     volatile size_t remainingSendByteCount;    /*!< Number of bytes remaining to send.*/
     volatile size_t remainingReceiveByteCount; /*!< Number of bytes remaining to receive.*/

@@ -352,7 +352,7 @@ typedef void (*dspi_slave_transfer_callback_t)(SPI_Type *base,
 /*! @brief DSPI master/slave transfer structure.*/
 typedef struct _dspi_transfer
 {
-    uint8_t *txData;          /*!< Send buffer. */
+    const uint8_t *txData;    /*!< Send buffer. */
     uint8_t *rxData;          /*!< Receive buffer. */
     volatile size_t dataSize; /*!< Transfer bytes. */
 
@@ -374,7 +374,7 @@ struct _dspi_master_handle
     volatile bool isPcsActiveAfterTransfer; /*!< Is PCS signal keep active after the last frame transfer.*/
     volatile bool isThereExtraByte;         /*!< Is there extra byte.*/
 
-    uint8_t *volatile txData;                  /*!< Send buffer. */
+    const uint8_t *volatile txData;            /*!< Send buffer. */
     uint8_t *volatile rxData;                  /*!< Receive buffer. */
     volatile size_t remainingSendByteCount;    /*!< Number of bytes remaining to send.*/
     volatile size_t remainingReceiveByteCount; /*!< Number of bytes remaining to receive.*/
@@ -392,7 +392,7 @@ struct _dspi_slave_handle
     uint32_t bitsPerFrame;          /*!< Desired number of bits per frame. */
     volatile bool isThereExtraByte; /*!< Is there extra byte.*/
 
-    uint8_t *volatile txData;                  /*!< Send buffer. */
+    const uint8_t *volatile txData;            /*!< Send buffer. */
     uint8_t *volatile rxData;                  /*!< Receive buffer. */
     volatile size_t remainingSendByteCount;    /*!< Number of bytes remaining to send.*/
     volatile size_t remainingReceiveByteCount; /*!< Number of bytes remaining to receive.*/
