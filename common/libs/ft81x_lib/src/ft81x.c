@@ -1,4 +1,4 @@
-#include "ft81x/ft81x.h"
+#include "ft81x.h"
 #include "ft81x/commands.h"
 #include "ft81x/memory_map.h"
 

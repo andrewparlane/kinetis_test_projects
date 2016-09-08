@@ -14,7 +14,7 @@
 #  error FT81X_BOARD is not a defined board
 #endif
 
-#include "ft81x/ft81x.h"
+#include "ft81x.h"
 #include "ft81x/ft81x_types.h"
 
 // functions
