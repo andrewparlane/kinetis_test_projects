@@ -237,7 +237,7 @@ ft81x_result ft81x_platform_gpu_send_command(FT81X_Handle *handle, ft81x_command
     return FT81X_RESULT_OK;
 }
 
-ft81x_result ft81x_platform_gpu_write_mem(FT81X_Handle *handle, uint32_t address, uint32_t count, uint8_t *data)
+ft81x_result ft81x_platform_gpu_write_mem(FT81X_Handle *handle, uint32_t address, uint32_t count, const uint8_t *data)
 {
     if (handle == NULL)
     {
@@ -305,7 +305,7 @@ ft81x_result ft81x_platform_gpu_write_mem(FT81X_Handle *handle, uint32_t address
     return FT81X_RESULT_OK;
 }
 
-ft81x_result gpu_write_register(FT81X_Handle *handle, uint32_t address, uint8_t count, uint8_t *data)
+ft81x_result gpu_write_register(FT81X_Handle *handle, uint32_t address, uint8_t count, const uint8_t *data)
 {
     if (handle == NULL)
     {
@@ -503,7 +503,7 @@ ft81x_result ft81x_platform_gpu_read_register_32(FT81X_Handle *handle, uint32_t 
 // Display transfer functions
 // ----------------------------------------------------------------------------
 #if ((FT81X_DISPLAY_COMMS_TYPE) == (FT81X_DISPLAY_COMMS_TYPE_SPI))
-ft81x_result ft81x_platform_display_spi_transfer(FT81X_Handle *handle, uint32_t count, uint8_t *tx_data, uint8_t *rx_data)
+ft81x_result ft81x_platform_display_spi_transfer(FT81X_Handle *handle, uint32_t count, const uint8_t *tx_data, uint8_t *rx_data)
 {
     if (handle == NULL)
     {
