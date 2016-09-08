@@ -262,6 +262,13 @@ ft81x_result ft81x_display_send_configuration(FT81X_Handle *handle)
     data[0] = 0xB0;
     WRITE_CMD(CMD_MEMORY_WRITE, 1, data);
 
+    // wait a little
+    res = ft81x_platform_delay(handle, 100);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
     return FT81X_RESULT_OK;
 }
 
