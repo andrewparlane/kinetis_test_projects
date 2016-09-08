@@ -39,6 +39,7 @@
 // functions
 ft81x_result ft81x_display_initialise(FT81X_Handle *handle);
 ft81x_result ft81x_display_comms_initialise(FT81X_Handle *handle);
+void ft81x_display_cleanup(FT81X_Handle *handle);
 
 ft81x_result ft81x_display_read_id(FT81X_Handle *handle, uint32_t *id);
 

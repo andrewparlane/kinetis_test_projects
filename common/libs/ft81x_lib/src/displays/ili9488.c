@@ -122,6 +122,10 @@ ft81x_result ft81x_display_comms_initialise(FT81X_Handle *handle)
     return ft81x_board_display_comms_initialise(handle);
 }
 
+void ft81x_display_cleanup(FT81X_Handle *handle)
+{
+}
+
 ft81x_result ft81x_display_read_id(FT81X_Handle *handle, uint32_t *id)
 {
     uint8_t tx_data[5] = { CMD_READ_ID, 0, 0, 0, 0 };

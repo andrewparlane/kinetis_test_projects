@@ -214,6 +214,13 @@ ft81x_result ft81x_initialise(FT81X_Handle *handle)
     return FT81X_RESULT_OK;
 }
 
+void ft81x_cleanup(FT81X_Handle *handle)
+{
+    ft81x_board_cleanup(handle);
+    ft81x_platform_cleanup(handle);
+    ft81x_display_cleanup(handle);
+}
+
 ft81x_result ft81x_configure(FT81X_Handle *handle)
 {
     ft81x_result res;

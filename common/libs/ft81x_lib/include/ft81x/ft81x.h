@@ -11,6 +11,7 @@ typedef struct
 } FT81X_Handle;
 
 ft81x_result ft81x_initialise(FT81X_Handle *handle);
+void ft81x_cleanup(FT81X_Handle *handle);
 ft81x_result ft81x_configure(FT81X_Handle *handle);
 
 ft81x_result ft81x_reset(FT81X_Handle *handle);

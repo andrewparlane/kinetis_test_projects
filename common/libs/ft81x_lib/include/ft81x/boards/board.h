@@ -21,5 +21,6 @@
 ft81x_result ft81x_board_initialise(FT81X_Handle *handle);
 ft81x_result ft81x_board_gpu_comms_initialise(FT81X_Handle *handle);
 ft81x_result ft81x_board_display_comms_initialise(FT81X_Handle *handle);
+void ft81x_board_cleanup(FT81X_Handle *handle);
 
 #endif

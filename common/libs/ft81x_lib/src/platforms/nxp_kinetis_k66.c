@@ -189,6 +189,15 @@ ft81x_result ft81x_platform_display_spi_comms_initialise(FT81X_Handle *handle)
 }
 #endif
 
+void ft81x_platform_cleanup(FT81X_Handle *handle)
+{
+    if (handle != NULL)
+    {
+        free(handle->platform_user_data);
+        handle->platform_user_data = NULL;
+    }
+}
+
 // ----------------------------------------------------------------------------
 // GPU transfer functions
 // ----------------------------------------------------------------------------

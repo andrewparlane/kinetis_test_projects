@@ -29,6 +29,7 @@ typedef enum
 ft81x_result ft81x_platform_initialise(FT81X_Handle *handle);
 ft81x_result ft81x_platform_gpu_spi_comms_initialise(FT81X_Handle *handle);
 ft81x_result ft81x_platform_display_spi_comms_initialise(FT81X_Handle *handle);
+void ft81x_platform_cleanup(FT81X_Handle *handle);
 
 ft81x_result ft81x_platform_gpu_send_command(FT81X_Handle *handle, ft81x_command command, uint8_t param);
 ft81x_result ft81x_platform_gpu_write_mem(FT81X_Handle *handle, uint32_t address, uint32_t count, uint8_t *data);
