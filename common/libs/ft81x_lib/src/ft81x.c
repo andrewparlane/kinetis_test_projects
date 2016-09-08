@@ -147,7 +147,7 @@ ft81x_result configure_gpu(FT81X_Handle *handle)
     WRITE_GPU_REG_8(FT81X_REG_GPIO, 0xff);
 
     // set the clear colour to green, and clear the display
-    uint8_t init_dl[12] =
+    const uint8_t init_dl[] =
     {
         0,255,0,2,    //GPU instruction CLEAR_COLOR_RGB
         7,0,0,38,   //GPU instruction CLEAR
