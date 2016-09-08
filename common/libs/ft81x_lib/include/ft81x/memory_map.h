@@ -24,6 +24,7 @@
 #define FT81X_REG_PCLK              0x302070
 #define FT81X_REG_GPIO_DIR          0x302090
 #define FT81X_REG_GPIO              0x302094
+#define     FT81X_REG_GPIO_DISP             0x80
 #define FT81X_REG_TOUCH_RZTHRESH    0x302118
 
 #endif

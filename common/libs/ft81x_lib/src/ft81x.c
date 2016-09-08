@@ -143,8 +143,11 @@ ft81x_result configure_gpu(FT81X_Handle *handle)
     WRITE_GPU_REG_16(FT81X_REG_TOUCH_RZTHRESH, (FT81X_RESISTIVE_TOUCH_THRESHOLD));
 #endif
 
-    WRITE_GPU_REG_8(FT81X_REG_GPIO_DIR, 0xff);
-    WRITE_GPU_REG_8(FT81X_REG_GPIO, 0xff);
+    // configure the GPIO pins
+    // DISP is an output, the rest are inputs
+    // DISP starts as 1 (enable)
+    WRITE_GPU_REG_8(FT81X_REG_GPIO, FT81X_REG_GPIO_DISP);
+    WRITE_GPU_REG_8(FT81X_REG_GPIO_DIR, FT81X_REG_GPIO_DISP);
 
     // set the clear colour to green, and clear the display
     const uint8_t init_dl[] =
