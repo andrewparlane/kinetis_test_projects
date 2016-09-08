@@ -45,7 +45,7 @@
 #include "fsl_edma.h"
 
 // ft81x lib includes
-#include "ft81x/ft81x.h"
+#include "ft81x.h"
 
 // ----------------------------------------------------------------------------
 // GPIO pins

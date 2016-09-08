@@ -3,7 +3,6 @@
 
 // copy this file to your project directory and rename to ft81x_config.h
 
-#include "ft81x/ft81x_types.h"
 #include "ft81x/boards/board_types.h"
 
 // ----------------------------------------------------------------------------
