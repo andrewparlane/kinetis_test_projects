@@ -118,7 +118,7 @@ ft81x_result ft81x_display_initialise(FT81X_Handle *handle)
 ft81x_result ft81x_display_comms_initialise(FT81X_Handle *handle)
 {
     // this display needs some set up so we need to initialise the comms
-    return ft81x_board_display_comms_initialise(handle);
+    return ft81x_platform_display_spi_comms_initialise(handle);
 }
 
 void ft81x_display_cleanup(FT81X_Handle *handle)

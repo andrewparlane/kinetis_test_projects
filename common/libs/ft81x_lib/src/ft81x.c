@@ -208,7 +208,7 @@ ft81x_result ft81x_initialise(FT81X_Handle *handle)
     }
 
     // initialise comms to the GPU
-    res = ft81x_board_gpu_comms_initialise(handle);
+    res = ft81x_platform_gpu_spi_comms_initialise(handle);
     if (res != FT81X_RESULT_OK)
     {
         return res;
