@@ -1,4 +1,5 @@
 #include "ft81x.h"
+#include "ft81x_display_list.h"
 #include "ft81x/commands.h"
 #include "ft81x/memory_map.h"
 
@@ -156,14 +157,14 @@ ft81x_result configure_gpu(FT81X_Handle *handle)
     WRITE_GPU_REG_8(FT81X_REG_GPIO, FT81X_REG_GPIO_DISP);
     WRITE_GPU_REG_8(FT81X_REG_GPIO_DIR, FT81X_REG_GPIO_DISP);
 
-    // set the clear colour to green, and clear the display
-    const uint8_t init_dl[] =
+    // clear the display to black
+    const uint32_t init_dl[] =
     {
-        0,255,0,2,    //GPU instruction CLEAR_COLOR_RGB
-        7,0,0,38,   //GPU instruction CLEAR
-        0,0,0,0,    //GPU instruction DISPLAY
+        FT81X_DL_CMD_CLEAR_COLOUR_RGB(0,0,0),
+        FT81X_DL_CMD_CLEAR(1,1,1),
+        FT81X_DL_CMD_DISPLAY()
     };
-    WRITE_GPU_MEM(FT81X_DISPLAY_LIST_RAM, sizeof(init_dl), init_dl);
+    WRITE_GPU_MEM(FT81X_DISPLAY_LIST_RAM, sizeof(init_dl), (uint8_t *)init_dl);
     WRITE_GPU_REG_8(FT81X_REG_DLSWAP, FT81X_REG_DLSWAP_SWAP_FRAME);
 
     // after this display is visible on the LCD
