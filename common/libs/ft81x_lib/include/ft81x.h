@@ -55,4 +55,7 @@ ft81x_result ft81x_set_active(FT81X_Handle *handle);
 
 ft81x_result ft81x_backlight(FT81X_Handle *handle, ft81x_backlight_level level);
 
+
+ft81x_result ft81x_dump_registers(FT81X_Handle *handle);
+
 #endif

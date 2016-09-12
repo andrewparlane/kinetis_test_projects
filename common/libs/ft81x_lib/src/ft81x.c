@@ -7,6 +7,8 @@
 #include "ft81x/displays/display.h"
 #include "ft81x/platforms/platform.h"
 
+#include <stdio.h>
+
 // ----------------------------------------------------------------------------
 // Helper macros
 // ----------------------------------------------------------------------------
@@ -35,6 +37,22 @@
     {                                                                                           \
         return res;                                                                             \
     }                                                                                           \
+}
+
+#define READ_GPU_REG_32(addr, data)                                                            \
+{                                                                                               \
+    ft81x_result res = ft81x_platform_gpu_read_register_32(handle, addr, &data);    \
+    if (res != FT81X_RESULT_OK)                                                                 \
+    {                                                                                           \
+        return res;                                                                             \
+    }                                                                                           \
+}
+
+#define DUMP_GPU_REG_32(addr)                                       \
+{                                                                   \
+    uint32_t data;                                                  \
+    READ_GPU_REG_32(addr, data);                                    \
+    printf("%s (%08X) = %08X\n", #addr, addr, (unsigned int)data);  \
 }
 
 // ----------------------------------------------------------------------------
@@ -319,5 +337,50 @@ ft81x_result ft81x_set_active(FT81X_Handle *handle)
 ft81x_result ft81x_backlight(FT81X_Handle *handle, ft81x_backlight_level level)
 {
     WRITE_GPU_REG_8(FT81X_REG_PWM_DUTY, level);
+    return FT81X_RESULT_OK;
+}
+
+ft81x_result ft81x_dump_registers(FT81X_Handle *handle)
+{
+    DUMP_GPU_REG_32(FT81X_REG_ID_ADDR);
+    DUMP_GPU_REG_32(FT81X_REG_FRAMES);
+    DUMP_GPU_REG_32(FT81X_REG_CLOCK);
+    DUMP_GPU_REG_32(FT81X_REG_FREQUENCY);
+    DUMP_GPU_REG_32(FT81X_REG_RENDERMODE);
+    DUMP_GPU_REG_32(FT81X_REG_SNAPY);
+    DUMP_GPU_REG_32(FT81X_REG_SNAPSHOT);
+    DUMP_GPU_REG_32(FT81X_REG_SNAPFORMAT);
+    DUMP_GPU_REG_32(FT81X_REG_CPURESET);
+    DUMP_GPU_REG_32(FT81X_REG_TAP_CRC);
+    DUMP_GPU_REG_32(FT81X_REG_TAP_MASK);
+    DUMP_GPU_REG_32(FT81X_REG_HCYCLE);
+    DUMP_GPU_REG_32(FT81X_REG_HOFFSET);
+    DUMP_GPU_REG_32(FT81X_REG_HSIZE);
+    DUMP_GPU_REG_32(FT81X_REG_HSYNC0);
+    DUMP_GPU_REG_32(FT81X_REG_HSYNC1);
+    DUMP_GPU_REG_32(FT81X_REG_VCYCLE);
+    DUMP_GPU_REG_32(FT81X_REG_VOFFSET);
+    DUMP_GPU_REG_32(FT81X_REG_VSIZE);
+    DUMP_GPU_REG_32(FT81X_REG_VSYNC0);
+    DUMP_GPU_REG_32(FT81X_REG_VSYNC1);
+    DUMP_GPU_REG_32(FT81X_REG_DLSWAP);
+    DUMP_GPU_REG_32(FT81X_REG_ROTATE);
+    DUMP_GPU_REG_32(FT81X_REG_OUTBITS);
+    DUMP_GPU_REG_32(FT81X_REG_DITHER);
+    DUMP_GPU_REG_32(FT81X_REG_SWIZZLE);
+    DUMP_GPU_REG_32(FT81X_REG_CSPREAD);
+    DUMP_GPU_REG_32(FT81X_REG_PCLK_POL);
+    DUMP_GPU_REG_32(FT81X_REG_PCLK);
+    DUMP_GPU_REG_32(FT81X_REG_GPIO_DIR);
+    DUMP_GPU_REG_32(FT81X_REG_GPIO);
+    DUMP_GPU_REG_32(FT81X_REG_INT_FLAGS);
+    DUMP_GPU_REG_32(FT81X_REG_INT_EN);
+    DUMP_GPU_REG_32(FT81X_REG_INT_MASK);
+    DUMP_GPU_REG_32(FT81X_REG_PWM_DUTY);
+    DUMP_GPU_REG_32(FT81X_REG_CMD_READ);
+    DUMP_GPU_REG_32(FT81X_REG_CMD_WRITE);
+    DUMP_GPU_REG_32(FT81X_REG_CMD_DL);
+    DUMP_GPU_REG_32(FT81X_REG_TOUCH_RZTHRESH);
+
     return FT81X_RESULT_OK;
 }
