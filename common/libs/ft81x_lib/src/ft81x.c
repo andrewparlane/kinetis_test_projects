@@ -39,6 +39,15 @@
     }                                                                                           \
 }
 
+#define WRITE_GPU_REG_32(addr, data)                                                            \
+{                                                                                               \
+    ft81x_result res = ft81x_platform_gpu_write_register_32(handle, addr, data);    \
+    if (res != FT81X_RESULT_OK)                                                                 \
+    {                                                                                           \
+        return res;                                                                             \
+    }                                                                                           \
+}
+
 #define READ_GPU_REG_32(addr, data)                                                            \
 {                                                                                               \
     ft81x_result res = ft81x_platform_gpu_read_register_32(handle, addr, &data);    \
@@ -347,6 +356,29 @@ ft81x_result ft81x_send_display_list(FT81X_Handle *handle, uint32_t bytes, const
 {
     WRITE_GPU_MEM(FT81X_DISPLAY_LIST_RAM, bytes, (uint8_t *)dl);
     WRITE_GPU_REG_8(FT81X_REG_DLSWAP, FT81X_REG_DLSWAP_SWAP_FRAME);
+
+    return FT81X_RESULT_OK;
+}
+
+ft81x_result ft81x_send_display_list_to_coproc(FT81X_Handle *handle, uint32_t bytes, const uint32_t *dl)
+{
+    uint32_t dlstart = 0xFFFFFF00;
+    uint32_t dlswap = 0xFFFFFF01;
+
+    uint32_t wp;
+    READ_GPU_REG_32(FT81X_REG_CMD_WRITE, wp);
+
+    WRITE_GPU_MEM(FT81X_COPROC_CMD_RAM + wp, 4, (uint8_t *)&dlstart);
+    WRITE_GPU_MEM(FT81X_COPROC_CMD_RAM + wp + 4, bytes, (uint8_t *)dl);
+    WRITE_GPU_MEM(FT81X_COPROC_CMD_RAM + wp + bytes + 4, 4, (uint8_t *)&dlswap);
+
+    WRITE_GPU_REG_32(FT81X_REG_CMD_WRITE, (wp + bytes + 8) % 4096);
+
+    uint32_t rp;
+    do
+    {
+        READ_GPU_REG_32(FT81X_REG_CMD_READ, rp);
+    } while(rp != (wp + bytes + 8) % 4096);
 
     return FT81X_RESULT_OK;
 }
