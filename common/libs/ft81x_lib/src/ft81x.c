@@ -182,8 +182,11 @@ ft81x_result configure_gpu(FT81X_Handle *handle)
         FT81X_DL_CMD_CLEAR(1,1,1),
         FT81X_DL_CMD_DISPLAY()
     };
-    WRITE_GPU_MEM(FT81X_DISPLAY_LIST_RAM, sizeof(init_dl), (uint8_t *)init_dl);
-    WRITE_GPU_REG_8(FT81X_REG_DLSWAP, FT81X_REG_DLSWAP_SWAP_FRAME);
+    res = ft81x_send_display_list(handle, sizeof(init_dl), init_dl);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
 
     // after this display is visible on the LCD
     WRITE_GPU_REG_8(FT81X_REG_PCLK, FT81X_SCREEN_PCLK_DIVISOR);
@@ -337,6 +340,14 @@ ft81x_result ft81x_set_active(FT81X_Handle *handle)
 ft81x_result ft81x_backlight(FT81X_Handle *handle, ft81x_backlight_level level)
 {
     WRITE_GPU_REG_8(FT81X_REG_PWM_DUTY, level);
+    return FT81X_RESULT_OK;
+}
+
+ft81x_result ft81x_send_display_list(FT81X_Handle *handle, uint32_t bytes, const uint32_t *dl)
+{
+    WRITE_GPU_MEM(FT81X_DISPLAY_LIST_RAM, bytes, (uint8_t *)dl);
+    WRITE_GPU_REG_8(FT81X_REG_DLSWAP, FT81X_REG_DLSWAP_SWAP_FRAME);
+
     return FT81X_RESULT_OK;
 }
 
