@@ -280,13 +280,6 @@ ft81x_result ft81x_configure(FT81X_Handle *handle)
         return res;
     }
 
-    // enable the backlight
-    res = ft81x_backlight(handle, FT81X_BACKLIGHT_LEVEL_MAX);
-    if (res != FT81X_RESULT_OK)
-    {
-        return res;
-    }
-
     return res;
 }
 
