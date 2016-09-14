@@ -50,6 +50,7 @@
 
 // resources
 #include "resources/cat_l8_raw.h"
+#include "resources/cat_argb1555_raw.h"
 
 // ----------------------------------------------------------------------------
 // GPIO pins
@@ -120,8 +121,21 @@ static void main_thread(void *arg)
         return;
     }
 
+    // ----------------------------------------------------------
     // load our resources into g RAM
-    res = ft81x_write_to_g_ram(&handle, 0, sizeof(cat_l8_raw), cat_l8_raw);
+    // ----------------------------------------------------------
+    // first is the L8 image, at offset 0
+    const uint32_t cat_l8_raw_load_offset = 0;
+    res = ft81x_write_to_g_ram(&handle, cat_l8_raw_load_offset, sizeof(cat_l8_raw), cat_l8_raw);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_write_to_g_ram failed with %u\n", res);
+        ft81x_cleanup(&handle);
+        return;
+    }
+    // then the argb1555 image, straight after, but aligned to 2 bytes
+    const uint32_t cat_argb1555_raw_load_offset = (cat_l8_raw_load_offset + sizeof(cat_l8_raw) + 1) & 0xFFFFFFFE;
+    res = ft81x_write_to_g_ram(&handle, cat_argb1555_raw_load_offset, sizeof(cat_argb1555_raw), cat_argb1555_raw);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_write_to_g_ram failed with %u\n", res);
@@ -137,10 +151,19 @@ static void main_thread(void *arg)
         FT81X_DL_CMD_BITMAP_HANDLE(0),
         FT81X_DL_CMD_BITMAP_LAYOUT((FT81X_DL_BITMAP_FORMAT_L8), cat_l8_linestride, cat_l8_height),
         FT81X_DL_CMD_BITMAP_SIZE((FT81X_DL_BITMAP_FILTER_NEAREST), (FT81X_DL_BITMAP_WRAP_BORDER), (FT81X_DL_BITMAP_WRAP_BORDER), cat_l8_width, cat_l8_height),
-        FT81X_DL_CMD_BITMAP_SOURCE(0),
+        FT81X_DL_CMD_BITMAP_SOURCE(cat_l8_raw_load_offset),
+
+        FT81X_DL_CMD_BITMAP_HANDLE(1),
+        FT81X_DL_CMD_BITMAP_LAYOUT((FT81X_DL_BITMAP_FORMAT_ARGB1555), cat_argb1555_linestride, cat_argb1555_height),
+        FT81X_DL_CMD_BITMAP_SIZE((FT81X_DL_BITMAP_FILTER_NEAREST), (FT81X_DL_BITMAP_WRAP_BORDER), (FT81X_DL_BITMAP_WRAP_BORDER), cat_argb1555_width, cat_argb1555_height),
+        FT81X_DL_CMD_BITMAP_SOURCE(cat_argb1555_raw_load_offset),
 
         FT81X_DL_CMD_BEGIN((FT81X_DL_PRIM_BITMAP)),
             FT81X_DL_CMD_VERTEX2II(160-(cat_l8_width/2), 240-(cat_l8_height/2), 0, 0),
+        FT81X_DL_CMD_END(),
+
+        FT81X_DL_CMD_BEGIN((FT81X_DL_PRIM_BITMAP)),
+            FT81X_DL_CMD_VERTEX2II(0, 0, 1, 0),
         FT81X_DL_CMD_END(),
 
         FT81X_DL_CMD_POINT_SIZE(20 * 16),
