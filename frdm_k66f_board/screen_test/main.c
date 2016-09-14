@@ -166,7 +166,7 @@ static void main_thread(void *arg)
     }
 
     // enable the backlight
-    res = ft81x_backlight(handle, FT81X_BACKLIGHT_LEVEL_MAX);
+    res = ft81x_backlight(&handle, FT81X_BACKLIGHT_LEVEL_MAX);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_backlight failed with %u\n", res);
