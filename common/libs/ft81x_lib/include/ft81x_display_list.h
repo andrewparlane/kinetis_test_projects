@@ -35,8 +35,31 @@ Revision History:
 #define __FT81X_DISPLAY_LIST_H
 
 #define FT81X_DL_CMD_ID_DISPLAY             0x00
+#define FT81X_DL_CMD_ID_BITMAP_SOURCE       0x01
 #define FT81X_DL_CMD_ID_CLEAR_COLOUR_RGB    0x02
 #define FT81X_DL_CMD_ID_COLOUR_RGB          0x04
+#define FT81X_DL_CMD_ID_BITMAP_HANDLE       0x05
+#define FT81X_DL_CMD_ID_BITMAP_LAYOUT       0x07
+#define     FT81X_DL_BITMAP_FORMAT_ARGB1555         0
+#define     FT81X_DL_BITMAP_FORMAT_L1               1
+#define     FT81X_DL_BITMAP_FORMAT_L4               2
+#define     FT81X_DL_BITMAP_FORMAT_L8               3
+#define     FT81X_DL_BITMAP_FORMAT_RGB332           4
+#define     FT81X_DL_BITMAP_FORMAT_ARGB2            5
+#define     FT81X_DL_BITMAP_FORMAT_ARGB4            6
+#define     FT81X_DL_BITMAP_FORMAT_RGB565           7
+#define     FT81X_DL_BITMAP_FORMAT_TEXT8X8          9
+#define     FT81X_DL_BITMAP_FORMAT_TEXTVGA          10
+#define     FT81X_DL_BITMAP_FORMAT_BARGRAPH         11
+#define     FT81X_DL_BITMAP_FORMAT_PALLETTED565     14
+#define     FT81X_DL_BITMAP_FORMAT_PALLETED4444     15
+#define     FT81X_DL_BITMAP_FORMAT_PALLETED8        16
+#define     FT81X_DL_BITMAP_FORMAT_L2               17
+#define FT81X_DL_CMD_ID_BITMAP_SIZE         0x08
+#define     FT81X_DL_BITMAP_FILTER_NEAREST          0
+#define     FT81X_DL_BITMAP_FILTER_BILINEAR         1
+#define     FT81X_DL_BITMAP_WRAP_BORDER             0
+#define     FT81X_DL_BITMAP_WRAP_REPEAT             1
 #define FT81X_DL_CMD_ID_POINT_SIZE          0x0D
 #define FT81X_DL_CMD_ID_LINE_WIDTH          0x0E
 #define FT81X_DL_CMD_ID_BEGIN               0x1F
@@ -71,6 +94,13 @@ Revision History:
             FT81X_DL_8BIT_CMD((FT81X_DL_CMD_ID_DISPLAY), \
                               0)
 
+// Specify the source address in g_ram of a bitmap
+//  addr - address in g_ram of the bitmap
+//         (must be aligned to the bitmap format, ie RGB565 means 2 byte alignment)
+#define FT81X_DL_CMD_BITMAP_SOURCE(addr) \
+            FT81X_DL_8BIT_CMD((FT81X_DL_CMD_ID_BITMAP_SOURCE), \
+                              ((addr) & 0x3FFFFF))
+
 // Set the clear colour for the RGB channels
 #define FT81X_DL_CMD_CLEAR_COLOUR_RGB(red, green, blue) \
             FT81X_DL_8BIT_CMD((FT81X_DL_CMD_ID_CLEAR_COLOUR_RGB), \
@@ -84,6 +114,39 @@ Revision History:
                               ((((red)   & 0xFF) << 16) | \
                                (((green) & 0xFF) <<  8) | \
                                (((blue)  & 0xFF) <<  0)))
+
+// Specify the bitmap handle
+//  handle - (0-31) An ID associated with this bitmap
+//           which can be used by vertex2i calls
+//           by default 15 is for scratch used by co-proc cmds
+//           and 16-31 are built in fonts.
+#define FT81X_DL_CMD_BITMAP_HANDLE(handle) \
+            FT81X_DL_8BIT_CMD((FT81X_DL_CMD_ID_BITMAP_HANDLE) , \
+                              ((handle) & 0x1F))
+
+// Specify the bitmap layout for the current handle (see BITMAP_HANDLE)
+//  format      - type of bitmap (one of FT81X_DL_BITMAP_FORMAT_...)
+//  linestride  - width of image in bytes
+//  height      - height in lines
+#define FT81X_DL_CMD_BITMAP_LAYOUT(format, linestride, height) \
+            FT81X_DL_8BIT_CMD((FT81X_DL_CMD_ID_BITMAP_LAYOUT) , \
+                              ((((format)       & 0x1F) << 19) | \
+                               (((linestride)   & 0x3FF) << 9) | \
+                               (((height)       & 0x1FF) << 0)))
+
+// Specify how to draw bitmaps for the current handle (see BITMAP_HANDLE)
+//  filter - FT81X_DL_BITMAP_FILTER_NEAREST or FT81X_DL_BITMAP_FILTER_BILINEAR
+//  wrapx - FT81X_DL_BITMAP_WRAP_BORDER or FT81X_DL_BITMAP_WRAP_REPEAT
+//  wrapy - FT81X_DL_BITMAP_WRAP_BORDER or FT81X_DL_BITMAP_WRAP_REPEAT
+//  width - what width to draw in pixels
+//  height - what height to draw in pixels
+#define FT81X_DL_CMD_BITMAP_SIZE(filter, wrapx, wrapy, width, height) \
+            FT81X_DL_8BIT_CMD((FT81X_DL_CMD_ID_BITMAP_SIZE) , \
+                              ((((filter)  & 0x1)   << 20) | \
+                               (((wrapx)   & 0x1)   << 19) | \
+                               (((wrapy)   & 0x1)   << 18) | \
+                               (((width)   & 0x1FF) << 9)  | \
+                               (((height)  & 0x1FF) << 0)))
 
 // Specify the radius of a point
 //  size - radius in 1/16ths of pixels
@@ -131,12 +194,8 @@ Revision History:
 
 /*
 #define VERTEX2F(x,y) ((1UL<<30)|(((x)&32767UL)<<15)|(((y)&32767UL)<<0))
-#define BITMAP_SOURCE(addr) ((1UL<<24)|(((addr)&4194303UL)<<0))
 #define TAG(s) ((3UL<<24)|(((s)&255UL)<<0))
-#define BITMAP_HANDLE(handle) ((5UL<<24)|(((handle)&31UL)<<0))
 #define CELL(cell) ((6UL<<24)|(((cell)&127UL)<<0))
-#define BITMAP_LAYOUT(format,linestride,height) ((7UL<<24)|(((format)&31UL)<<19)|(((linestride)&1023UL)<<9)|(((height)&511UL)<<0))
-#define BITMAP_SIZE(filter,wrapx,wrapy,width,height) ((8UL<<24)|(((filter)&1UL)<<20)|(((wrapx)&1UL)<<19)|(((wrapy)&1UL)<<18)|(((width)&511UL)<<9)|(((height)&511UL)<<0))
 #define ALPHA_FUNC(func,ref) ((9UL<<24)|(((func)&7UL)<<8)|(((ref)&255UL)<<0))
 #define STENCIL_FUNC(func,ref,mask) ((10UL<<24)|(((func)&7UL)<<16)|(((ref)&255UL)<<8)|(((mask)&255UL)<<0))
 #define BLEND_FUNC(src,dst) ((11UL<<24)|(((src)&7UL)<<3)|(((dst)&7UL)<<0))
