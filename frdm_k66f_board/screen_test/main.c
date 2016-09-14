@@ -46,6 +46,7 @@
 
 // ft81x lib includes
 #include "ft81x.h"
+#include "ft81x_display_list.h"
 
 // ----------------------------------------------------------------------------
 // GPIO pins
@@ -112,6 +113,58 @@ static void main_thread(void *arg)
         DbgConsole_Printf("ft81x_configure failed with %u\n", res);
     }
 
+    const uint32_t test_dl[] =
+    {
+        FT81X_DL_CMD_CLEAR_COLOUR_RGB(32,32,32),
+        FT81X_DL_CMD_CLEAR(1,1,1),
+
+        FT81X_DL_CMD_POINT_SIZE(20 * 16),
+        FT81X_DL_CMD_COLOUR_RGB(255, 0, 0),
+        FT81X_DL_CMD_BEGIN(FT81X_DL_PRIM_POINTS),
+            FT81X_DL_CMD_VERTEX2II(5, 5, 0, 0),
+        FT81X_DL_CMD_END(),
+
+        FT81X_DL_CMD_POINT_SIZE(40 * 16),
+        FT81X_DL_CMD_COLOUR_RGB(0, 255, 0),
+        FT81X_DL_CMD_BEGIN(FT81X_DL_PRIM_POINTS),
+            FT81X_DL_CMD_VERTEX2II(315, 5, 0, 0),
+        FT81X_DL_CMD_END(),
+
+        FT81X_DL_CMD_LINE_WIDTH(5 * 16),
+        FT81X_DL_CMD_COLOUR_RGB(0, 0, 255),
+        FT81X_DL_CMD_BEGIN(FT81X_DL_PRIM_LINES),
+            FT81X_DL_CMD_VERTEX2II(10, 10, 0, 0),
+            FT81X_DL_CMD_VERTEX2II(310, 470, 0, 0),
+        FT81X_DL_CMD_END(),
+
+        FT81X_DL_CMD_LINE_WIDTH(1 * 16),
+        FT81X_DL_CMD_COLOUR_RGB(255, 255, 0),
+        FT81X_DL_CMD_BEGIN(FT81X_DL_PRIM_RECTS),
+            FT81X_DL_CMD_VERTEX2II(300, 199, 0, 0),
+            FT81X_DL_CMD_VERTEX2II(200, 280, 0, 0),
+        FT81X_DL_CMD_END(),
+
+        FT81X_DL_CMD_LINE_WIDTH(10 * 16),
+        FT81X_DL_CMD_COLOUR_RGB(255, 0, 255),
+        FT81X_DL_CMD_BEGIN(FT81X_DL_PRIM_RECTS),
+            FT81X_DL_CMD_VERTEX2II(50, 300, 0, 0),
+            FT81X_DL_CMD_VERTEX2II(100, 450, 0, 0),
+        FT81X_DL_CMD_END(),
+
+        FT81X_DL_CMD_DISPLAY()
+    };
+    res = ft81x_send_display_list(&handle, sizeof(test_dl), test_dl);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_send_display_list failed with %u\n", res);
+    }
+
+    // enable the backlight
+    res = ft81x_backlight(handle, FT81X_BACKLIGHT_LEVEL_MAX);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
 
     DbgConsole_Printf("sreen_test completed successfully\n");
 
