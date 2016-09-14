@@ -245,6 +245,11 @@ ft81x_result ft81x_platform_gpu_write_mem(FT81X_Handle *handle, uint32_t address
     }
     FT81X_NXP_kinetis_k66_user_data *k66_user_data = (FT81X_NXP_kinetis_k66_user_data *)handle->platform_user_data;
 
+    if (count == 0)
+    {
+        return FT81X_RESULT_INVALID_ARG;
+    }
+
     // first send the address
     // the | 0x80 is because we are writing
     uint8_t spi_tx_buffer[3] = { ((address >> 16) & 0x3F) | 0x80,
@@ -278,28 +283,38 @@ ft81x_result ft81x_platform_gpu_write_mem(FT81X_Handle *handle, uint32_t address
     }
 
     // now send the data
-    tfer.txData = data;
-    tfer.rxData = NULL;
-    tfer.dataSize = count;
-    tfer.configFlags = FT81X_BOARD_GPU_SPI_TFER_CTAR |
-                       FT81X_BOARD_GPU_SPI_TFER_CS |
-                       kDSPI_MasterPcsContinuous;
-
-    ret = DSPI_MasterTransferEDMA(FT81X_BOARD_GPU_SPI_MODULE, &(k66_user_data->gpu_spi_edma_handle), &tfer);
-    if (ret != kStatus_Success)
+    // The EDMA peripheral doesn't allow for more than 511 bytes per transfer
+    uint32_t sent = 0;
+    while (sent != count)
     {
-        DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to write GPU memory\n", (unsigned int)ret);
-        return FT81X_RESULT_GPU_TFER_FAILED;
-    }
+        uint32_t remaining = (count - sent);
+        uint32_t toSend = (remaining > 511) ? 511 : remaining;
+        tfer.txData = &data[sent];
+        tfer.rxData = NULL;
+        tfer.dataSize = toSend;
+        tfer.configFlags = FT81X_BOARD_GPU_SPI_TFER_CTAR |
+                           FT81X_BOARD_GPU_SPI_TFER_CS |
+                           kDSPI_MasterPcsContinuous |
+                           ((toSend == remaining) ? 0 : kDSPI_MasterActiveAfterTransfer);
 
-    // todo add timeout
-    while (!k66_user_data->spi_transfer_complete);
-    k66_user_data->spi_transfer_complete = 0;
+        ret = DSPI_MasterTransferEDMA(FT81X_BOARD_GPU_SPI_MODULE, &(k66_user_data->gpu_spi_edma_handle), &tfer);
+        if (ret != kStatus_Success)
+        {
+            DbgConsole_Printf("DSPI_MasterTransferEDMA() returned %u, trying to write GPU memory\n", (unsigned int)ret);
+            return FT81X_RESULT_GPU_TFER_FAILED;
+        }
 
-    if (k66_user_data->spi_transfer_status != kStatus_Success)
-    {
-        DbgConsole_Printf("SPI tfer failed with %u, trying to write GPU memory\n", (unsigned int)k66_user_data->spi_transfer_status);
-        return FT81X_RESULT_GPU_TFER_FAILED;
+        // todo add timeout
+        while (!k66_user_data->spi_transfer_complete);
+        k66_user_data->spi_transfer_complete = 0;
+
+        if (k66_user_data->spi_transfer_status != kStatus_Success)
+        {
+            DbgConsole_Printf("SPI tfer failed with %u, trying to write GPU memory\n", (unsigned int)k66_user_data->spi_transfer_status);
+            return FT81X_RESULT_GPU_TFER_FAILED;
+        }
+
+        sent += toSend;
     }
 
     return FT81X_RESULT_OK;
