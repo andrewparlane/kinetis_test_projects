@@ -106,11 +106,15 @@ static void main_thread(void *arg)
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_initialise failed with %u\n", res);
+        ft81x_cleanup(&handle);
+        return;
     }
     res = ft81x_configure(&handle);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_configure failed with %u\n", res);
+        ft81x_cleanup(&handle);
+        return;
     }
 
     const uint32_t test_dl[] =
@@ -157,13 +161,17 @@ static void main_thread(void *arg)
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_send_display_list failed with %u\n", res);
+        ft81x_cleanup(&handle);
+        return;
     }
 
     // enable the backlight
     res = ft81x_backlight(handle, FT81X_BACKLIGHT_LEVEL_MAX);
     if (res != FT81X_RESULT_OK)
     {
-        return res;
+        DbgConsole_Printf("ft81x_backlight failed with %u\n", res);
+        ft81x_cleanup(&handle);
+        return;
     }
 
     DbgConsole_Printf("sreen_test completed successfully\n");
