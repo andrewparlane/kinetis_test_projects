@@ -34,51 +34,71 @@ Revision History:
 #ifndef __FT81X_DISPLAY_LIST_H
 #define __FT81X_DISPLAY_LIST_H
 
+typedef enum
+{
+    FT81X_BITMAP_FORMAT_ARGB1555        = 0,
+    FT81X_BITMAP_FORMAT_L1              = 1,
+    FT81X_BITMAP_FORMAT_L4              = 2,
+    FT81X_BITMAP_FORMAT_L8              = 3,
+    FT81X_BITMAP_FORMAT_RGB332          = 4,
+    FT81X_BITMAP_FORMAT_ARGB2           = 5,
+    FT81X_BITMAP_FORMAT_ARGB4           = 6,
+    FT81X_BITMAP_FORMAT_RGB565          = 7,
+    FT81X_BITMAP_FORMAT_TEXT8X8         = 9,
+    FT81X_BITMAP_FORMAT_TEXTVGA         = 10,
+    FT81X_BITMAP_FORMAT_BARGRAPH        = 11,
+    FT81X_BITMAP_FORMAT_PALETTED565     = 14,
+    FT81X_BITMAP_FORMAT_PALETTED4444    = 15,
+    FT81X_BITMAP_FORMAT_PALETTED8       = 16,
+    FT81X_BITMAP_FORMAT_L2              = 17
+} FT81X_Bitmap_Format;
+
+typedef enum
+{
+    FT81X_BITMAP_FILTER_NEAREST         = 0,
+    FT81X_BITMAP_FILTER_BILINEAR        = 1
+} FT81X_Bitmap_Filter;
+
+typedef enum
+{
+    FT81X_BITMAP_WRAP_BORDER            = 0,
+    FT81X_BITMAP_WRAP_REPEAT            = 1
+} FT81X_Bitmap_Wrap;
+
+typedef enum
+{
+    FT81X_BLEND_FUNC_ZERO                   = 0,
+    FT81X_BLEND_FUNC_ONE                    = 1,
+    FT81X_BLEND_FUNC_SRC_ALPHA              = 2,
+    FT81X_BLEND_FUNC_DST_ALPHA              = 3,
+    FT81X_BLEND_FUNC_ONE_MINUS_SRC_ALPHA    = 4,
+    FT81X_BLEND_FUNC_ONE_MINUS_DST_ALPHA    = 5
+} FT81X_Blend_Func;
+
+typedef enum
+{
+    FT81X_PRIMITIVE_BITMAP          = 1,
+    FT81X_PRIMITIVE_POINTS          = 2,
+    FT81X_PRIMITIVE_LINES           = 3,
+    FT81X_PRIMITIVE_LINE_STRIP      = 4,
+    FT81X_PRIMITIVE_EDGE_STRIP_R    = 5,
+    FT81X_PRIMITIVE_EDGE_STRIP_L    = 6,
+    FT81X_PRIMITIVE_EDGE_STRIP_A    = 7,
+    FT81X_PRIMITIVE_EDGE_STRIP_B    = 8,
+    FT81X_PRIMITIVE_RECTS           = 9
+} FT81X_Primitive;
+
 #define FT81X_DL_CMD_ID_DISPLAY             0x00
 #define FT81X_DL_CMD_ID_BITMAP_SOURCE       0x01
 #define FT81X_DL_CMD_ID_CLEAR_COLOUR_RGB    0x02
 #define FT81X_DL_CMD_ID_COLOUR_RGB          0x04
 #define FT81X_DL_CMD_ID_BITMAP_HANDLE       0x05
 #define FT81X_DL_CMD_ID_BITMAP_LAYOUT       0x07
-#define     FT81X_DL_BITMAP_FORMAT_ARGB1555         0
-#define     FT81X_DL_BITMAP_FORMAT_L1               1
-#define     FT81X_DL_BITMAP_FORMAT_L4               2
-#define     FT81X_DL_BITMAP_FORMAT_L8               3
-#define     FT81X_DL_BITMAP_FORMAT_RGB332           4
-#define     FT81X_DL_BITMAP_FORMAT_ARGB2            5
-#define     FT81X_DL_BITMAP_FORMAT_ARGB4            6
-#define     FT81X_DL_BITMAP_FORMAT_RGB565           7
-#define     FT81X_DL_BITMAP_FORMAT_TEXT8X8          9
-#define     FT81X_DL_BITMAP_FORMAT_TEXTVGA          10
-#define     FT81X_DL_BITMAP_FORMAT_BARGRAPH         11
-#define     FT81X_DL_BITMAP_FORMAT_PALETTED565      14
-#define     FT81X_DL_BITMAP_FORMAT_PALETTED4444     15
-#define     FT81X_DL_BITMAP_FORMAT_PALETTED8        16
-#define     FT81X_DL_BITMAP_FORMAT_L2               17
 #define FT81X_DL_CMD_ID_BITMAP_SIZE         0x08
-#define     FT81X_DL_BITMAP_FILTER_NEAREST          0
-#define     FT81X_DL_BITMAP_FILTER_BILINEAR         1
-#define     FT81X_DL_BITMAP_WRAP_BORDER             0
-#define     FT81X_DL_BITMAP_WRAP_REPEAT             1
 #define FT81X_DL_CMD_ID_BLEND_FUNC          0x0B
-#define     FT81X_DL_BLEND_FUNC_ZERO                0
-#define     FT81X_DL_BLEND_FUNC_ONE                 1
-#define     FT81X_DL_BLEND_FUNC_SRC_ALPHA           2
-#define     FT81X_DL_BLEND_FUNC_DST_ALPHA           3
-#define     FT81X_DL_BLEND_FUNC_ONE_MINUS_SRC_ALPHA 4
-#define     FT81X_DL_BLEND_FUNC_ONE_MINUS_DST_ALPHA 5
 #define FT81X_DL_CMD_ID_POINT_SIZE          0x0D
 #define FT81X_DL_CMD_ID_LINE_WIDTH          0x0E
 #define FT81X_DL_CMD_ID_BEGIN               0x1F
-#define     FT81X_DL_PRIM_BITMAP                    1
-#define     FT81X_DL_PRIM_POINTS                    2
-#define     FT81X_DL_PRIM_LINES                     3
-#define     FT81X_DL_PRIM_LINE_STRIP                4
-#define     FT81X_DL_PRIM_EDGE_STRIP_R              5
-#define     FT81X_DL_PRIM_EDGE_STRIP_L              6
-#define     FT81X_DL_PRIM_EDGE_STRIP_A              7
-#define     FT81X_DL_PRIM_EDGE_STRIP_B              8
-#define     FT81X_DL_PRIM_RECTS                     9
 #define FT81X_DL_CMD_ID_COLOUR_MASK         0x20
 #define FT81X_DL_CMD_ID_END                 0x21
 #define FT81X_DL_CMD_ID_PALETTE_SOURCE      0x2A
@@ -134,7 +154,7 @@ Revision History:
                               ((handle) & 0x1F))
 
 // Specify the bitmap layout for the current handle (see BITMAP_HANDLE)
-//  format      - type of bitmap (one of FT81X_DL_BITMAP_FORMAT_...)
+//  format      - type of bitmap (one of FT81X_Bitmap_Format)
 //  linestride  - width of image in bytes
 //  height      - height in lines
 #define FT81X_DL_CMD_BITMAP_LAYOUT(format, linestride, height) \
@@ -144,9 +164,9 @@ Revision History:
                                (((height)       & 0x1FF) << 0)))
 
 // Specify how to draw bitmaps for the current handle (see BITMAP_HANDLE)
-//  filter - FT81X_DL_BITMAP_FILTER_NEAREST or FT81X_DL_BITMAP_FILTER_BILINEAR
-//  wrapx - FT81X_DL_BITMAP_WRAP_BORDER or FT81X_DL_BITMAP_WRAP_REPEAT
-//  wrapy - FT81X_DL_BITMAP_WRAP_BORDER or FT81X_DL_BITMAP_WRAP_REPEAT
+//  filter - one of FT81X_Bitmap_Filter
+//  wrapx - one of FT81X_Bitmap_Wrap
+//  wrapy - one of FT81X_Bitmap_Wrap
 //  width - what width to draw in pixels
 //  height - what height to draw in pixels
 #define FT81X_DL_CMD_BITMAP_SIZE(filter, wrapx, wrapy, width, height) \
@@ -160,7 +180,7 @@ Revision History:
 // Specify how to blend pixels
 //  src - specifies how the source blending factor is computed
 //  dst - specifies how the destination blending factor is computed
-//   src and dst should be one of FT81X_DL_BLEND_FUNC_...
+//   src and dst should be one of FT81X_Blend_Func
 //   given a pixel value: source
 //   and a previous value in the colour beffer: destination
 //   new colour = source * src + destination * dst
@@ -182,7 +202,7 @@ Revision History:
                               (((size) & 0xFFF) << 0))
 
 // Begin drawing a graphics primitive
-//  prim - should be one of FT81X_DL_PRIM_...
+//  prim - should be one of FT81X_Primitive
 #define FT81X_DL_CMD_BEGIN(prim) \
             FT81X_DL_8BIT_CMD((FT81X_DL_CMD_ID_BEGIN), \
                               (((prim) & 0x0F) << 0))
