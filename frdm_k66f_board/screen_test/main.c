@@ -51,6 +51,8 @@
 // resources
 #include "resources/cat_l8_raw.h"
 #include "resources/cat_argb1555_raw.h"
+#include "resources/cat_paletted8_indices_raw.h"
+#include "resources/cat_paletted8_lut_raw.h"
 
 // ----------------------------------------------------------------------------
 // GPIO pins
@@ -142,6 +144,24 @@ static void main_thread(void *arg)
         ft81x_cleanup(&handle);
         return;
     }
+    // then the paletted8 image indices, straight after
+    const uint32_t cat_paletted8_indices_raw_load_offset = cat_argb1555_raw_load_offset + sizeof(cat_argb1555_raw);
+    res = ft81x_write_to_g_ram(&handle, cat_paletted8_indices_raw_load_offset, sizeof(cat_paletted8_indices_raw), cat_paletted8_indices_raw);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_write_to_g_ram failed with %u\n", res);
+        ft81x_cleanup(&handle);
+        return;
+    }
+    // then the paletted8 image lut, straight after
+    const uint32_t cat_paletted8_lut_raw_load_offset = cat_paletted8_indices_raw_load_offset + sizeof(cat_paletted8_indices_raw);
+    res = ft81x_write_to_g_ram(&handle, cat_paletted8_lut_raw_load_offset, sizeof(cat_paletted8_lut_raw), cat_paletted8_lut_raw);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_write_to_g_ram failed with %u\n", res);
+        ft81x_cleanup(&handle);
+        return;
+    }
 
     const uint32_t test_dl[] =
     {
@@ -158,12 +178,44 @@ static void main_thread(void *arg)
         FT81X_DL_CMD_BITMAP_SIZE((FT81X_DL_BITMAP_FILTER_NEAREST), (FT81X_DL_BITMAP_WRAP_BORDER), (FT81X_DL_BITMAP_WRAP_BORDER), cat_argb1555_width, cat_argb1555_height),
         FT81X_DL_CMD_BITMAP_SOURCE(cat_argb1555_raw_load_offset),
 
+        FT81X_DL_CMD_BITMAP_HANDLE(2),
+        FT81X_DL_CMD_BITMAP_LAYOUT((FT81X_DL_BITMAP_FORMAT_PALETTED8), cat_paletted8_linestride, cat_paletted8_height),
+        FT81X_DL_CMD_BITMAP_SIZE((FT81X_DL_BITMAP_FILTER_NEAREST), (FT81X_DL_BITMAP_WRAP_BORDER), (FT81X_DL_BITMAP_WRAP_BORDER), cat_paletted8_width, cat_paletted8_height),
+        FT81X_DL_CMD_BITMAP_SOURCE(cat_paletted8_indices_raw_load_offset),
+
         FT81X_DL_CMD_BEGIN((FT81X_DL_PRIM_BITMAP)),
             FT81X_DL_CMD_VERTEX2II(160-(cat_l8_width/2), 240-(cat_l8_height/2), 0, 0),
         FT81X_DL_CMD_END(),
 
         FT81X_DL_CMD_BEGIN((FT81X_DL_PRIM_BITMAP)),
             FT81X_DL_CMD_VERTEX2II(0, 0, 1, 0),
+        FT81X_DL_CMD_END(),
+
+        FT81X_DL_CMD_BEGIN((FT81X_DL_PRIM_BITMAP)),
+            // alpha
+            FT81X_DL_CMD_BLEND_FUNC((FT81X_DL_BLEND_FUNC_ONE), (FT81X_DL_BLEND_FUNC_ZERO)),
+            FT81X_DL_CMD_COLOUR_MASK(0, 0, 0, 1),
+            FT81X_DL_CMD_PALETTE_SOURCE(cat_paletted8_lut_raw_load_offset+3),
+            FT81X_DL_CMD_VERTEX2II(162, 270, 2, 0),
+
+            // colours
+            FT81X_DL_CMD_BLEND_FUNC((FT81X_DL_BLEND_FUNC_DST_ALPHA), (FT81X_DL_BLEND_FUNC_ONE_MINUS_DST_ALPHA)),
+            // red
+            FT81X_DL_CMD_COLOUR_MASK(1, 0, 0, 0),
+            FT81X_DL_CMD_PALETTE_SOURCE(cat_paletted8_lut_raw_load_offset+2),
+            FT81X_DL_CMD_VERTEX2II(162, 270, 2, 0),
+            // green
+            FT81X_DL_CMD_COLOUR_MASK(0, 1, 0, 0),
+            FT81X_DL_CMD_PALETTE_SOURCE(cat_paletted8_lut_raw_load_offset+1),
+            FT81X_DL_CMD_VERTEX2II(162, 270, 2, 0),
+            // blue
+            FT81X_DL_CMD_COLOUR_MASK(0, 0, 1, 0),
+            FT81X_DL_CMD_PALETTE_SOURCE(cat_paletted8_lut_raw_load_offset+0),
+            FT81X_DL_CMD_VERTEX2II(162, 270, 2, 0),
+
+            // revert to default settings
+            FT81X_DL_CMD_BLEND_FUNC((FT81X_DL_BLEND_FUNC_SRC_ALPHA), (FT81X_DL_BLEND_FUNC_ONE_MINUS_SRC_ALPHA)),
+            FT81X_DL_CMD_COLOUR_MASK(1, 1, 1, 1),
         FT81X_DL_CMD_END(),
 
         FT81X_DL_CMD_POINT_SIZE(20 * 16),
