@@ -60,6 +60,13 @@ Revision History:
 #define     FT81X_DL_BITMAP_FILTER_BILINEAR         1
 #define     FT81X_DL_BITMAP_WRAP_BORDER             0
 #define     FT81X_DL_BITMAP_WRAP_REPEAT             1
+#define FT81X_DL_CMD_ID_BLEND_FUNC          0x0B
+#define     FT81X_DL_BLEND_FUNC_ZERO                0
+#define     FT81X_DL_BLEND_FUNC_ONE                 1
+#define     FT81X_DL_BLEND_FUNC_SRC_ALPHA           2
+#define     FT81X_DL_BLEND_FUNC_DST_ALPHA           3
+#define     FT81X_DL_BLEND_FUNC_ONE_MINUS_SRC_ALPHA 4
+#define     FT81X_DL_BLEND_FUNC_ONE_MINUS_DST_ALPHA 5
 #define FT81X_DL_CMD_ID_POINT_SIZE          0x0D
 #define FT81X_DL_CMD_ID_LINE_WIDTH          0x0E
 #define FT81X_DL_CMD_ID_BEGIN               0x1F
@@ -72,7 +79,9 @@ Revision History:
 #define     FT81X_DL_PRIM_EDGE_STRIP_A              7
 #define     FT81X_DL_PRIM_EDGE_STRIP_B              8
 #define     FT81X_DL_PRIM_RECTS                     9
+#define FT81X_DL_CMD_ID_COLOUR_MASK         0x20
 #define FT81X_DL_CMD_ID_END                 0x21
+#define FT81X_DL_CMD_ID_PALETTE_SOURCE      0x2A
 #define FT81X_DL_CMD_ID_CLEAR               0x26
 #define FT81X_DL_CMD_ID_VERTEX2II           0x80
 
@@ -148,6 +157,18 @@ Revision History:
                                (((width)   & 0x1FF) << 9)  | \
                                (((height)  & 0x1FF) << 0)))
 
+// Specify how to blend pixels
+//  src - specifies how the source blending factor is computed
+//  dst - specifies how the destination blending factor is computed
+//   src and dst should be one of FT81X_DL_BLEND_FUNC_...
+//   given a pixel value: source
+//   and a previous value in the colour beffer: destination
+//   new colour = source * src + destination * dst
+#define FT81X_DL_CMD_BLEND_FUNC(src, dst) \
+            FT81X_DL_8BIT_CMD((FT81X_DL_CMD_ID_BLEND_FUNC) , \
+                              ((((src)  & 0x07)     << 3) | \
+                               (((dst)  & 0x07)     << 0)))
+
 // Specify the radius of a point
 //  size - radius in 1/16ths of pixels
 #define FT81X_DL_CMD_POINT_SIZE(size) \
@@ -166,10 +187,29 @@ Revision History:
             FT81X_DL_8BIT_CMD((FT81X_DL_CMD_ID_BEGIN), \
                               (((prim) & 0x0F) << 0))
 
+// Enables or disables drawing of colour components
+//  r - 1 = enable red component
+//  g - 1 = enable green component
+//  b - 1 = enable blue component
+//  a - 1 = enable alpha component
+#define FT81X_DL_CMD_COLOUR_MASK(r, g, b, a) \
+            FT81X_DL_8BIT_CMD((FT81X_DL_CMD_ID_COLOUR_MASK), \
+                              ((((r) & 0x1) << 3) | \
+                               (((g) & 0x1) << 2) | \
+                               (((b) & 0x1) << 1) | \
+                               (((a) & 0x1) << 0)))
+
 // End drawing a graphics primitive
 #define FT81X_DL_CMD_END() \
             FT81X_DL_8BIT_CMD((FT81X_DL_CMD_ID_END), \
                               0)
+
+// Specifies the base address of the palette
+//  addr - specify the address of the palette in g_ram
+#define FT81X_DL_CMD_PALETTE_SOURCE(addr) \
+            FT81X_DL_8BIT_CMD((FT81X_DL_CMD_ID_PALETTE_SOURCE), \
+                              (((addr) & 0x3FFFFF) << 0))
+
 // clear buffers
 //  c - colour buffer
 //  s - stencil buffer
@@ -198,7 +238,6 @@ Revision History:
 #define CELL(cell) ((6UL<<24)|(((cell)&127UL)<<0))
 #define ALPHA_FUNC(func,ref) ((9UL<<24)|(((func)&7UL)<<8)|(((ref)&255UL)<<0))
 #define STENCIL_FUNC(func,ref,mask) ((10UL<<24)|(((func)&7UL)<<16)|(((ref)&255UL)<<8)|(((mask)&255UL)<<0))
-#define BLEND_FUNC(src,dst) ((11UL<<24)|(((src)&7UL)<<3)|(((dst)&7UL)<<0))
 #define STENCIL_OP(sfail,spass) ((12UL<<24)|(((sfail)&7UL)<<3)|(((spass)&7UL)<<0))
 #define CLEAR_COLOUR_A(alpha) ((15UL<<24)|(((alpha)&255UL)<<0))
 #define COLOUR_A(alpha) ((16UL<<24)|(((alpha)&255UL)<<0))
@@ -216,11 +255,9 @@ Revision History:
 #define SCISSOR_SIZE(width,height) ((28UL<<24)|(((width)&4095UL)<<12)|(((height)&4095UL)<<0))
 #define CALL(dest) ((29UL<<24)|(((dest)&65535UL)<<0))
 #define JUMP(dest) ((30UL<<24)|(((dest)&65535UL)<<0))
-#define COLOUR_MASK(r,g,b,a) ((32UL<<24)|(((r)&1UL)<<3)|(((g)&1UL)<<2)|(((b)&1UL)<<1)|(((a)&1UL)<<0))
 #define VERTEX_FORMAT(frac) ((39UL<<24)|(((frac)&7UL)<<0))
 #define BITMAP_LAYOUT_H(linestride,height) ((40UL<<24)|(((linestride)&3UL)<<2)|(((height)&3UL)<<0))
 #define BITMAP_SIZE_H(width,height) ((41UL<<24)|(((width)&3UL)<<2)|(((height)&3UL)<<0))
-#define PALETTE_SOURCE(addr) ((42UL<<24)|(((addr)&4194303UL)<<0))
 #define VERTEX_TRANSLATE_X(x) ((43UL<<24)|(((x)&131071UL)<<0))
 #define VERTEX_TRANSLATE_Y(y) ((44UL<<24)|(((y)&131071UL)<<0))
 #define NOP() ((45UL<<24))
