@@ -298,18 +298,6 @@ ft81x_result ft81x_backlight(FT81X_Handle *handle, ft81x_backlight_level level)
     return FT81X_RESULT_OK;
 }
 
-ft81x_result ft81x_write_to_g_ram(FT81X_Handle *handle, uint32_t count, const uint8_t *data, uint32_t *offset)
-{
-    ft81x_result res = ft81x_g_ram_manager_allocate(handle, count, offset);
-    if (res != FT81X_RESULT_OK)
-    {
-        return res;
-    }
-
-    WRITE_GPU_MEM(((FT81X_G_RAM) + *offset), count, data);
-    return FT81X_RESULT_OK;
-}
-
 ft81x_result ft81x_send_display_list(FT81X_Handle *handle, uint32_t bytes, const uint32_t *dl)
 {
     WRITE_GPU_MEM(FT81X_DISPLAY_LIST_RAM, bytes, (uint8_t *)dl);
