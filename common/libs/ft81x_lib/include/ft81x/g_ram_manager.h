@@ -22,7 +22,7 @@ typedef struct _GRAM_Linked_List_Node
 typedef struct
 {
     GRAM_Linked_List_Node head;
-} GRAM_Info;
+} FT81X_G_RAM_Manager_Data;
 
 // forward declarations for ft81x.h
 enum _ft81x_result;

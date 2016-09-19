@@ -39,8 +39,8 @@ typedef enum _ft81x_result
 
 typedef struct _FT81X_Handle
 {
-    void *platform_user_data;
-    GRAM_Info gram_info;
+    void                       *platform_user_data;
+    FT81X_G_RAM_Manager_Data    g_ram_manager_data;
 } FT81X_Handle;
 
 typedef enum

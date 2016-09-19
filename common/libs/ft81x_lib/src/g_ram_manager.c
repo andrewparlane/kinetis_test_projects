@@ -13,11 +13,11 @@ ft81x_result ft81x_g_ram_manager_initialise(FT81X_Handle *handle)
     // initialise the head of the linked list
     // address is 0
     // and we are not allocated.
-    handle->gram_info.head.address_and_flags = (0 & (FT81X_G_RAM_MANAGER_ADDRESS_MASK)) |
+    handle->g_ram_manager_data.head.address_and_flags = (0 & (FT81X_G_RAM_MANAGER_ADDRESS_MASK)) |
                                                ((FT81X_G_RAM_MANAGER_FREE) & (FT81X_G_RAM_MANAGER_ALLOCATED_MASK));
 
     // there is no next node
-    handle->gram_info.head.next = NULL;
+    handle->g_ram_manager_data.head.next = NULL;
 
     return FT81X_RESULT_OK;
 }
@@ -30,7 +30,7 @@ ft81x_result ft81x_g_ram_manager_allocate(FT81X_Handle *handle, uint32_t count, 
     }
 
     // look through the linked list trying to find a big enough unalloctade region
-    GRAM_Linked_List_Node *node = &(handle->gram_info.head);
+    GRAM_Linked_List_Node *node = &(handle->g_ram_manager_data.head);
     while (node)
     {
         // is this node free?
