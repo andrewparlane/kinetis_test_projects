@@ -23,7 +23,7 @@
 #define FT81X_COLOUR_FORMAT_RBG             14  // MSb on MSb pin
 #define FT81X_COLOUR_FORMAT_RBG_REVERSED    15  // MSb on LSb pin
 
-typedef enum
+typedef enum _ft81x_result
 {
     FT81X_RESULT_OK = 0,
     FT81X_RESULT_NO_HANDLE,
@@ -34,7 +34,7 @@ typedef enum
     FT81X_RESULT_INVALID_ARG,
 } ft81x_result;
 
-typedef struct
+typedef struct _FT81X_Handle
 {
     void *platform_user_data;
 } FT81X_Handle;
