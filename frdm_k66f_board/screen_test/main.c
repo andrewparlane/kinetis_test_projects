@@ -165,32 +165,39 @@ static void main_thread(void *arg)
 
     const uint32_t test_dl[] =
     {
+        // set the background colour to dark grey and clear the screen
         FT81X_DL_CMD_CLEAR_COLOUR_RGB(32,32,32),
         FT81X_DL_CMD_CLEAR(1,1,1),
 
+        // set up handle 0 for L8 image
         FT81X_DL_CMD_BITMAP_HANDLE(0),
         FT81X_DL_CMD_BITMAP_LAYOUT((FT81X_DL_BITMAP_FORMAT_L8), cat_l8_linestride, cat_l8_height),
         FT81X_DL_CMD_BITMAP_SIZE((FT81X_DL_BITMAP_FILTER_NEAREST), (FT81X_DL_BITMAP_WRAP_BORDER), (FT81X_DL_BITMAP_WRAP_BORDER), cat_l8_width, cat_l8_height),
         FT81X_DL_CMD_BITMAP_SOURCE(cat_l8_raw_load_offset),
 
+        // set up handle 1 for ARGB1555 image
         FT81X_DL_CMD_BITMAP_HANDLE(1),
         FT81X_DL_CMD_BITMAP_LAYOUT((FT81X_DL_BITMAP_FORMAT_ARGB1555), cat_argb1555_linestride, cat_argb1555_height),
         FT81X_DL_CMD_BITMAP_SIZE((FT81X_DL_BITMAP_FILTER_NEAREST), (FT81X_DL_BITMAP_WRAP_BORDER), (FT81X_DL_BITMAP_WRAP_BORDER), cat_argb1555_width, cat_argb1555_height),
         FT81X_DL_CMD_BITMAP_SOURCE(cat_argb1555_raw_load_offset),
 
+        // set up handle 2 for PALETTED8 image
         FT81X_DL_CMD_BITMAP_HANDLE(2),
         FT81X_DL_CMD_BITMAP_LAYOUT((FT81X_DL_BITMAP_FORMAT_PALETTED8), cat_paletted8_linestride, cat_paletted8_height),
         FT81X_DL_CMD_BITMAP_SIZE((FT81X_DL_BITMAP_FILTER_NEAREST), (FT81X_DL_BITMAP_WRAP_BORDER), (FT81X_DL_BITMAP_WRAP_BORDER), cat_paletted8_width, cat_paletted8_height),
         FT81X_DL_CMD_BITMAP_SOURCE(cat_paletted8_indices_raw_load_offset),
 
+        // draw L8 image
         FT81X_DL_CMD_BEGIN((FT81X_DL_PRIM_BITMAP)),
             FT81X_DL_CMD_VERTEX2II(160-(cat_l8_width/2), 240-(cat_l8_height/2), 0, 0),
         FT81X_DL_CMD_END(),
 
+        // draw ARGB1555 image
         FT81X_DL_CMD_BEGIN((FT81X_DL_PRIM_BITMAP)),
             FT81X_DL_CMD_VERTEX2II(0, 0, 1, 0),
         FT81X_DL_CMD_END(),
 
+        // draw paletted8 image
         FT81X_DL_CMD_BEGIN((FT81X_DL_PRIM_BITMAP)),
             // alpha
             FT81X_DL_CMD_BLEND_FUNC((FT81X_DL_BLEND_FUNC_ONE), (FT81X_DL_BLEND_FUNC_ZERO)),
@@ -218,6 +225,7 @@ static void main_thread(void *arg)
             FT81X_DL_CMD_COLOUR_MASK(1, 1, 1, 1),
         FT81X_DL_CMD_END(),
 
+        // draw some points
         FT81X_DL_CMD_POINT_SIZE(20 * 16),
         FT81X_DL_CMD_COLOUR_RGB(255, 0, 0),
         FT81X_DL_CMD_BEGIN(FT81X_DL_PRIM_POINTS),
@@ -230,6 +238,7 @@ static void main_thread(void *arg)
             FT81X_DL_CMD_VERTEX2II(315, 5, 0, 0),
         FT81X_DL_CMD_END(),
 
+        // draw a line
         FT81X_DL_CMD_LINE_WIDTH(5 * 16),
         FT81X_DL_CMD_COLOUR_RGB(0, 0, 255),
         FT81X_DL_CMD_BEGIN(FT81X_DL_PRIM_LINES),
@@ -237,6 +246,7 @@ static void main_thread(void *arg)
             FT81X_DL_CMD_VERTEX2II(310, 470, 0, 0),
         FT81X_DL_CMD_END(),
 
+        // draw a rect
         FT81X_DL_CMD_LINE_WIDTH(1 * 16),
         FT81X_DL_CMD_COLOUR_RGB(255, 255, 0),
         FT81X_DL_CMD_BEGIN(FT81X_DL_PRIM_RECTS),
@@ -244,6 +254,7 @@ static void main_thread(void *arg)
             FT81X_DL_CMD_VERTEX2II(200, 280, 0, 0),
         FT81X_DL_CMD_END(),
 
+        // draw a rect with rounded corners
         FT81X_DL_CMD_LINE_WIDTH(10 * 16),
         FT81X_DL_CMD_COLOUR_RGB(255, 0, 255),
         FT81X_DL_CMD_BEGIN(FT81X_DL_PRIM_RECTS),
@@ -251,6 +262,7 @@ static void main_thread(void *arg)
             FT81X_DL_CMD_VERTEX2II(100, 450, 0, 0),
         FT81X_DL_CMD_END(),
 
+        // done, show it
         FT81X_DL_CMD_DISPLAY()
     };
     res = ft81x_send_display_list(&handle, sizeof(test_dl), test_dl);
