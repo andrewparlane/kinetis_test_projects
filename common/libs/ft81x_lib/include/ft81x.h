@@ -1,6 +1,8 @@
 #ifndef __FT81X_H
 #define __FT81X_H
 
+#include "ft81x/g_ram_manager.h"
+
 #include <stdint.h>
 
 // GPU chip types
@@ -29,6 +31,7 @@ typedef enum _ft81x_result
     FT81X_RESULT_NO_HANDLE,
     FT81X_RESULT_AREADY_INITIALISED,
     FT81X_RESULT_OUT_OF_MEMORY,
+    FT81X_RESULT_OUT_OF_G_RAM,
     FT81X_RESULT_GPU_TFER_FAILED,
     FT81X_RESULT_INVALID_ID,
     FT81X_RESULT_INVALID_ARG,
@@ -37,6 +40,7 @@ typedef enum _ft81x_result
 typedef struct _FT81X_Handle
 {
     void *platform_user_data;
+    GRAM_Info gram_info;
 } FT81X_Handle;
 
 typedef enum
@@ -55,7 +59,7 @@ ft81x_result ft81x_set_active(FT81X_Handle *handle);
 
 ft81x_result ft81x_backlight(FT81X_Handle *handle, ft81x_backlight_level level);
 
-ft81x_result ft81x_write_to_g_ram(FT81X_Handle *handle, uint32_t offset, uint32_t count, const uint8_t *data);
+ft81x_result ft81x_write_to_g_ram(FT81X_Handle *handle, uint32_t count, const uint8_t *data, uint32_t *offset);
 
 ft81x_result ft81x_send_display_list(FT81X_Handle *handle, uint32_t bytes, const uint32_t *dl);
 ft81x_result ft81x_send_display_list_to_coproc(FT81X_Handle *handle, uint32_t bytes, const uint32_t *dl);

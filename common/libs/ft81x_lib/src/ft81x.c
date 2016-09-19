@@ -2,6 +2,7 @@
 #include "ft81x_display_list.h"
 #include "ft81x/commands.h"
 #include "ft81x/memory_map.h"
+#include "ft81x/g_ram_manager.h"
 
 #include "ft81x/boards/board.h"
 #include "ft81x/displays/display.h"
@@ -252,6 +253,13 @@ ft81x_result ft81x_initialise(FT81X_Handle *handle)
         return res;
     }
 
+    // g_ram manager initialise
+    res = ft81x_g_ram_manager_initialise(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
     return FT81X_RESULT_OK;
 }
 
@@ -345,13 +353,15 @@ ft81x_result ft81x_backlight(FT81X_Handle *handle, ft81x_backlight_level level)
     return FT81X_RESULT_OK;
 }
 
-ft81x_result ft81x_write_to_g_ram(FT81X_Handle *handle, uint32_t offset, uint32_t count, const uint8_t *data)
+ft81x_result ft81x_write_to_g_ram(FT81X_Handle *handle, uint32_t count, const uint8_t *data, uint32_t *offset)
 {
-    if ((offset + count) >= (FT81X_G_RAM_SIZE))
+    ft81x_result res = ft81x_g_ram_manager_allocate(handle, count, offset);
+    if (res != FT81X_RESULT_OK)
     {
-        return FT81X_RESULT_INVALID_ARG;
+        return res;
     }
-    WRITE_GPU_MEM(((FT81X_G_RAM) + offset), count, data);
+
+    WRITE_GPU_MEM(((FT81X_G_RAM) + *offset), count, data);
     return FT81X_RESULT_OK;
 }
 
