@@ -68,7 +68,7 @@
 // ----------------------------------------------------------------------------
 // Local functions
 // ----------------------------------------------------------------------------
-ft81x_result configure_gpu(FT81X_Handle *handle)
+static ft81x_result configure_gpu(FT81X_Handle *handle)
 {
     ft81x_result res;
 
