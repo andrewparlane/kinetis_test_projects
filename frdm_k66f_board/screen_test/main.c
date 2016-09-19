@@ -126,36 +126,39 @@ static void main_thread(void *arg)
     // ----------------------------------------------------------
     // load our resources into g RAM
     // ----------------------------------------------------------
-    // first is the L8 image, at offset 0
-    const uint32_t cat_l8_raw_load_offset = 0;
-    res = ft81x_write_to_g_ram(&handle, cat_l8_raw_load_offset, sizeof(cat_l8_raw), cat_l8_raw);
+    // first is the L8 image
+    uint32_t cat_l8_raw_load_offset;
+    res = ft81x_write_to_g_ram(&handle, sizeof(cat_l8_raw), cat_l8_raw, &cat_l8_raw_load_offset);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_write_to_g_ram failed with %u\n", res);
         ft81x_cleanup(&handle);
         return;
     }
-    // then the argb1555 image, straight after, but aligned to 2 bytes
-    const uint32_t cat_argb1555_raw_load_offset = (cat_l8_raw_load_offset + sizeof(cat_l8_raw) + 1) & 0xFFFFFFFE;
-    res = ft81x_write_to_g_ram(&handle, cat_argb1555_raw_load_offset, sizeof(cat_argb1555_raw), cat_argb1555_raw);
+
+    // then the argb1555 image
+    uint32_t cat_argb1555_raw_load_offset;
+    res = ft81x_write_to_g_ram(&handle, sizeof(cat_argb1555_raw), cat_argb1555_raw, &cat_argb1555_raw_load_offset);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_write_to_g_ram failed with %u\n", res);
         ft81x_cleanup(&handle);
         return;
     }
-    // then the paletted8 image indices, straight after
-    const uint32_t cat_paletted8_indices_raw_load_offset = cat_argb1555_raw_load_offset + sizeof(cat_argb1555_raw);
-    res = ft81x_write_to_g_ram(&handle, cat_paletted8_indices_raw_load_offset, sizeof(cat_paletted8_indices_raw), cat_paletted8_indices_raw);
+
+    // then the paletted8 image indices
+    uint32_t cat_paletted8_indices_raw_load_offset;
+    res = ft81x_write_to_g_ram(&handle, sizeof(cat_paletted8_indices_raw), cat_paletted8_indices_raw, &cat_paletted8_indices_raw_load_offset);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_write_to_g_ram failed with %u\n", res);
         ft81x_cleanup(&handle);
         return;
     }
-    // then the paletted8 image lut, straight after
-    const uint32_t cat_paletted8_lut_raw_load_offset = cat_paletted8_indices_raw_load_offset + sizeof(cat_paletted8_indices_raw);
-    res = ft81x_write_to_g_ram(&handle, cat_paletted8_lut_raw_load_offset, sizeof(cat_paletted8_lut_raw), cat_paletted8_lut_raw);
+
+    // then the paletted8 image lut
+    uint32_t cat_paletted8_lut_raw_load_offset;
+    res = ft81x_write_to_g_ram(&handle, sizeof(cat_paletted8_lut_raw), cat_paletted8_lut_raw, &cat_paletted8_lut_raw_load_offset);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_write_to_g_ram failed with %u\n", res);
