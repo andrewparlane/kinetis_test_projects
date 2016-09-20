@@ -2,6 +2,7 @@
 #define __FT81X_H
 
 #include "ft81x/g_ram_manager.h"
+#include "ft81x_image_manager.h"
 
 #include <stdint.h>
 
@@ -35,12 +36,14 @@ typedef enum _ft81x_result
     FT81X_RESULT_GPU_TFER_FAILED,
     FT81X_RESULT_INVALID_ID,
     FT81X_RESULT_INVALID_ARG,
+    FT81X_RESULT_OUT_OF_BITMAP_IDS,
 } ft81x_result;
 
 typedef struct _FT81X_Handle
 {
     void                       *platform_user_data;
     FT81X_G_RAM_Manager_Data    g_ram_manager_data;
+    FT81X_Image_Manager_Data    image_manager_data;
 } FT81X_Handle;
 
 typedef enum

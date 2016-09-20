@@ -205,6 +205,13 @@ ft81x_result ft81x_initialise(FT81X_Handle *handle)
         return res;
     }
 
+    // image manager initialise
+    res = ft81x_image_manager_initialise(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
     return FT81X_RESULT_OK;
 }
 
