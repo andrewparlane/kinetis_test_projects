@@ -163,60 +163,39 @@ static void main_thread(void *arg)
         FT81X_DL_CMD_CLEAR(1,1,1),
 
         // set up the L8 image
-        FT81X_DL_CMD_BITMAP_HANDLE(cat_l8_raw_image_handle.bitmap_handle),
-        FT81X_DL_CMD_BITMAP_LAYOUT(cat_l8_raw_image_properties.format, cat_l8_raw_image_properties.linestride, cat_l8_raw_image_properties.height),
-        FT81X_DL_CMD_BITMAP_SIZE((FT81X_BITMAP_FILTER_NEAREST), (FT81X_BITMAP_WRAP_BORDER), (FT81X_BITMAP_WRAP_BORDER), cat_l8_raw_image_properties.width, cat_l8_raw_image_properties.height),
-        FT81X_DL_CMD_BITMAP_SOURCE(cat_l8_raw_image_handle.load_offset),
+        FT81X_IMAGE_MANAGER_DL_INIT_IMAGE(cat_l8_raw_image_properties,
+                                          cat_l8_raw_image_handle,
+                                          FT81X_BITMAP_FILTER_NEAREST,
+                                          FT81X_BITMAP_WRAP_BORDER,
+                                          FT81X_BITMAP_WRAP_BORDER),
 
         // set up the ARGB1555 image
-        FT81X_DL_CMD_BITMAP_HANDLE(cat_argb1555_raw_image_handle.bitmap_handle),
-        FT81X_DL_CMD_BITMAP_LAYOUT(cat_argb1555_raw_image_properties.format, cat_argb1555_raw_image_properties.linestride, cat_argb1555_raw_image_properties.height),
-        FT81X_DL_CMD_BITMAP_SIZE((FT81X_BITMAP_FILTER_NEAREST), (FT81X_BITMAP_WRAP_BORDER), (FT81X_BITMAP_WRAP_BORDER), cat_argb1555_raw_image_properties.width, cat_argb1555_raw_image_properties.height),
-        FT81X_DL_CMD_BITMAP_SOURCE(cat_argb1555_raw_image_handle.load_offset),
+        FT81X_IMAGE_MANAGER_DL_INIT_IMAGE(cat_argb1555_raw_image_properties,
+                                          cat_argb1555_raw_image_handle,
+                                          FT81X_BITMAP_FILTER_NEAREST,
+                                          FT81X_BITMAP_WRAP_BORDER,
+                                          FT81X_BITMAP_WRAP_BORDER),
 
         // set up the PALETTED8 image
-        FT81X_DL_CMD_BITMAP_HANDLE(cat_paletted8_raw_image_handle.bitmap_handle),
-        FT81X_DL_CMD_BITMAP_LAYOUT(cat_paletted8_raw_image_properties.format, cat_paletted8_raw_image_properties.linestride, cat_paletted8_raw_image_properties.height),
-        FT81X_DL_CMD_BITMAP_SIZE((FT81X_BITMAP_FILTER_NEAREST), (FT81X_BITMAP_WRAP_BORDER), (FT81X_BITMAP_WRAP_BORDER), cat_paletted8_raw_image_properties.width, cat_paletted8_raw_image_properties.height),
-        FT81X_DL_CMD_BITMAP_SOURCE(cat_paletted8_raw_image_handle.load_offset),
+        FT81X_IMAGE_MANAGER_DL_INIT_IMAGE(cat_paletted8_raw_image_properties,
+                                          cat_paletted8_raw_image_handle,
+                                          FT81X_BITMAP_FILTER_NEAREST,
+                                          FT81X_BITMAP_WRAP_BORDER,
+                                          FT81X_BITMAP_WRAP_BORDER),
 
         // draw L8 image
-        FT81X_DL_CMD_BEGIN((FT81X_PRIMITIVE_BITMAP)),
-            FT81X_DL_CMD_VERTEX2II(160-(cat_l8_raw_image_properties.width/2), 240-(cat_l8_raw_image_properties.height/2), cat_l8_raw_image_handle.bitmap_handle, 0),
-        FT81X_DL_CMD_END(),
+        FT81X_IMAGE_MANAGER_DL_DRAW_NON_PALETTED_IMAGE(cat_l8_raw_image_handle,
+                                                       160-(cat_l8_raw_image_properties.width/2),
+                                                       240-(cat_l8_raw_image_properties.height/2)),
 
         // draw ARGB1555 image
-        FT81X_DL_CMD_BEGIN((FT81X_PRIMITIVE_BITMAP)),
-            FT81X_DL_CMD_VERTEX2II(0, 0, cat_argb1555_raw_image_handle.bitmap_handle, 0),
-        FT81X_DL_CMD_END(),
+        FT81X_IMAGE_MANAGER_DL_DRAW_NON_PALETTED_IMAGE(cat_argb1555_raw_image_handle,
+                                                       0, 0),
 
         // draw paletted8 image
-        FT81X_DL_CMD_BEGIN((FT81X_PRIMITIVE_BITMAP)),
-            // alpha
-            FT81X_DL_CMD_BLEND_FUNC((FT81X_BLEND_FUNC_ONE), (FT81X_BLEND_FUNC_ZERO)),
-            FT81X_DL_CMD_COLOUR_MASK(0, 0, 0, 1),
-            FT81X_DL_CMD_PALETTE_SOURCE(cat_paletted8_raw_image_handle.lut_load_offset+3),
-            FT81X_DL_CMD_VERTEX2II(162, 270, cat_paletted8_raw_image_handle.bitmap_handle, 0),
-
-            // colours
-            FT81X_DL_CMD_BLEND_FUNC((FT81X_BLEND_FUNC_DST_ALPHA), (FT81X_BLEND_FUNC_ONE_MINUS_DST_ALPHA)),
-            // red
-            FT81X_DL_CMD_COLOUR_MASK(1, 0, 0, 0),
-            FT81X_DL_CMD_PALETTE_SOURCE(cat_paletted8_raw_image_handle.lut_load_offset+2),
-            FT81X_DL_CMD_VERTEX2II(162, 270, cat_paletted8_raw_image_handle.bitmap_handle, 0),
-            // green
-            FT81X_DL_CMD_COLOUR_MASK(0, 1, 0, 0),
-            FT81X_DL_CMD_PALETTE_SOURCE(cat_paletted8_raw_image_handle.lut_load_offset+1),
-            FT81X_DL_CMD_VERTEX2II(162, 270, cat_paletted8_raw_image_handle.bitmap_handle, 0),
-            // blue
-            FT81X_DL_CMD_COLOUR_MASK(0, 0, 1, 0),
-            FT81X_DL_CMD_PALETTE_SOURCE(cat_paletted8_raw_image_handle.lut_load_offset+0),
-            FT81X_DL_CMD_VERTEX2II(162, 270, cat_paletted8_raw_image_handle.bitmap_handle, 0),
-
-            // revert to default settings
-            FT81X_DL_CMD_BLEND_FUNC((FT81X_BLEND_FUNC_SRC_ALPHA), (FT81X_BLEND_FUNC_ONE_MINUS_SRC_ALPHA)),
-            FT81X_DL_CMD_COLOUR_MASK(1, 1, 1, 1),
-        FT81X_DL_CMD_END(),
+        // (note saves the context on the stack and restores it)
+        FT81X_IMAGE_MANAGER_DL_DRAW_PALETTED_IMAGE(cat_paletted8_raw_image_handle,
+                                                   162, 270),
 
         // draw some points
         FT81X_DL_CMD_POINT_SIZE(20 * 16),
