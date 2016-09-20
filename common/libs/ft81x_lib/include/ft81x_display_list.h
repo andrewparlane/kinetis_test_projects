@@ -101,6 +101,8 @@ typedef enum
 #define FT81X_DL_CMD_ID_BEGIN               0x1F
 #define FT81X_DL_CMD_ID_COLOUR_MASK         0x20
 #define FT81X_DL_CMD_ID_END                 0x21
+#define FT81X_DL_CMD_ID_SAVE_CONTEXT        0x22
+#define FT81X_DL_CMD_ID_RESTORE_CONTEXT     0x23
 #define FT81X_DL_CMD_ID_PALETTE_SOURCE      0x2A
 #define FT81X_DL_CMD_ID_CLEAR               0x26
 #define FT81X_DL_CMD_ID_VERTEX2II           0x80
@@ -224,6 +226,18 @@ typedef enum
             FT81X_DL_8BIT_CMD((FT81X_DL_CMD_ID_END), \
                               0)
 
+// save the graphic context (stuff like colour, blend func, ...)
+//  see section 4.1 of the programmers guide
+#define FT81X_DL_CMD_SAVE_CONTEXT() \
+            FT81X_DL_8BIT_CMD((FT81X_DL_CMD_ID_SAVE_CONTEXT), \
+                              0)
+
+// restore the graphic context (stuff like colour, blend func, ...)
+//  see section 4.1 of the programmers guide
+#define FT81X_DL_CMD_RESTORE_CONTEXT() \
+            FT81X_DL_8BIT_CMD((FT81X_DL_CMD_ID_RESTORE_CONTEXT), \
+                              0)
+
 // Specifies the base address of the palette
 //  addr - specify the address of the palette in g_ram
 #define FT81X_DL_CMD_PALETTE_SOURCE(addr) \
@@ -281,9 +295,6 @@ typedef enum
 #define VERTEX_TRANSLATE_X(x) ((43UL<<24)|(((x)&131071UL)<<0))
 #define VERTEX_TRANSLATE_Y(y) ((44UL<<24)|(((y)&131071UL)<<0))
 #define NOP() ((45UL<<24))
-#define END() ((33UL<<24))
-#define SAVE_CONTEXT() ((34UL<<24))
-#define RESTORE_CONTEXT() ((35UL<<24))
 #define RETURN() ((36UL<<24))
 #define MACRO(m) ((37UL<<24)|(((m)&1UL)<<0))
 */
