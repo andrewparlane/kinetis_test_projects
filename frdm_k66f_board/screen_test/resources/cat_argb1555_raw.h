@@ -1,15 +1,14 @@
 #ifndef __CAT_ARGB1555_RAW_H
 #define __CAT_ARGB1555_RAW_H
 
+#include "ft81x.h"
+#include "ft81x_display_list.h"
+
 /*('file properties: ',
         'resolution ', 158x210,
         'format ', 'ARGB1555',
         'stride ', 316,
         ' total size ', 66360)*/
-
-const uint32_t cat_argb1555_linestride = 316;
-const uint32_t cat_argb1555_width = 158;
-const uint32_t cat_argb1555_height = 210;
 
 const uint8_t cat_argb1555_raw[] =
 { 255,255,255,255,255,255,255,255,255,255,
@@ -6648,6 +6647,18 @@ const uint8_t cat_argb1555_raw[] =
   16,194,16,194,16,194,16,194,16,194,
   16,194,16,194,16,194,16,194,239,189,
   239,189,239,189,239,189,82,202,24,227,
+};
+
+const FT81X_Image_Properties cat_argb1555_raw_image_properties =
+{
+    .format         = FT81X_BITMAP_FORMAT_ARGB1555,
+    .width          = 158,
+    .height         = 210,
+    .linestride     = 316,
+    .data           = cat_argb1555_raw,
+    .size           = sizeof(cat_argb1555_raw),
+    .lut_data       = NULL,
+    .lut_size       = 0,
 };
 
 #endif

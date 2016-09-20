@@ -1,15 +1,14 @@
 #ifndef __CAT_L8_RAW_H
 #define __CAT_L8_RAW_H
 
+#include "ft81x.h"
+#include "ft81x_display_list.h"
+
 /*('file properties: ',
         'resolution ', '158x210',
         'format ', 'L8',
         'stride ', 158, '
         total size ', 33180)*/
-
-const uint32_t cat_l8_linestride = 158;
-const uint32_t cat_l8_width = 158;
-const uint32_t cat_l8_height = 210;
 
 const uint8_t cat_l8_raw[] =
 { 253,253,253,253,253,253,253,253,254,254,
@@ -3329,6 +3328,19 @@ const uint8_t cat_l8_raw[] =
   128,128,128,128,128,128,128,128,128,128,
   128,128,128,128,128,128,128,128,128,128,
   128,128,128,128,128,128,128,128,128,128,
-  128,128,128,128,125,126,125,126,151,195 };
+  128,128,128,128,125,126,125,126,151,195
+};
+
+const FT81X_Image_Properties cat_l8_raw_image_properties =
+{
+    .format         = FT81X_BITMAP_FORMAT_L8,
+    .width          = 158,
+    .height         = 210,
+    .linestride     = 158,
+    .data           = cat_l8_raw,
+    .size           = sizeof(cat_l8_raw),
+    .lut_data       = NULL,
+    .lut_size       = 0,
+};
 
 #endif
