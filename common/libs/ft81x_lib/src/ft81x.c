@@ -171,6 +171,14 @@ ft81x_result flush_display_list_buffer(FT81X_Handle *handle)
     }
     else
     {
+        // check we won't overflow DL ram
+        if ((handle->dl_ram_write_idx + handle->buffer_write_idx) > FT81X_DISPLAY_LIST_RAM_SIZE)
+        {
+            handle->dl_ram_write_idx = 0;
+            handle->buffer_write_idx = 0;
+            return FT81X_RESULT_OUT_OF_DL_RAM;
+        }
+
         // write the buffer into DL ram
         // and update our indexes
         WRITE_GPU_MEM(FT81X_DISPLAY_LIST_RAM + handle->dl_ram_write_idx, handle->buffer_write_idx, handle->buffer);
@@ -352,6 +360,12 @@ ft81x_result ft81x_write_display_list_snippet(FT81X_Handle *handle, uint32_t byt
     if (handle->buffer_size == 0 ||
         handle->buffer == NULL)
     {
+        // check it's not bigger than DL ram
+        if (bytes > FT81X_DISPLAY_LIST_RAM_SIZE)
+        {
+            handle->dl_ram_write_idx = 0;
+            return FT81X_RESULT_OUT_OF_DL_RAM;
+        }
         WRITE_GPU_MEM(FT81X_DISPLAY_LIST_RAM + handle->dl_ram_write_idx, bytes, (uint8_t *)dl);
         handle->dl_ram_write_idx += bytes;
     }
