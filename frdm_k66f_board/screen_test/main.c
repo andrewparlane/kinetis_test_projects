@@ -83,7 +83,7 @@ const uint32_t clear_dl_snippet[] =
     FT81X_DL_CMD_CLEAR(1,1,1),
 };
 
-const uint32_t test_dl_snippet_end[] =
+const uint32_t test_dl_snippet[] =
 {
         // draw some points
         FT81X_DL_CMD_POINT_SIZE(20 * 16),
@@ -121,9 +121,6 @@ const uint32_t test_dl_snippet_end[] =
             FT81X_DL_CMD_VERTEX2II(50, 300, 0, 0),
             FT81X_DL_CMD_VERTEX2II(100, 450, 0, 0),
         FT81X_DL_CMD_END(),
-
-        // done, show it
-        FT81X_DL_CMD_DISPLAY()
 };
 
 // ----------------------------------------------------------------------------
@@ -300,11 +297,20 @@ static void main_thread(void *arg)
         return;
     }
 
-    // draw the remainder of my test display list (points, lines, rects)
-    res = ft81x_write_display_list_snippet(&handle, sizeof(test_dl_snippet_end), test_dl_snippet_end);
+    // draw some points, lines and rects
+    res = ft81x_write_display_list_snippet(&handle, sizeof(test_dl_snippet), test_dl_snippet);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_write_display_list_snippet failed with %u\n", res);
+        ft81x_cleanup(&handle);
+        return;
+    }
+
+    // display it
+    res = ft81x_write_display_list_cmd(&handle, FT81X_DL_CMD_DISPLAY());
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_write_display_list_cmd failed with %u\n", res);
         ft81x_cleanup(&handle);
         return;
     }
