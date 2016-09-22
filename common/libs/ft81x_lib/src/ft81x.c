@@ -137,7 +137,12 @@ static ft81x_result configure_gpu(FT81X_Handle *handle)
         FT81X_DL_CMD_CLEAR(1,1,1),
         FT81X_DL_CMD_DISPLAY()
     };
-    res = ft81x_send_display_list(handle, sizeof(init_dl), init_dl);
+    res = ft81x_write_display_list_snippet(handle, sizeof(init_dl), init_dl);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+    res = ft81x_end_display_list(handle);
     if (res != FT81X_RESULT_OK)
     {
         return res;
@@ -156,12 +161,42 @@ static ft81x_result configure_gpu(FT81X_Handle *handle)
     return FT81X_RESULT_OK;
 }
 
+ft81x_result flush_display_list_buffer(FT81X_Handle *handle)
+{
+    if (handle->buffer_size == 0    ||
+        handle->buffer == NULL      ||
+        handle->buffer_write_idx == 0)
+    {
+        // nothing to do
+    }
+    else
+    {
+        // write the buffer into DL ram
+        // and update our indexes
+        WRITE_GPU_MEM(FT81X_DISPLAY_LIST_RAM + handle->dl_ram_write_idx, handle->buffer_write_idx, handle->buffer);
+        handle->dl_ram_write_idx += handle->buffer_write_idx;
+        handle->buffer_write_idx = 0;
+    }
+
+    return FT81X_RESULT_OK;
+}
+
 // ----------------------------------------------------------------------------
 // FT81X functions
 // ----------------------------------------------------------------------------
-ft81x_result ft81x_initialise(FT81X_Handle *handle)
+ft81x_result ft81x_initialise(FT81X_Handle *handle, uint32_t buffer_size, uint8_t *buffer)
 {
     ft81x_result res;
+
+    if (handle == NULL)
+    {
+        return FT81X_RESULT_NO_HANDLE;
+    }
+
+    handle->buffer              = buffer;
+    handle->buffer_size         = buffer_size;
+    handle->buffer_write_idx    = 0;
+    handle->dl_ram_write_idx    = 0;
 
     // generic board initialise
     res = ft81x_board_initialise(handle);
@@ -305,10 +340,59 @@ ft81x_result ft81x_backlight(FT81X_Handle *handle, ft81x_backlight_level level)
     return FT81X_RESULT_OK;
 }
 
-ft81x_result ft81x_send_display_list(FT81X_Handle *handle, uint32_t bytes, const uint32_t *dl)
+ft81x_result ft81x_write_display_list_snippet(FT81X_Handle *handle, uint32_t bytes, const uint32_t *dl)
 {
-    WRITE_GPU_MEM(FT81X_DISPLAY_LIST_RAM, bytes, (uint8_t *)dl);
-    WRITE_GPU_REG_8(FT81X_REG_DLSWAP, FT81X_REG_DLSWAP_SWAP_FRAME);
+    if (handle == NULL)
+    {
+        return FT81X_RESULT_NO_HANDLE;
+    }
+
+    // special case, if the buffer is 0 bytes or NULL
+    // then write directly to DL ram
+    if (handle->buffer_size == 0 ||
+        handle->buffer == NULL)
+    {
+        WRITE_GPU_MEM(FT81X_DISPLAY_LIST_RAM + handle->dl_ram_write_idx, bytes, (uint8_t *)dl);
+        handle->dl_ram_write_idx += bytes;
+    }
+    else
+    {
+        // write this dl to our buffer
+        // if the buffer fills up, then flush the buffer
+        // and continue writting
+        uint32_t written = 0;
+        while (written != bytes)
+        {
+            // how much space is left in our buffer?
+            uint32_t space = handle->buffer_size - handle->buffer_write_idx;
+            if (space == 0)
+            {
+                // flush the buffer
+                ft81x_result res = flush_display_list_buffer(handle);
+                if (res != FT81X_RESULT_OK)
+                {
+                    // abort
+                    handle->buffer_write_idx = 0;
+                    handle->dl_ram_write_idx = 0;
+                    return res;
+                }
+
+                // recalculate space
+                // can't be 0 since buffer_size != 0, and buffer_write_idx == 0
+                space = handle->buffer_size - handle->buffer_write_idx;
+            }
+
+            // copy up to space bytes into the buffer
+            uint32_t copy_count = (bytes - written);
+            if (copy_count > space)
+            {
+                copy_count = space;
+            }
+            memcpy(&(handle->buffer[handle->buffer_write_idx]), &((uint8_t *)dl)[written], copy_count);
+            handle->buffer_write_idx += copy_count;
+            written += copy_count;
+        }
+    }
 
     return FT81X_RESULT_OK;
 }
@@ -334,6 +418,25 @@ ft81x_result ft81x_send_display_list_to_coproc(FT81X_Handle *handle, uint32_t by
     } while(rp != (wp + bytes + 8) % 4096);
 
     return FT81X_RESULT_OK;
+}
+
+ft81x_result ft81x_end_display_list(FT81X_Handle *handle)
+{
+    if (handle == NULL)
+    {
+        return FT81X_RESULT_NO_HANDLE;
+    }
+
+    // flush anything in the buffer
+    ft81x_result res = flush_display_list_buffer(handle);
+
+    // set the DL offset back to 0 for the next DL
+    handle->dl_ram_write_idx = 0;
+
+    // swap the buffers
+    WRITE_GPU_REG_8(FT81X_REG_DLSWAP, FT81X_REG_DLSWAP_SWAP_FRAME);
+
+    return res;
 }
 
 ft81x_result ft81x_dump_registers(FT81X_Handle *handle)
