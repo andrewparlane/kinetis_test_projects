@@ -416,6 +416,8 @@ ft81x_result ft81x_send_display_list_to_coproc(FT81X_Handle *handle, uint32_t by
     uint32_t dlstart = 0xFFFFFF00;
     uint32_t dlswap = 0xFFFFFF01;
 
+#warning TODO: Use handle->buffer like for DL ram
+
     uint32_t wp;
     READ_GPU_REG_32(FT81X_REG_CMD_WRITE, wp);
 
