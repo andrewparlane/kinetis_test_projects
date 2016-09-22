@@ -48,6 +48,7 @@
 #include "ft81x.h"
 #include "ft81x_display_list.h"
 #include "ft81x_image_manager.h"
+#include "ft81x_text_manager.h"
 
 // resources
 #include "resources/cat_l8_raw.h"
@@ -122,6 +123,51 @@ const uint32_t test_dl_snippet[] =
             FT81X_DL_CMD_VERTEX2II(100, 450, 0, 0),
         FT81X_DL_CMD_END(),
 };
+
+// ----------------------------------------------------------------------------
+// Test display functions
+// ----------------------------------------------------------------------------
+ft81x_result test_text(FT81X_Handle *handle)
+{
+    ft81x_result res;
+
+    // set the font to green
+    res = ft81x_write_display_list_cmd(handle, FT81X_DL_CMD_COLOUR_RGB(0, 255, 0));
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    res = ft81x_text_manager_write_fixed_width_font_string(handle,
+                                                           24,
+                                                           FT81X_TEXT_MANAGER_FONT_24_MAX_WIDTH,
+                                                           FT81X_TEXT_MANAGER_FONT_24_HEIGHT,
+                                                           "How much wood\nwould a wood chuck\nchuck, if a wood\nchuck could\nchuck wood?",
+                                                           10,
+                                                           40);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // set the font to cyan
+    res = ft81x_write_display_list_cmd(handle, FT81X_DL_CMD_COLOUR_RGB(0, 255, 255));
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    res = ft81x_text_manager_write_fixed_width_font_string(handle,
+                                                           30,
+                                                           FT81X_TEXT_MANAGER_FONT_30_MAX_WIDTH,
+                                                           FT81X_TEXT_MANAGER_FONT_30_HEIGHT,
+                                                           "Peter\nPiper\npicked...",
+                                                           10,
+                                                           300);
+
+
+    return res;
+}
 
 // ----------------------------------------------------------------------------
 // Main thread
@@ -302,6 +348,15 @@ static void main_thread(void *arg)
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_write_display_list_snippet failed with %u\n", res);
+        ft81x_cleanup(&handle);
+        return;
+    }
+
+    // write some text strings
+    res = test_text(&handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("test_text failed with %u\n", res);
         ft81x_cleanup(&handle);
         return;
     }
