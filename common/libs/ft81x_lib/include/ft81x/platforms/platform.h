@@ -63,7 +63,16 @@ typedef enum
     }                                                                                           \
 }
 
-#define READ_GPU_REG_32(addr, data)                                                            \
+#define READ_GPU_MEM(addr, count, data)                                                     \
+{                                                                                           \
+    ft81x_result res = ft81x_platform_gpu_read_mem((handle), (addr), (count), (data));      \
+    if (res != FT81X_RESULT_OK)                                                             \
+    {                                                                                       \
+        return res;                                                                         \
+    }                                                                                       \
+}
+
+#define READ_GPU_REG_32(addr, data)                                                             \
 {                                                                                               \
     ft81x_result res = ft81x_platform_gpu_read_register_32((handle), (addr), &(data));          \
     if (res != FT81X_RESULT_OK)                                                                 \
