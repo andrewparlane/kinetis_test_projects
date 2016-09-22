@@ -40,7 +40,7 @@ typedef enum _ft81x_result ft81x_result;
 struct _FT81X_Handle;
 typedef struct _FT81X_Handle FT81X_Handle;
 
-// don't call in user code, auto called in ft81x.c
+// don't call initialise in user code, auto called in ft81x.c
 ft81x_result ft81x_image_manager_initialise(FT81X_Handle *handle);
 
 ft81x_result ft81x_image_manager_load_image(FT81X_Handle *handle, const FT81X_Image_Properties *image_properties, FT81X_Image_Handle *image_handle);
