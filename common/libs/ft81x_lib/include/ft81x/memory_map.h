@@ -7,7 +7,9 @@
 #define FT81X_G_RAM                 0x000000
 #define     FT81X_G_RAM_SIZE                0x100000    // 1MB
 #define FT81X_DISPLAY_LIST_RAM      0x300000
+#define     FT81X_DISPLAY_LIST_RAM_SIZE     0x002000    // 8KB
 #define FT81X_COPROC_CMD_RAM        0x308000
+#define     FT81X_COPROC_CMD_RAM_SIZE       0x001000    // 4KB
 
 // ----------------------------------------------------------------------------
 // Registers
