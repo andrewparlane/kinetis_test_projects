@@ -8,7 +8,7 @@ ft81x_result ft81x_text_manager_write_fixed_width_font_string(FT81X_Handle *hand
     ft81x_result res;
 
     // first we start drawing a bitmap
-    res = ft81x_write_display_list_cmd(handle, FT81X_DL_CMD_BEGIN(FT81X_PRIMITIVE_BITMAP));
+    res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_BEGIN(FT81X_PRIMITIVE_BITMAP));
     if (res != FT81X_RESULT_OK)
     {
         return res;
@@ -32,7 +32,7 @@ ft81x_result ft81x_text_manager_write_fixed_width_font_string(FT81X_Handle *hand
 
         // show the charater
         uint32_t cmd = FT81X_DL_CMD_VERTEX2II(x_offset, y, font_id, str[i]);
-        res = ft81x_write_display_list_cmd(handle, cmd);
+        res = ft81x_graphics_engine_write_display_list_cmd(handle, cmd);
         if (res != FT81X_RESULT_OK)
         {
             return res;
@@ -43,5 +43,5 @@ ft81x_result ft81x_text_manager_write_fixed_width_font_string(FT81X_Handle *hand
     }
 
     // finall end this set of primitives
-    return ft81x_write_display_list_cmd(handle, FT81X_DL_CMD_END());
+    return ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_END());
 }

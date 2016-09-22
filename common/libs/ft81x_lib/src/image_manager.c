@@ -102,7 +102,7 @@ ft81x_result ft81x_image_manager_send_image_init_dl(FT81X_Handle *handle, const 
         FT81X_DL_CMD_BITMAP_SOURCE(image_handle->load_offset)
     };
 
-    return ft81x_write_display_list_snippet(handle, sizeof(dl), dl);
+    return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(dl), dl);
 }
 
 ft81x_result ft81x_image_manager_send_non_paletted8_image_draw_dl(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle, uint32_t x, uint32_t y)
@@ -114,7 +114,7 @@ ft81x_result ft81x_image_manager_send_non_paletted8_image_draw_dl(FT81X_Handle *
         FT81X_DL_CMD_END()
     };
 
-    return ft81x_write_display_list_snippet(handle, sizeof(dl), dl);
+    return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(dl), dl);
 }
 
 ft81x_result ft81x_image_manager_send_paletted8_image_draw_dl(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle, uint32_t x, uint32_t y)
@@ -151,5 +151,5 @@ ft81x_result ft81x_image_manager_send_paletted8_image_draw_dl(FT81X_Handle *hand
         FT81X_DL_CMD_END()
     };
 
-    return ft81x_write_display_list_snippet(handle, sizeof(dl), dl);
+    return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(dl), dl);
 }
