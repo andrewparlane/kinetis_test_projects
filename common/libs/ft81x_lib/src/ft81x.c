@@ -348,6 +348,11 @@ ft81x_result ft81x_backlight(FT81X_Handle *handle, ft81x_backlight_level level)
     return FT81X_RESULT_OK;
 }
 
+ft81x_result ft81x_write_display_list_cmd(FT81X_Handle *handle, uint32_t cmd)
+{
+    return ft81x_write_display_list_snippet(handle, 4, &cmd);
+}
+
 ft81x_result ft81x_write_display_list_snippet(FT81X_Handle *handle, uint32_t bytes, const uint32_t *dl)
 {
     if (handle == NULL)

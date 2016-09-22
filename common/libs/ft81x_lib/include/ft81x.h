@@ -76,6 +76,7 @@ ft81x_result ft81x_set_active(FT81X_Handle *handle);
 
 ft81x_result ft81x_backlight(FT81X_Handle *handle, ft81x_backlight_level level);
 
+ft81x_result ft81x_write_display_list_cmd(FT81X_Handle *handle, uint32_t cmd);
 ft81x_result ft81x_write_display_list_snippet(FT81X_Handle *handle, uint32_t bytes, const uint32_t *dl);
 ft81x_result ft81x_send_display_list_to_coproc(FT81X_Handle *handle, uint32_t bytes, const uint32_t *dl);
 ft81x_result ft81x_end_display_list(FT81X_Handle *handle);
