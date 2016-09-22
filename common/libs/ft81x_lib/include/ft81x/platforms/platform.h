@@ -29,7 +29,7 @@ typedef enum
 // ----------------------------------------------------------------------------
 #define WRITE_GPU_MEM(addr, count, data)                                                    \
 {                                                                                           \
-    ft81x_result res = ft81x_platform_gpu_write_mem(handle, addr, count, data); \
+    ft81x_result res = ft81x_platform_gpu_write_mem((handle), (addr), (count), (data));     \
     if (res != FT81X_RESULT_OK)                                                             \
     {                                                                                       \
         return res;                                                                         \
@@ -38,7 +38,7 @@ typedef enum
 
 #define WRITE_GPU_REG_8(addr, data)                                                         \
 {                                                                                           \
-    ft81x_result res = ft81x_platform_gpu_write_register_8(handle, addr, data); \
+    ft81x_result res = ft81x_platform_gpu_write_register_8((handle), (addr), (data));       \
     if (res != FT81X_RESULT_OK)                                                             \
     {                                                                                       \
         return res;                                                                         \
@@ -47,7 +47,7 @@ typedef enum
 
 #define WRITE_GPU_REG_16(addr, data)                                                            \
 {                                                                                               \
-    ft81x_result res = ft81x_platform_gpu_write_register_16(handle, addr, data);    \
+    ft81x_result res = ft81x_platform_gpu_write_register_16((handle), (addr), (data));          \
     if (res != FT81X_RESULT_OK)                                                                 \
     {                                                                                           \
         return res;                                                                             \
@@ -56,7 +56,7 @@ typedef enum
 
 #define WRITE_GPU_REG_32(addr, data)                                                            \
 {                                                                                               \
-    ft81x_result res = ft81x_platform_gpu_write_register_32(handle, addr, data);    \
+    ft81x_result res = ft81x_platform_gpu_write_register_32((handle), (addr), (data));          \
     if (res != FT81X_RESULT_OK)                                                                 \
     {                                                                                           \
         return res;                                                                             \
@@ -65,18 +65,18 @@ typedef enum
 
 #define READ_GPU_REG_32(addr, data)                                                            \
 {                                                                                               \
-    ft81x_result res = ft81x_platform_gpu_read_register_32(handle, addr, &data);    \
+    ft81x_result res = ft81x_platform_gpu_read_register_32((handle), (addr), &(data));          \
     if (res != FT81X_RESULT_OK)                                                                 \
     {                                                                                           \
         return res;                                                                             \
     }                                                                                           \
 }
 
-#define DUMP_GPU_REG_32(addr)                                       \
-{                                                                   \
-    uint32_t data;                                                  \
-    READ_GPU_REG_32(addr, data);                                    \
-    printf("%s (%08X) = %08X\n", #addr, addr, (unsigned int)data);  \
+#define DUMP_GPU_REG_32(addr)                                           \
+{                                                                       \
+    uint32_t data;                                                      \
+    READ_GPU_REG_32((addr), data);                                      \
+    printf("%s (%08X) = %08X\n", #addr, (addr), (unsigned int)data);    \
 }
 
 // ----------------------------------------------------------------------------
