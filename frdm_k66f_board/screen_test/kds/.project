@@ -731,6 +731,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>ft81x_lib/src/co_processor.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/common/libs/ft81x_lib/src/co_processor.c</locationURI>
+		</link>
+		<link>
 			<name>ft81x_lib/src/displays</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -744,6 +749,11 @@
 			<name>ft81x_lib/src/g_ram_manager.c</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/common/libs/ft81x_lib/src/g_ram_manager.c</locationURI>
+		</link>
+		<link>
+			<name>ft81x_lib/src/graphics_engine.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/common/libs/ft81x_lib/src/graphics_engine.c</locationURI>
 		</link>
 		<link>
 			<name>ft81x_lib/src/image_manager.c</name>

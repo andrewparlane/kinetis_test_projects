@@ -6,6 +6,13 @@
 #include "ft81x/boards/board_types.h"
 
 // ----------------------------------------------------------------------------
+// Library options
+// ----------------------------------------------------------------------------
+// define this to write directly to DL ram bypassing the CO-PROC circular buffer
+// by default this should be commented out
+// #define FT81X_DL_WRITE_DIRECTLY_TO_DL_RAM
+
+// ----------------------------------------------------------------------------
 // Board type
 // ----------------------------------------------------------------------------
 #define FT81X_BOARD                             FT81X_BOARD_FRDM_K66F

@@ -2,6 +2,7 @@
 
 // ft81x_lib includes
 #include "ft81x.h"
+#include "ft81x_graphics_engine.h"
 #include "ft81x_display_list.h"
 #include "ft81x_image_manager.h"
 #include "ft81x_text_manager.h"
@@ -63,7 +64,7 @@ static ft81x_result test1_text(FT81X_Handle *handle)
     ft81x_result res;
 
     // set the font to green
-    res = ft81x_write_display_list_cmd(handle, FT81X_DL_CMD_COLOUR_RGB(0, 255, 0));
+    res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_COLOUR_RGB(0, 255, 0));
     if (res != FT81X_RESULT_OK)
     {
         return res;
@@ -82,7 +83,7 @@ static ft81x_result test1_text(FT81X_Handle *handle)
     }
 
     // set the font to cyan
-    res = ft81x_write_display_list_cmd(handle, FT81X_DL_CMD_COLOUR_RGB(0, 255, 255));
+    res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_COLOUR_RGB(0, 255, 255));
     if (res != FT81X_RESULT_OK)
     {
         return res;
@@ -137,11 +138,18 @@ ft81x_result test1(FT81X_Handle *handle)
     // ----------------------------------------------------------
     // Build and display the display list
     // ----------------------------------------------------------
-    // clear the screen
-    res = ft81x_write_display_list_snippet(handle, sizeof(clear_dl_snippet), clear_dl_snippet);
+    // start the display list
+    res = ft81x_graphics_engine_start_display_list(handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_write_display_list_snippet failed with %u\n", res);
+        DbgConsole_Printf("ft81x_graphics_engine_start_display_list failed with %u\n", res);
+        return res;
+    }
+    // clear the screen
+    res = ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(clear_dl_snippet), clear_dl_snippet);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
         return res;
     }
 
@@ -154,7 +162,7 @@ ft81x_result test1(FT81X_Handle *handle)
                                                  FT81X_BITMAP_WRAP_BORDER);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_write_display_list_snippet failed with %u\n", res);
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
         return res;
     }
 
@@ -167,7 +175,7 @@ ft81x_result test1(FT81X_Handle *handle)
                                                  FT81X_BITMAP_WRAP_BORDER);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_write_display_list_snippet failed with %u\n", res);
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
         return res;
     }
 
@@ -180,7 +188,7 @@ ft81x_result test1(FT81X_Handle *handle)
                                                  FT81X_BITMAP_WRAP_BORDER);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_write_display_list_snippet failed with %u\n", res);
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
         return res;
     }
 
@@ -191,7 +199,7 @@ ft81x_result test1(FT81X_Handle *handle)
                                                                240-(cat_l8_raw_image_properties.height/2));
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_write_display_list_snippet failed with %u\n", res);
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
         return res;
     }
 
@@ -201,7 +209,7 @@ ft81x_result test1(FT81X_Handle *handle)
                                                                0, 0);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_write_display_list_snippet failed with %u\n", res);
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
         return res;
     }
 
@@ -212,15 +220,15 @@ ft81x_result test1(FT81X_Handle *handle)
                                                            162, 270);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_write_display_list_snippet failed with %u\n", res);
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
         return res;
     }
 
     // draw some points, lines and rects
-    res = ft81x_write_display_list_snippet(handle, sizeof(test_dl_snippet), test_dl_snippet);
+    res = ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(test_dl_snippet), test_dl_snippet);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_write_display_list_snippet failed with %u\n", res);
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
         return res;
     }
 
@@ -233,18 +241,18 @@ ft81x_result test1(FT81X_Handle *handle)
     }
 
     // display it
-    res = ft81x_write_display_list_cmd(handle, FT81X_DL_CMD_DISPLAY());
+    res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_DISPLAY());
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_write_display_list_cmd failed with %u\n", res);
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
         return res;
     }
 
     // write everything to the DL ram and then swap it in
-    res = ft81x_end_display_list(handle);
+    res = ft81x_graphics_engine_end_display_list(handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_end_display_list failed with %u\n", res);
+        DbgConsole_Printf("ft81x_graphics_engine_end_display_list failed with %u\n", res);
         return res;
     }
 
