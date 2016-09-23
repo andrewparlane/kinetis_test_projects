@@ -23,6 +23,9 @@ ft81x_result ft81x_coproc_cmd_dlstart(FT81X_Handle *handle);
 // Swaps the display list (uses REG_DLSWAP)
 ft81x_result ft81x_coproc_cmd_swap(FT81X_Handle *handle);
 
+// Show the FTDI logo animation
+ft81x_result ft81x_coproc_cmd_logo(FT81X_Handle *handle);
+
 #endif
 
 #endif
