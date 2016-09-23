@@ -120,6 +120,10 @@ typedef enum
             ((((cmd) & 0xFF) << 24) | \
              ((params) & 0x00FFFFFF))
 
+// ----------------------------------------------------------------------------
+// Display List Commands
+// ----------------------------------------------------------------------------
+
 // End of display lst
 #define FT81X_DL_CMD_DISPLAY() \
             FT81X_DL_8BIT_CMD((FT81X_DL_CMD_ID_DISPLAY), \
