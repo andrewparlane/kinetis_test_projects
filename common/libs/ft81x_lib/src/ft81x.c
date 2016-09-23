@@ -131,6 +131,11 @@ static ft81x_result configure_gpu(FT81X_Handle *handle)
     WRITE_GPU_REG_8(FT81X_REG_GPIO_DIR, FT81X_REG_GPIO_DISP);
 
     // clear the display to black
+    res = ft81x_graphics_engine_start_display_list(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
     const uint32_t init_dl[] =
     {
         FT81X_DL_CMD_CLEAR_COLOUR_RGB(0,0,0),

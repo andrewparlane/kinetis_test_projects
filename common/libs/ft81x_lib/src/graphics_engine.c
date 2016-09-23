@@ -1,5 +1,6 @@
 #include "ft81x.h"
 #include "ft81x_graphics_engine.h"
+#include "ft81x_co_processor.h"
 #include "ft81x/platforms/platform.h"
 
 #include <stdlib.h>
@@ -7,7 +8,9 @@
 // ----------------------------------------------------------------------------
 // Local functions
 // ----------------------------------------------------------------------------
-static ft81x_result flush_display_list_buffer(FT81X_Handle *handle)
+#ifdef FT81X_DL_WRITE_DIRECTLY_TO_DL_RAM
+
+static ft81x_result flush_display_list_buffer_to_dl_ram(FT81X_Handle *handle)
 {
     if (handle->graphics_engine_data.buffer_size == 0    ||
         handle->graphics_engine_data.buffer == NULL      ||
@@ -35,6 +38,68 @@ static ft81x_result flush_display_list_buffer(FT81X_Handle *handle)
     return FT81X_RESULT_OK;
 }
 
+#else
+
+static ft81x_result write_to_command_buffer(FT81X_Handle *handle, uint32_t count, const uint8_t *data)
+{
+    uint32_t written = 0;
+
+    while (written < count)
+    {
+        // wait until we have enough space or at least 1KB
+        // there's no point writing 4 bytes at a time.
+        uint32_t to_write = count - written;
+        if (to_write > 1024*1024)
+        {
+            to_write = 1024*1024;
+        }
+
+        uint16_t space;
+        do
+        {
+            READ_GPU_REG_16(FT81X_REG_CMDB_SPACE, space);
+        } while (space < to_write);
+
+        // write (either total buffer, or 1KB)
+        // into the command RAM using (FT81X_REG_CMDB_WRITE)
+        WRITE_GPU_MEM(FT81X_REG_CMDB_WRITE, to_write, &data[written]);
+
+        // update the counts
+        written += to_write;
+    }
+
+    return FT81X_RESULT_OK;
+}
+
+static ft81x_result flush_display_list_buffer_to_command_buffer(FT81X_Handle *handle)
+{
+    if (handle->graphics_engine_data.buffer_size == 0    ||
+        handle->graphics_engine_data.buffer == NULL      ||
+        handle->graphics_engine_data.buffer_write_idx == 0)
+    {
+        // nothing to do
+    }
+    else
+    {
+        ft81x_result res = write_to_command_buffer(handle, handle->graphics_engine_data.buffer_write_idx, handle->graphics_engine_data.buffer);
+        handle->graphics_engine_data.buffer_write_idx = 0;
+        return res;
+    }
+
+    return FT81X_RESULT_OK;
+}
+
+#endif
+
+static ft81x_result flush_display_list_buffer(FT81X_Handle *handle)
+{
+#ifdef FT81X_DL_WRITE_DIRECTLY_TO_DL_RAM
+    return flush_display_list_buffer_to_dl_ram(handle);
+#else
+    return flush_display_list_buffer_to_command_buffer(handle);
+#endif
+}
+
 // ----------------------------------------------------------------------------
 // FT81X Grahpics engine functions
 // ----------------------------------------------------------------------------
@@ -48,7 +113,9 @@ ft81x_result ft81x_graphics_engine_initialise(FT81X_Handle *handle, uint32_t buf
     handle->graphics_engine_data.buffer              = buffer;
     handle->graphics_engine_data.buffer_size         = buffer_size;
     handle->graphics_engine_data.buffer_write_idx    = 0;
+#ifdef FT81X_DL_WRITE_DIRECTLY_TO_DL_RAM
     handle->graphics_engine_data.dl_ram_write_idx    = 0;
+#endif
 
     return FT81X_RESULT_OK;
 }
@@ -63,9 +130,23 @@ ft81x_result ft81x_graphics_engine_cleanup(FT81X_Handle *handle)
     handle->graphics_engine_data.buffer              = NULL;
     handle->graphics_engine_data.buffer_size         = 0;
     handle->graphics_engine_data.buffer_write_idx    = 0;
+#ifdef FT81X_DL_WRITE_DIRECTLY_TO_DL_RAM
     handle->graphics_engine_data.dl_ram_write_idx    = 0;
+#endif
 
     return FT81X_RESULT_OK;
+}
+
+ft81x_result ft81x_graphics_engine_start_display_list(FT81X_Handle *handle)
+{
+#ifdef FT81X_DL_WRITE_DIRECTLY_TO_DL_RAM
+    // not needed
+    return FT81X_RESULT_OK;
+#else
+    // sending display list through the command buffer
+    // requires each to start with the DLSTART command
+    return ft81x_coproc_cmd_dlstart(handle);
+#endif
 }
 
 ft81x_result ft81x_graphics_engine_write_display_list_cmd(FT81X_Handle *handle, uint32_t cmd)
@@ -85,6 +166,7 @@ ft81x_result ft81x_graphics_engine_write_display_list_snippet(FT81X_Handle *hand
     if (handle->graphics_engine_data.buffer_size == 0 ||
         handle->graphics_engine_data.buffer == NULL)
     {
+#ifdef FT81X_DL_WRITE_DIRECTLY_TO_DL_RAM
         // check it's not bigger than DL ram
         if (bytes > FT81X_DISPLAY_LIST_RAM_SIZE)
         {
@@ -93,6 +175,13 @@ ft81x_result ft81x_graphics_engine_write_display_list_snippet(FT81X_Handle *hand
         }
         WRITE_GPU_MEM(FT81X_DISPLAY_LIST_RAM + handle->graphics_engine_data.dl_ram_write_idx, bytes, (uint8_t *)dl);
         handle->graphics_engine_data.dl_ram_write_idx += bytes;
+#else
+        ft81x_result res = write_to_command_buffer(handle, bytes, (uint8_t *)dl);
+        if (res != FT81X_RESULT_OK)
+        {
+            return res;
+        }
+#endif
     }
     else
     {
@@ -112,7 +201,9 @@ ft81x_result ft81x_graphics_engine_write_display_list_snippet(FT81X_Handle *hand
                 {
                     // abort
                     handle->graphics_engine_data.buffer_write_idx = 0;
+#ifdef FT81X_DL_WRITE_DIRECTLY_TO_DL_RAM
                     handle->graphics_engine_data.dl_ram_write_idx = 0;
+#endif
                     return res;
                 }
 
@@ -136,31 +227,6 @@ ft81x_result ft81x_graphics_engine_write_display_list_snippet(FT81X_Handle *hand
     return FT81X_RESULT_OK;
 }
 
-ft81x_result ft81x_graphics_engine_send_display_list_to_coproc(FT81X_Handle *handle, uint32_t bytes, const uint32_t *dl)
-{
-    uint32_t dlstart = 0xFFFFFF00;
-    uint32_t dlswap = 0xFFFFFF01;
-
-#warning TODO: Use handle->graphics_engine_data.buffer like for DL ram
-
-    uint32_t wp;
-    READ_GPU_REG_32(FT81X_REG_CMD_WRITE, wp);
-
-    WRITE_GPU_MEM(FT81X_COPROC_CMD_RAM + wp, 4, (uint8_t *)&dlstart);
-    WRITE_GPU_MEM(FT81X_COPROC_CMD_RAM + wp + 4, bytes, (uint8_t *)dl);
-    WRITE_GPU_MEM(FT81X_COPROC_CMD_RAM + wp + bytes + 4, 4, (uint8_t *)&dlswap);
-
-    WRITE_GPU_REG_32(FT81X_REG_CMD_WRITE, (wp + bytes + 8) % 4096);
-
-    uint32_t rp;
-    do
-    {
-        READ_GPU_REG_32(FT81X_REG_CMD_READ, rp);
-    } while(rp != (wp + bytes + 8) % 4096);
-
-    return FT81X_RESULT_OK;
-}
-
 ft81x_result ft81x_graphics_engine_end_display_list(FT81X_Handle *handle)
 {
     if (handle == NULL)
@@ -168,14 +234,31 @@ ft81x_result ft81x_graphics_engine_end_display_list(FT81X_Handle *handle)
         return FT81X_RESULT_NO_HANDLE;
     }
 
-    // flush anything in the buffer
-    ft81x_result res = flush_display_list_buffer(handle);
+    ft81x_result res;
 
+#ifndef FT81X_DL_WRITE_DIRECTLY_TO_DL_RAM
+    // sending display list through the command buffer
+    // requires each to end with the swap command
+    res = ft81x_coproc_cmd_swap(handle);
+#endif
+
+    // flush anything in the buffer
+    res = flush_display_list_buffer(handle);
+
+#ifdef FT81X_DL_WRITE_DIRECTLY_TO_DL_RAM
     // set the DL offset back to 0 for the next DL
     handle->graphics_engine_data.dl_ram_write_idx = 0;
 
     // swap the buffers
     WRITE_GPU_REG_8(FT81X_REG_DLSWAP, FT81X_REG_DLSWAP_SWAP_FRAME);
+#else
+    // sending display list through the command buffer
+    // requires each to start with the DLSTART command
+    // add it here because then it makes calling
+    // ft81x_graphics_engine_start_display_list() optional
+    // other than the first time (in ft81x.c)
+    return ft81x_coproc_cmd_dlstart(handle);
+#endif
 
     return res;
 }

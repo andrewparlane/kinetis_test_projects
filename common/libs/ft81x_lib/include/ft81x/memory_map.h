@@ -58,5 +58,7 @@
 #define FT81X_REG_CMD_WRITE         0x3020FC
 #define FT81X_REG_CMD_DL            0x302100
 #define FT81X_REG_TOUCH_RZTHRESH    0x302118
+#define FT81X_REG_CMDB_SPACE        0x302574
+#define FT81X_REG_CMDB_WRITE        0x302578
 
 #endif
