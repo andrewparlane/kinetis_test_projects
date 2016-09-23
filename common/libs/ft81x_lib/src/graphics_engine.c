@@ -193,7 +193,7 @@ ft81x_result ft81x_graphics_engine_write_display_list_snippet(FT81X_Handle *hand
         {
             // how much space is left in our buffer?
             uint32_t space = handle->graphics_engine_data.buffer_size - handle->graphics_engine_data.buffer_write_idx;
-            if (space == 0)
+            if (space < 4)  // all writes have to be multiples of 4
             {
                 // flush the buffer
                 ft81x_result res = flush_display_list_buffer(handle);
@@ -218,6 +218,8 @@ ft81x_result ft81x_graphics_engine_write_display_list_snippet(FT81X_Handle *hand
             {
                 copy_count = space;
             }
+            // can only copy in 4 byte chunks
+            copy_count &= ~0x03;
             memcpy(&(handle->graphics_engine_data.buffer[handle->graphics_engine_data.buffer_write_idx]), &((uint8_t *)dl)[written], copy_count);
             handle->graphics_engine_data.buffer_write_idx += copy_count;
             written += copy_count;
