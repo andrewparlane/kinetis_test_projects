@@ -3,10 +3,6 @@
 
 #include "ft81x_config.h"
 
-// if we write directly to DL RAM
-// then we can't use any of these commands
-#ifndef FT81X_DL_WRITE_DIRECTLY_TO_DL_RAM
-
 #include "ft81x.h"
 
 // ----------------------------------------------------------------------------
@@ -49,7 +45,5 @@ ft81x_result ft81x_coproc_cmd_getptr(FT81X_Handle *handle);
 
 // Show the FTDI logo animation
 ft81x_result ft81x_coproc_cmd_logo(FT81X_Handle *handle);
-
-#endif
 
 #endif

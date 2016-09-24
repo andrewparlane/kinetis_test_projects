@@ -9,9 +9,6 @@ typedef struct
     uint8_t                    *buffer;
     uint32_t                    buffer_size;
     uint32_t                    buffer_write_idx;
-#ifdef FT81X_DL_WRITE_DIRECTLY_TO_DL_RAM
-    uint32_t                    dl_ram_write_idx;
-#endif
 } FT81X_Graphics_Engine_Data;
 
 // Don't call initialise directly from user code

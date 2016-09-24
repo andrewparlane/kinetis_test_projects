@@ -1,9 +1,5 @@
 #include "ft81x_config.h"
 
-// if we write directly to DL RAM
-// then we can't use any of these commands
-#ifndef FT81X_DL_WRITE_DIRECTLY_TO_DL_RAM
-
 #include "ft81x.h"
 #include "ft81x_co_processor.h"
 #include "ft81x_graphics_engine.h"
@@ -123,5 +119,3 @@ inline ft81x_result ft81x_coproc_cmd_logo(FT81X_Handle *handle)
 {
     return ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_COPROC_CMD_ID_LOGO);
 }
-
-#endif
