@@ -38,14 +38,32 @@ static ft81x_result allocate_bitmap_id(FT81X_Handle *handle, uint8_t *id)
 
 static ft81x_result load_raw_image(FT81X_Handle *handle, const FT81X_Image_Properties *image_properties, FT81X_Image_Handle *image_handle)
 {
-    // write the image to g_ram, storing the offset in the image_handle
-    return ft81x_g_ram_manager_allocate_and_write(handle, image_properties->size, image_properties->data, &(image_handle->load_offset));
+    ft81x_result res;
+
+    // allocate space in g_ram, storing the offset in the image_handle
+    res = ft81x_g_ram_manager_allocate(handle, image_properties->size, &(image_handle->load_offset));
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // write the image to g_ram
+    return ft81x_g_ram_manager_write(handle, image_handle->load_offset, image_properties->size, image_properties->data);
 }
 
 static ft81x_result load_raw_image_lut(FT81X_Handle *handle, const FT81X_Image_Properties *image_properties, FT81X_Image_Handle *image_handle)
 {
-    // write the LUT to g_ram, storing the offset in the image_handle
-    return ft81x_g_ram_manager_allocate_and_write(handle, image_properties->lut_size, image_properties->lut_data, &(image_handle->lut_load_offset));
+    ft81x_result res;
+
+    // allocate space in g_ram, storing the offset in the image_handle
+    res = ft81x_g_ram_manager_allocate(handle, image_properties->lut_size, &(image_handle->lut_load_offset));
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // write the LUT to g_ram
+    return ft81x_g_ram_manager_write(handle, image_handle->lut_load_offset, image_properties->lut_size, image_properties->lut_data);
 }
 
 // ----------------------------------------------------------------------------

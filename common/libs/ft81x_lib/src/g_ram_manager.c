@@ -5,9 +5,28 @@
 #include <stdlib.h>
 
 // ----------------------------------------------------------------------------
-// Local functions
+// API functions
 // ----------------------------------------------------------------------------
-static ft81x_result allocate(FT81X_Handle *handle, uint32_t count, uint32_t *offset)
+ft81x_result ft81x_g_ram_manager_initialise(FT81X_Handle *handle)
+{
+    if (handle == NULL)
+    {
+        return FT81X_RESULT_NO_HANDLE;
+    }
+
+    // initialise the head of the linked list
+    // address is 0
+    // and we are not allocated.
+    handle->g_ram_manager_data.head.address_and_flags = (0 & (FT81X_G_RAM_MANAGER_ADDRESS_MASK)) |
+                                               ((FT81X_G_RAM_MANAGER_FREE) & (FT81X_G_RAM_MANAGER_ALLOCATED_MASK));
+
+    // there is no next node
+    handle->g_ram_manager_data.head.next = NULL;
+
+    return FT81X_RESULT_OK;
+}
+
+ft81x_result ft81x_g_ram_manager_allocate(FT81X_Handle *handle, uint32_t count, uint32_t *offset)
 {
     // look through the linked list trying to find a big enough unalloctade region
     GRAM_Linked_List_Node *node = &(handle->g_ram_manager_data.head);
@@ -81,44 +100,9 @@ static ft81x_result allocate(FT81X_Handle *handle, uint32_t count, uint32_t *off
     return FT81X_RESULT_OUT_OF_G_RAM;
 }
 
-// ----------------------------------------------------------------------------
-// API functions
-// ----------------------------------------------------------------------------
-ft81x_result ft81x_g_ram_manager_initialise(FT81X_Handle *handle)
+ft81x_result ft81x_g_ram_manager_write(FT81X_Handle *handle, uint32_t offset, uint32_t count, const uint8_t *data)
 {
-    if (handle == NULL)
-    {
-        return FT81X_RESULT_NO_HANDLE;
-    }
-
-    // initialise the head of the linked list
-    // address is 0
-    // and we are not allocated.
-    handle->g_ram_manager_data.head.address_and_flags = (0 & (FT81X_G_RAM_MANAGER_ADDRESS_MASK)) |
-                                               ((FT81X_G_RAM_MANAGER_FREE) & (FT81X_G_RAM_MANAGER_ALLOCATED_MASK));
-
-    // there is no next node
-    handle->g_ram_manager_data.head.next = NULL;
-
-    return FT81X_RESULT_OK;
-}
-
-ft81x_result ft81x_g_ram_manager_allocate_and_write(FT81X_Handle *handle, uint32_t count, const uint8_t *data, uint32_t *offset)
-{
-    if (handle == NULL)
-    {
-        return FT81X_RESULT_NO_HANDLE;
-    }
-
-    // allocate space
-    ft81x_result res = allocate(handle, count, offset);
-    if (res != FT81X_RESULT_OK)
-    {
-        return res;
-    }
-
-    // write the data
-    WRITE_GPU_MEM(((FT81X_G_RAM) + *offset), count, data);
+    WRITE_GPU_MEM(((FT81X_G_RAM) + offset), count, data);
 
     return FT81X_RESULT_OK;
 }
