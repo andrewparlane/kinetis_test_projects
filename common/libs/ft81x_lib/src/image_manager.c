@@ -36,6 +36,18 @@ static ft81x_result allocate_bitmap_id(FT81X_Handle *handle, uint8_t *id)
     return FT81X_RESULT_OK;
 }
 
+static ft81x_result load_raw_image(FT81X_Handle *handle, const FT81X_Image_Properties *image_properties, FT81X_Image_Handle *image_handle)
+{
+    // write the image to g_ram, storing the offset in the image_handle
+    return ft81x_g_ram_manager_allocate_and_write(handle, image_properties->size, image_properties->data, &(image_handle->load_offset));
+}
+
+static ft81x_result load_raw_image_lut(FT81X_Handle *handle, const FT81X_Image_Properties *image_properties, FT81X_Image_Handle *image_handle)
+{
+    // write the LUT to g_ram, storing the offset in the image_handle
+    return ft81x_g_ram_manager_allocate_and_write(handle, image_properties->lut_size, image_properties->lut_data, &(image_handle->lut_load_offset));
+}
+
 // ----------------------------------------------------------------------------
 // API functions
 // ----------------------------------------------------------------------------
@@ -55,8 +67,17 @@ ft81x_result ft81x_image_manager_load_image(FT81X_Handle *handle, const FT81X_Im
 {
     ft81x_result res;
 
-    // write the image to g_ram, storing the offset in the image_handle
-    res = ft81x_g_ram_manager_allocate_and_write(handle, image_properties->size, image_properties->data, &(image_handle->load_offset));
+    // load the image / indices
+    if (image_properties->is_compressed)
+    {
+        // We don't support this yet
+        return FT81X_RESULT_NOT_SUPPORTED
+    }
+    else
+    {
+        res = load_raw_image(handle, image_properties, image_handle);
+    }
+
     if (res != FT81X_RESULT_OK)
     {
         return res;
@@ -67,8 +88,17 @@ ft81x_result ft81x_image_manager_load_image(FT81X_Handle *handle, const FT81X_Im
          image_properties->format == FT81X_BITMAP_FORMAT_PALETTED8) &&
          image_properties->lut_data)
     {
-        // write the LUT to g_ram, storing the offset in the image_handle
-        res = ft81x_g_ram_manager_allocate_and_write(handle, image_properties->lut_size, image_properties->lut_data, &(image_handle->lut_load_offset));
+        // we have a LUT too
+        if (image_properties->is_lut_compressed)
+        {
+            // we don't support compressed LUT yet
+            return FT81X_RESULT_NOT_SUPPORTED;
+        }
+        else
+        {
+            res = load_raw_image_lut(handle, image_properties, image_handle);
+        }
+
         if (res != FT81X_RESULT_OK)
         {
             // failed, free the indices data

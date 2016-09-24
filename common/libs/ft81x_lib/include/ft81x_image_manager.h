@@ -20,9 +20,11 @@ typedef struct
     uint32_t                height;
     uint32_t                linestride;
 
+    uint8_t                 is_compressed;
     const uint8_t          *data;
     uint32_t                size;
 
+    uint8_t                 is_lut_compressed;
     const uint8_t          *lut_data;   // only for format = one of FT81X_BITMAP_FORMAT_PALETTED...
     uint32_t                lut_size;
 } FT81X_Image_Properties;
