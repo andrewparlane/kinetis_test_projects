@@ -3441,14 +3441,18 @@ const uint8_t cat_paletted8_lut_raw[] =
 
 const FT81X_Image_Properties cat_paletted8_raw_image_properties =
 {
-    .format         = FT81X_BITMAP_FORMAT_PALETTED8,
-    .width          = 158,
-    .height         = 210,
-    .linestride     = 158,
-    .data           = cat_paletted8_indices_raw,
-    .size           = sizeof(cat_paletted8_indices_raw),
-    .lut_data       = cat_paletted8_lut_raw,
-    .lut_size       = sizeof(cat_paletted8_lut_raw),
+    .format             = FT81X_BITMAP_FORMAT_PALETTED8,
+    .width              = 158,
+    .height             = 210,
+    .linestride         = 158,
+
+    .is_compressed      = 0,
+    .data               = cat_paletted8_indices_raw,
+    .size               = sizeof(cat_paletted8_indices_raw),
+
+    .is_lut_compressed  = 0,
+    .lut_data           = cat_paletted8_lut_raw,
+    .lut_size           = sizeof(cat_paletted8_lut_raw),
 };
 
 

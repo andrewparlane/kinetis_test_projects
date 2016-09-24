@@ -3333,14 +3333,18 @@ const uint8_t cat_l8_raw[] =
 
 const FT81X_Image_Properties cat_l8_raw_image_properties =
 {
-    .format         = FT81X_BITMAP_FORMAT_L8,
-    .width          = 158,
-    .height         = 210,
-    .linestride     = 158,
-    .data           = cat_l8_raw,
-    .size           = sizeof(cat_l8_raw),
-    .lut_data       = NULL,
-    .lut_size       = 0,
+    .format             = FT81X_BITMAP_FORMAT_L8,
+    .width              = 158,
+    .height             = 210,
+    .linestride         = 158,
+
+    .is_compressed      = 0,
+    .data               = cat_l8_raw,
+    .size               = sizeof(cat_l8_raw),
+
+    .is_lut_compressed  = 0,
+    .lut_data           = NULL,
+    .lut_size           = 0,
 };
 
 #endif

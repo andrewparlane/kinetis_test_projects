@@ -6651,14 +6651,18 @@ const uint8_t cat_argb1555_raw[] =
 
 const FT81X_Image_Properties cat_argb1555_raw_image_properties =
 {
-    .format         = FT81X_BITMAP_FORMAT_ARGB1555,
-    .width          = 158,
-    .height         = 210,
-    .linestride     = 316,
-    .data           = cat_argb1555_raw,
-    .size           = sizeof(cat_argb1555_raw),
-    .lut_data       = NULL,
-    .lut_size       = 0,
+    .format             = FT81X_BITMAP_FORMAT_ARGB1555,
+    .width              = 158,
+    .height             = 210,
+    .linestride         = 316,
+
+    .is_compressed      = 0,
+    .data               = cat_argb1555_raw,
+    .size               = sizeof(cat_argb1555_raw),
+
+    .is_lut_compressed  = 0,
+    .lut_data           = NULL,
+    .lut_size           = 0,
 };
 
 #endif
