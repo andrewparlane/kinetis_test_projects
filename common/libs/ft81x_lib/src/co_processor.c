@@ -22,12 +22,12 @@
 // CMD functions
 // ----------------------------------------------------------------------------
 
-ft81x_result ft81x_coproc_cmd_dlstart(FT81X_Handle *handle)
+inline ft81x_result ft81x_coproc_cmd_dlstart(FT81X_Handle *handle)
 {
     return ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_COPROC_CMD_ID_DLSTART);
 }
 
-ft81x_result ft81x_coproc_cmd_swap(FT81X_Handle *handle)
+inline ft81x_result ft81x_coproc_cmd_swap(FT81X_Handle *handle)
 {
     return ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_COPROC_CMD_ID_SWAP);
 }
