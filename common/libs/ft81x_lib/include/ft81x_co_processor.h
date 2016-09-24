@@ -35,6 +35,18 @@ ft81x_result ft81x_coproc_cmd_swap(FT81X_Handle *handle);
 //  str     - NULL terminated ascii string
 ft81x_result ft81x_coproc_cmd_text(FT81X_Handle *handle, uint16_t x, uint16_t y, uint8_t font_id, uint16_t options, char *str);
 
+// Decompresses data that has been compressed with the DEFLATE algorithm
+// for example using the zlib library.
+// Note: This should be used in conjunction with the G_RAM manager.
+//       Which for now means you need to know an upper bound on decompress size.
+//  offset          - the address in g_ram to decompress to
+//  compressed_data - the data
+//  count           - the size of the compressed_data array
+ft81x_result ft81x_coproc_cmd_inflate(FT81X_Handle *handle, uint32_t offset, uint32_t count, const uint8_t *compressed_data);
+
+// Get the end memory address of data inflated using CMD_INFLATE
+ft81x_result ft81x_coproc_cmd_getptr(FT81X_Handle *handle);
+
 // Show the FTDI logo animation
 ft81x_result ft81x_coproc_cmd_logo(FT81X_Handle *handle);
 
