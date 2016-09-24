@@ -21,7 +21,7 @@ typedef struct
     uint32_t                linestride;
 
     const uint8_t          *data;
-    uint32_t                size;       // needed? or linestride * height
+    uint32_t                size;
 
     const uint8_t          *lut_data;   // only for format = one of FT81X_BITMAP_FORMAT_PALETTED...
     uint32_t                lut_size;
