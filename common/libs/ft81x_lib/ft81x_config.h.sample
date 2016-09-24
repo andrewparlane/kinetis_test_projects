@@ -12,6 +12,9 @@
 // by default this should be commented out
 // #define FT81X_DL_WRITE_DIRECTLY_TO_DL_RAM
 
+// enable this to add debugging support
+// #define FT81X_DEBUG
+
 // ----------------------------------------------------------------------------
 // Board type
 // ----------------------------------------------------------------------------

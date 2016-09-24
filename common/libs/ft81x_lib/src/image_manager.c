@@ -1,6 +1,8 @@
 #include "ft81x.h"
 #include "ft81x_image_manager.h"
+#include "ft81x_co_processor.h"
 #include "ft81x/g_ram_manager.h"
+#include "ft81x/platforms/platform.h"
 
 #include <stdlib.h>
 
@@ -66,6 +68,85 @@ static ft81x_result load_raw_image_lut(FT81X_Handle *handle, const FT81X_Image_P
     return ft81x_g_ram_manager_write(handle, image_handle->lut_load_offset, image_properties->lut_size, image_properties->lut_data);
 }
 
+static ft81x_result load_compressed_image(FT81X_Handle *handle, const FT81X_Image_Properties *image_properties, FT81X_Image_Handle *image_handle)
+{
+    ft81x_result res;
+
+    // The image will decompress to linestride*height
+    // unless linestride or height have been misconfigured
+    // TODO how do we deal with detecting that without
+    //      blocking for ages (see the #ifdef FT81X_DEBUG below)
+    //      maybe we could use CMD_INTERRUPT and then in the
+    //      handler we can read the end address
+#warning TODO: Set up the interrupt handler to check for g_ram overflow
+    uint32_t decompress_size = image_properties->linestride * image_properties->height;
+    res = ft81x_g_ram_manager_allocate(handle, decompress_size, &(image_handle->load_offset));
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // send the inflate command and the data
+    res = ft81x_coproc_cmd_inflate(handle, image_handle->load_offset, image_properties->size, image_properties->data);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+#ifdef FT81X_DEBUG
+    // check that we haven't overflowed the allocated space
+    // shouldn't happen unless linestride or height are wrong
+
+    // first we need to wait until the data has been decompressed
+#warning TODO: do we have to wait here?
+    res = ft81x_graphics_engine_flush_and_synchronise(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // we now use CMD_GETPTR which once written to the command bufer
+    // has the 4 bytes after the command replaced with the end address
+    // of the image in g_ram (next address after the end of the data).
+    // We can then read that out of the command buffer.
+
+    // Get the address to read from. The value in REG_CMD_WRITE
+    // is where the next write to the cmd_buffer will go.
+    // our end address will be after that
+    uint16_t end_address_location;
+    READ_GPU_REG_16(FT81X_REG_CMD_WRITE, end_address_location);
+    end_address_location += 4;
+
+    // then the cmd
+    res = ft81x_coproc_cmd_getptr(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // wait until it's done
+    res = ft81x_graphics_engine_flush_and_synchronise(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // finally we read the result out of the command buffer
+    uint32_t end_addr;
+    READ_GPU_REG_32(FT81X_COPROC_CMD_RAM + end_address_location, end_addr);
+
+    uint32_t actual_decompress_size = end_addr - image_handle->load_offset;
+
+    if (actual_decompress_size > decompress_size)
+    {
+        return FT81X_RESULT_OVERFLOW;
+    }
+
+#endif
+
+    return FT81X_RESULT_OK;
+}
+
 // ----------------------------------------------------------------------------
 // API functions
 // ----------------------------------------------------------------------------
@@ -88,8 +169,7 @@ ft81x_result ft81x_image_manager_load_image(FT81X_Handle *handle, const FT81X_Im
     // load the image / indices
     if (image_properties->is_compressed)
     {
-        // We don't support this yet
-        return FT81X_RESULT_NOT_SUPPORTED
+        res = load_compressed_image(handle, image_properties, image_handle);
     }
     else
     {
@@ -110,6 +190,11 @@ ft81x_result ft81x_image_manager_load_image(FT81X_Handle *handle, const FT81X_Im
         if (image_properties->is_lut_compressed)
         {
             // we don't support compressed LUT yet
+            // this is due to us needing to allocate space in g_ram for the table
+            // but we don't know the decompressed size
+            // can we calculate an upper bound by assuming 256 indexes
+            // and then using the PALETTED format to get the size?
+#warning TODO: Support compressed LUTs
             return FT81X_RESULT_NOT_SUPPORTED;
         }
         else

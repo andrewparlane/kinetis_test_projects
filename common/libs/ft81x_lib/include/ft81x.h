@@ -40,6 +40,7 @@ typedef enum _ft81x_result
     FT81X_RESULT_INVALID_ARG,
     FT81X_RESULT_OUT_OF_BITMAP_IDS,
     FT81X_RESULT_NOT_SUPPORTED,
+    FT81X_RESULT_OVERFLOW,
 } ft81x_result;
 
 typedef struct _FT81X_Handle

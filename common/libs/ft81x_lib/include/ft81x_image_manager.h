@@ -24,8 +24,9 @@ typedef struct
     const uint8_t          *data;
     uint32_t                size;
 
-    uint8_t                 is_lut_compressed;
-    const uint8_t          *lut_data;   // only for format = one of FT81X_BITMAP_FORMAT_PALETTED...
+    // only for format = one of FT81X_BITMAP_FORMAT_PALETTED...
+    uint8_t                 is_lut_compressed;  // note: compressed LUTs are currently not supported
+    const uint8_t          *lut_data;
     uint32_t                lut_size;
 } FT81X_Image_Properties;
 
