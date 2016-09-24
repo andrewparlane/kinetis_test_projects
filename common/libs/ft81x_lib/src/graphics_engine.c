@@ -264,3 +264,31 @@ ft81x_result ft81x_graphics_engine_end_display_list(FT81X_Handle *handle)
 
     return res;
 }
+
+ft81x_result ft81x_graphics_engine_flush_and_synchronise(FT81X_Handle *handle)
+{
+    // flush anything in the buffer
+    ft81x_result res = flush_display_list_buffer(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+#ifndef FT81X_DL_WRITE_DIRECTLY_TO_DL_RAM
+    // wait for read ptr to equal write ptr
+    while (1)
+    {
+        uint16_t wp, rp;
+
+        READ_GPU_REG_16(FT81X_REG_CMD_WRITE, wp);
+        READ_GPU_REG_16(FT81X_REG_CMD_READ, rp);
+
+        if (wp == rp)
+        {
+            break;
+        }
+    }
+#endif
+
+    return FT81X_RESULT_OK;
+}
