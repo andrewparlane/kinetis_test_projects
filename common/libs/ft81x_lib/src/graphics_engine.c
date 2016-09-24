@@ -173,9 +173,17 @@ ft81x_result ft81x_graphics_engine_end_display_list(FT81X_Handle *handle)
     // sending display list through the command buffer
     // requires each to end with the swap command
     res = ft81x_coproc_cmd_swap(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
 
     // flush anything in the buffer
     res = flush_display_list_buffer(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
 
     // sending display list through the command buffer
     // requires each to start with the DLSTART command
