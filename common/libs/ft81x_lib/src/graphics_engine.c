@@ -57,6 +57,73 @@ static ft81x_result flush_display_list_buffer(FT81X_Handle *handle)
     return FT81X_RESULT_OK;
 }
 
+// this is an internal helper function.
+// it should only be called with bytes % 4 == 0
+static ft81x_result write_display_list_data_non_padding(FT81X_Handle *handle, uint32_t bytes, const uint8_t *data)
+{
+    if (handle == NULL)
+    {
+        return FT81X_RESULT_NO_HANDLE;
+    }
+
+    if (bytes % 4 != 0)
+    {
+        return FT81X_RESULT_INVALID_ARG;
+    }
+
+    // special case, if the buffer is 0 bytes or NULL
+    // then write directly to the command buffer
+    if (handle->graphics_engine_data.buffer_size == 0 ||
+        handle->graphics_engine_data.buffer == NULL)
+    {
+        ft81x_result res = write_to_command_buffer(handle, bytes, data);
+        if (res != FT81X_RESULT_OK)
+        {
+            return res;
+        }
+    }
+    else
+    {
+        // write this data to our buffer
+        // if the buffer fills up, then flush the buffer
+        // and continue writting
+        uint32_t written = 0;
+        while (written != bytes)
+        {
+            // how much space is left in our buffer?
+            uint32_t space = handle->graphics_engine_data.buffer_size - handle->graphics_engine_data.buffer_write_idx;
+            if (space < 4)  // all writes have to be multiples of 4
+            {
+                // flush the buffer
+                ft81x_result res = flush_display_list_buffer(handle);
+                if (res != FT81X_RESULT_OK)
+                {
+                    // abort
+                    handle->graphics_engine_data.buffer_write_idx = 0;
+                    return res;
+                }
+
+                // recalculate space
+                // can't be 0 since buffer_size != 0, and buffer_write_idx == 0
+                space = handle->graphics_engine_data.buffer_size - handle->graphics_engine_data.buffer_write_idx;
+            }
+
+            // copy up to space bytes into the buffer
+            uint32_t copy_count = (bytes - written);
+            if (copy_count > space)
+            {
+                // & ~3 to make copy_count a multiple of 4
+                copy_count = space & ~3;
+            }
+            memcpy(&(handle->graphics_engine_data.buffer[handle->graphics_engine_data.buffer_write_idx]), &data[written], copy_count);
+            handle->graphics_engine_data.buffer_write_idx += copy_count;
+            written += copy_count;
+        }
+    }
+
+    return FT81X_RESULT_OK;
+}
+
 // ----------------------------------------------------------------------------
 // FT81X Grahpics engine functions
 // ----------------------------------------------------------------------------
@@ -95,70 +162,42 @@ ft81x_result ft81x_graphics_engine_start_display_list(FT81X_Handle *handle)
     return ft81x_coproc_cmd_dlstart(handle);
 }
 
-ft81x_result ft81x_graphics_engine_write_display_list_cmd(FT81X_Handle *handle, uint32_t cmd)
-{
-    return ft81x_graphics_engine_write_display_list_snippet(handle, 4, &cmd);
-}
-
-ft81x_result ft81x_graphics_engine_write_display_list_snippet(FT81X_Handle *handle, uint32_t bytes, const uint32_t *dl)
+ft81x_result ft81x_graphics_engine_write_display_list_data(FT81X_Handle *handle, uint32_t bytes, const uint8_t *data)
 {
     if (handle == NULL)
     {
         return FT81X_RESULT_NO_HANDLE;
     }
 
-    // special case, if the buffer is 0 bytes or NULL
-    // then write directly to the command buffer
-    if (handle->graphics_engine_data.buffer_size == 0 ||
-        handle->graphics_engine_data.buffer == NULL)
+    // needs to be padded to a multiple of 4 bytes
+    // so send all complete blocks of 4 that we have
+    // then any remaining with padded.
+    ft81x_result res = write_display_list_data_non_padding(handle, bytes & ~3, data);
+    if (res != FT81X_RESULT_OK)
     {
-        ft81x_result res = write_to_command_buffer(handle, bytes, (uint8_t *)dl);
-        if (res != FT81X_RESULT_OK)
-        {
-            return res;
-        }
-    }
-    else
-    {
-        // write this dl to our buffer
-        // if the buffer fills up, then flush the buffer
-        // and continue writting
-        uint32_t written = 0;
-        while (written != bytes)
-        {
-            // how much space is left in our buffer?
-            uint32_t space = handle->graphics_engine_data.buffer_size - handle->graphics_engine_data.buffer_write_idx;
-            if (space < 4)  // all writes have to be multiples of 4
-            {
-                // flush the buffer
-                ft81x_result res = flush_display_list_buffer(handle);
-                if (res != FT81X_RESULT_OK)
-                {
-                    // abort
-                    handle->graphics_engine_data.buffer_write_idx = 0;
-                    return res;
-                }
-
-                // recalculate space
-                // can't be 0 since buffer_size != 0, and buffer_write_idx == 0
-                space = handle->graphics_engine_data.buffer_size - handle->graphics_engine_data.buffer_write_idx;
-            }
-
-            // copy up to space bytes into the buffer
-            uint32_t copy_count = (bytes - written);
-            if (copy_count > space)
-            {
-                copy_count = space;
-            }
-            // can only copy in 4 byte chunks
-            copy_count &= ~0x03;
-            memcpy(&(handle->graphics_engine_data.buffer[handle->graphics_engine_data.buffer_write_idx]), &((uint8_t *)dl)[written], copy_count);
-            handle->graphics_engine_data.buffer_write_idx += copy_count;
-            written += copy_count;
-        }
+        return res;
     }
 
-    return FT81X_RESULT_OK;
+    // anything remaining?
+    if (bytes % 4)
+    {
+        // copy remaining data (1,2 or 3 bytes)
+        uint8_t remaining_data[4];
+        memcpy(remaining_data, &data[bytes & ~3], bytes % 4);
+
+        res = write_display_list_data_non_padding(handle, 4, &data[bytes & ~3]);
+    }
+    return res;
+}
+
+inline ft81x_result ft81x_graphics_engine_write_display_list_cmd(FT81X_Handle *handle, uint32_t cmd)
+{
+    return ft81x_graphics_engine_write_display_list_data(handle, 4, (uint8_t *)&cmd);
+}
+
+inline ft81x_result ft81x_graphics_engine_write_display_list_snippet(FT81X_Handle *handle, uint32_t bytes, const uint32_t *dl)
+{
+    return ft81x_graphics_engine_write_display_list_data(handle, bytes, (uint8_t *)dl);
 }
 
 ft81x_result ft81x_graphics_engine_end_display_list(FT81X_Handle *handle)

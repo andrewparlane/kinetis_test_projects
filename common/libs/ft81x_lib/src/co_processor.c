@@ -46,29 +46,7 @@ ft81x_result ft81x_coproc_cmd_text(FT81X_Handle *handle, uint16_t x, uint16_t y,
     // then the string
     // (strlen + 1 for the NULL char
     uint32_t len = strlen(str) + 1;
-
-    // this needs to be padded to 4 bytes.
-    // so I send all blocks of 4 and then
-    // finally any remaining bytes padded out
-    // hence the len & ~3
-    res = ft81x_graphics_engine_write_display_list_snippet(handle, len & ~3, (uint32_t *)str);
-    if (res != FT81X_RESULT_OK)
-    {
-        return res;
-    }
-
-    // anything remaining?
-    if (len % 4)
-    {
-        // copy remaining data (1,2 or 3 bytes)
-        uint8_t remaining_data[4];
-        memcpy(remaining_data, &str[len & ~3], len % 4);
-
-        // doesn't matter on the pad values, so just send it
-        return ft81x_graphics_engine_write_display_list_snippet(handle, 4, (uint32_t *)remaining_data);
-    }
-
-    return FT81X_RESULT_OK;
+    return ft81x_graphics_engine_write_display_list_data(handle, len, (uint8_t *)str);
 }
 
 ft81x_result ft81x_coproc_cmd_inflate(FT81X_Handle *handle, uint32_t offset, uint32_t count, const uint8_t *compressed_data)
@@ -84,26 +62,7 @@ ft81x_result ft81x_coproc_cmd_inflate(FT81X_Handle *handle, uint32_t offset, uin
     }
 
     // then the compressed data
-    // this needs to be padded to 4 bytes.
-    // so I send all blocks of 4 and then finally any remaining bytes padded out
-    res = ft81x_graphics_engine_write_display_list_snippet(handle, (count & ~3), (uint32_t *)compressed_data);
-    if (res != FT81X_RESULT_OK)
-    {
-        return res;
-    }
-
-    // anything remaining?
-    if (count % 4)
-    {
-        // copy remaining data (1,2 or 3 bytes)
-        uint8_t remaining_data[4];
-        memcpy(remaining_data, &compressed_data[count & ~3], count % 4);
-
-        // doesn't matter on the pad values, so just send it
-        return ft81x_graphics_engine_write_display_list_snippet(handle, 4, (uint32_t *)remaining_data);
-    }
-
-    return FT81X_RESULT_OK;
+    return ft81x_graphics_engine_write_display_list_data(handle, count, compressed_data);
 }
 
 ft81x_result ft81x_coproc_cmd_getptr(FT81X_Handle *handle)

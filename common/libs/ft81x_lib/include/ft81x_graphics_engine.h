@@ -17,6 +17,7 @@ ft81x_result ft81x_graphics_engine_initialise(FT81X_Handle *handle, uint32_t buf
 ft81x_result ft81x_graphics_engine_cleanup(FT81X_Handle *handle);
 
 ft81x_result ft81x_graphics_engine_start_display_list(FT81X_Handle *handle);
+ft81x_result ft81x_graphics_engine_write_display_list_data(FT81X_Handle *handle, uint32_t bytes, const uint8_t *data);
 ft81x_result ft81x_graphics_engine_write_display_list_cmd(FT81X_Handle *handle, uint32_t cmd);
 ft81x_result ft81x_graphics_engine_write_display_list_snippet(FT81X_Handle *handle, uint32_t bytes, const uint32_t *dl);
 ft81x_result ft81x_graphics_engine_end_display_list(FT81X_Handle *handle);
