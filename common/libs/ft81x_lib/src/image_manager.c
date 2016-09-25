@@ -132,11 +132,10 @@ static ft81x_result load_compressed_image(FT81X_Handle *handle, const FT81X_Imag
 
     // The image will decompress to linestride*height
     // unless linestride or height have been misconfigured
-    // TODO how do we deal with detecting that without
-    //      blocking for ages (see the #ifdef FT81X_DEBUG below)
-    //      maybe we could use CMD_INTERRUPT and then in the
-    //      handler we can read the end address
-#warning TODO: Set up the interrupt handler to check for g_ram overflow
+    // define FT81X_DEBUG in your config to enable checking
+    // for overflows. This will slow down the execution
+    // but will detect if your image decompressed to larger
+    // than it should.
     uint32_t decompress_size = image_properties->linestride * image_properties->height;
     res = ft81x_g_ram_manager_allocate(handle, decompress_size, &(image_handle->load_offset));
     if (res != FT81X_RESULT_OK)
@@ -191,11 +190,10 @@ static ft81x_result load_compressed_image_lut(FT81X_Handle *handle, const FT81X_
         default:                                return FT81X_RESULT_NOT_SUPPORTED;
     }
 
-    // TODO how do we deal with detecting overflow without
-    //      blocking for ages (see the #ifdef FT81X_DEBUG below)
-    //      maybe we could use CMD_INTERRUPT and then in the
-    //      handler we can read the end address
-#warning TODO: Set up the interrupt handler to check for g_ram overflow
+    // define FT81X_DEBUG in your config to enable checking
+    // for overflows. This will slow down the execution
+    // but will detect if your image decompressed to larger
+    // than it should.
     res = ft81x_g_ram_manager_allocate(handle, decompress_size, &(image_handle->lut_load_offset));
     if (res != FT81X_RESULT_OK)
     {
