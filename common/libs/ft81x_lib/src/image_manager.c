@@ -78,7 +78,6 @@ static ft81x_result check_for_overflow(FT81X_Handle *handle, uint32_t load_offse
     // shouldn't happen unless linestride, height or format are wrong
 
     // first we need to wait until the data has been decompressed
-#warning TODO: do we have to wait here?
     res = ft81x_graphics_engine_flush_and_synchronise(handle);
     if (res != FT81X_RESULT_OK)
     {
