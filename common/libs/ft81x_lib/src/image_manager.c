@@ -68,34 +68,14 @@ static ft81x_result load_raw_image_lut(FT81X_Handle *handle, const FT81X_Image_P
     return ft81x_g_ram_manager_write(handle, image_handle->lut_load_offset, image_properties->lut_size, image_properties->lut_data);
 }
 
-static ft81x_result load_compressed_image(FT81X_Handle *handle, const FT81X_Image_Properties *image_properties, FT81X_Image_Handle *image_handle)
+#ifdef FT81X_DEBUG
+
+static ft81x_result check_for_overflow(FT81X_Handle *handle, uint32_t load_offset, uint32_t expected_decompress_size)
 {
     ft81x_result res;
 
-    // The image will decompress to linestride*height
-    // unless linestride or height have been misconfigured
-    // TODO how do we deal with detecting that without
-    //      blocking for ages (see the #ifdef FT81X_DEBUG below)
-    //      maybe we could use CMD_INTERRUPT and then in the
-    //      handler we can read the end address
-#warning TODO: Set up the interrupt handler to check for g_ram overflow
-    uint32_t decompress_size = image_properties->linestride * image_properties->height;
-    res = ft81x_g_ram_manager_allocate(handle, decompress_size, &(image_handle->load_offset));
-    if (res != FT81X_RESULT_OK)
-    {
-        return res;
-    }
-
-    // send the inflate command and the data
-    res = ft81x_coproc_cmd_inflate(handle, image_handle->load_offset, image_properties->size, image_properties->data);
-    if (res != FT81X_RESULT_OK)
-    {
-        return res;
-    }
-
-#ifdef FT81X_DEBUG
     // check that we haven't overflowed the allocated space
-    // shouldn't happen unless linestride or height are wrong
+    // shouldn't happen unless linestride, height or format are wrong
 
     // first we need to wait until the data has been decompressed
 #warning TODO: do we have to wait here?
@@ -135,13 +115,107 @@ static ft81x_result load_compressed_image(FT81X_Handle *handle, const FT81X_Imag
     uint32_t end_addr;
     READ_GPU_REG_32(FT81X_COPROC_CMD_RAM + end_address_location, end_addr);
 
-    uint32_t actual_decompress_size = end_addr - image_handle->load_offset;
+    uint32_t actual_decompress_size = end_addr - load_offset;
 
-    if (actual_decompress_size > decompress_size)
+    if (actual_decompress_size > expected_decompress_size)
     {
         return FT81X_RESULT_OVERFLOW;
     }
 
+    return FT81X_RESULT_OK;
+}
+
+#endif
+
+static ft81x_result load_compressed_image(FT81X_Handle *handle, const FT81X_Image_Properties *image_properties, FT81X_Image_Handle *image_handle)
+{
+    ft81x_result res;
+
+    // The image will decompress to linestride*height
+    // unless linestride or height have been misconfigured
+    // TODO how do we deal with detecting that without
+    //      blocking for ages (see the #ifdef FT81X_DEBUG below)
+    //      maybe we could use CMD_INTERRUPT and then in the
+    //      handler we can read the end address
+#warning TODO: Set up the interrupt handler to check for g_ram overflow
+    uint32_t decompress_size = image_properties->linestride * image_properties->height;
+    res = ft81x_g_ram_manager_allocate(handle, decompress_size, &(image_handle->load_offset));
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // send the inflate command and the data
+    res = ft81x_coproc_cmd_inflate(handle, image_handle->load_offset, image_properties->size, image_properties->data);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+#ifdef FT81X_DEBUG
+    res = check_for_overflow(handle, image_handle->load_offset, decompress_size);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+#endif
+
+    return FT81X_RESULT_OK;
+}
+
+static ft81x_result load_compressed_image_lut(FT81X_Handle *handle, const FT81X_Image_Properties *image_properties, FT81X_Image_Handle *image_handle)
+{
+    ft81x_result res;
+
+    // The LUT will decompress to less than or equal to
+    // the number of indices * size of each indice
+
+    // if (image_properties->linestride == image_properties->width)
+    // then each byte is one inex ie. 256 bytes. For now we don't support
+    // more indices than that. (Pretty sure the FT81X only supports 256)
+    if (image_properties->linestride != image_properties->width)
+    {
+        return FT81X_RESULT_NOT_SUPPORTED;
+    }
+    const uint32_t NUM_INDICES = 256;
+
+    // The FT81X support 3 paletted types:
+    //  565     - 16 bits per index
+    //  4444    - 16 bits per index
+    //  8       - 32 bits per index
+    uint32_t decompress_size;
+    switch (image_properties->format)
+    {
+        case FT81X_BITMAP_FORMAT_PALETTED565:   decompress_size = NUM_INDICES * 2;  break;
+        case FT81X_BITMAP_FORMAT_PALETTED4444:  decompress_size = NUM_INDICES * 2;  break;
+        case FT81X_BITMAP_FORMAT_PALETTED8:     decompress_size = NUM_INDICES * 4;  break;
+        default:                                return FT81X_RESULT_NOT_SUPPORTED;
+    }
+
+    // TODO how do we deal with detecting overflow without
+    //      blocking for ages (see the #ifdef FT81X_DEBUG below)
+    //      maybe we could use CMD_INTERRUPT and then in the
+    //      handler we can read the end address
+#warning TODO: Set up the interrupt handler to check for g_ram overflow
+    res = ft81x_g_ram_manager_allocate(handle, decompress_size, &(image_handle->lut_load_offset));
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // send the inflate command and the data
+    res = ft81x_coproc_cmd_inflate(handle, image_handle->lut_load_offset, image_properties->lut_size, image_properties->lut_data);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+#ifdef FT81X_DEBUG
+    res = check_for_overflow(handle, image_handle->lut_load_offset, decompress_size);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
 #endif
 
     return FT81X_RESULT_OK;
@@ -189,13 +263,7 @@ ft81x_result ft81x_image_manager_load_image(FT81X_Handle *handle, const FT81X_Im
         // we have a LUT too
         if (image_properties->is_lut_compressed)
         {
-            // we don't support compressed LUT yet
-            // this is due to us needing to allocate space in g_ram for the table
-            // but we don't know the decompressed size
-            // can we calculate an upper bound by assuming 256 indexes
-            // and then using the PALETTED format to get the size?
-#warning TODO: Support compressed LUTs
-            return FT81X_RESULT_NOT_SUPPORTED;
+            res = load_compressed_image_lut(handle, image_properties, image_handle);
         }
         else
         {
