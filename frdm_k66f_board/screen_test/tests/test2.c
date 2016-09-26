@@ -21,7 +21,7 @@
 static const uint32_t clear_dl_snippet[] =
 {
     // set the background colour to dark grey and clear the screen
-    FT81X_DL_CMD_CLEAR_COLOUR_RGB(64,0,0),
+    FT81X_DL_CMD_CLEAR_COLOUR_RGB(0,0,0),
     FT81X_DL_CMD_CLEAR(1,1,1),
 };
 
@@ -84,6 +84,14 @@ ft81x_result test2_compressed_images(FT81X_Handle *handle)
     // ----------------------------------------------------------
     // Build and display the display list
     // ----------------------------------------------------------
+    // reset the co-proc to it's default state
+    res = ft81x_coproc_cmd_coldstart(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+        return res;
+    }
+
     // clear the screen
     res = ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(clear_dl_snippet), clear_dl_snippet);
     if (res != FT81X_RESULT_OK)
@@ -188,6 +196,14 @@ ft81x_result test2_text(FT81X_Handle *handle)
 {
     ft81x_result res;
 
+    // reset the co-proc to it's default state
+    res = ft81x_coproc_cmd_coldstart(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+        return res;
+    }
+
     // clear the screen
     res = ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(clear_dl_snippet), clear_dl_snippet);
     if (res != FT81X_RESULT_OK)
@@ -206,6 +222,42 @@ ft81x_result test2_text(FT81X_Handle *handle)
 
     // show some text
     res = ft81x_coproc_cmd_text(handle, 10, 30, 31, 0, "Test 2");
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_text failed with %u\n", res);
+        return res;
+    }
+
+    // show some numbers
+    res = ft81x_coproc_cmd_number(handle, 10, 100, 31, 0, (int32_t)0xFFFFFFFF);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_text failed with %u\n", res);
+        return res;
+    }
+
+    res = ft81x_coproc_cmd_number(handle, 10, 150, 26, FT81X_COPROC_OPTION_SIGNED, (int32_t)0xFFFFFFFF);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_text failed with %u\n", res);
+        return res;
+    }
+
+    res = ft81x_coproc_cmd_number(handle, 10, 200, 26, 0, -1);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_text failed with %u\n", res);
+        return res;
+    }
+
+    res = ft81x_coproc_cmd_number(handle, 10, 250, 26, FT81X_COPROC_OPTION_SIGNED, -1);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_text failed with %u\n", res);
+        return res;
+    }
+
+    res = ft81x_coproc_cmd_number(handle, 10, 300, 26, 0, 1337);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_coproc_cmd_text failed with %u\n", res);
@@ -233,9 +285,462 @@ ft81x_result test2_text(FT81X_Handle *handle)
     return FT81X_RESULT_OK;
 }
 
+ft81x_result test2_buttons(FT81X_Handle *handle)
+{
+    ft81x_result res;
+
+    // reset the co-proc to it's default state
+    res = ft81x_coproc_cmd_coldstart(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+        return res;
+    }
+
+    // clear the screen
+    res = ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(clear_dl_snippet), clear_dl_snippet);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+        return res;
+    }
+
+    // draw a default button
+    res = ft81x_coproc_cmd_button(handle, 10, 10, 200, 100, 24, 0, "button1");
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_button failed with %u\n", res);
+        return res;
+    }
+
+    // change the fg colour to red
+    res = ft81x_coproc_cmd_fgcolour(handle, 255, 0, 0);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_fgcolour failed with %u\n", res);
+        return res;
+    }
+
+    // draw a flat button
+    res = ft81x_coproc_cmd_button(handle, 10, 120, 200, 100, 24, FT81X_COPROC_OPTION_FLAT, "flat button");
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_button failed with %u\n", res);
+        return res;
+    }
+
+    // change the fg colour to dark yellow
+    res = ft81x_coproc_cmd_fgcolour(handle, 32, 32, 0);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_fgcolour failed with %u\n", res);
+        return res;
+    }
+
+    // set the gradient colour to blue
+    res = ft81x_coproc_cmd_gradcolour(handle, 0, 0, 255);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_gradcolour failed with %u\n", res);
+        return res;
+    }
+
+    // draw another button
+    res = ft81x_coproc_cmd_button(handle, 10, 220, 250, 200, 28, 0, "button 3 with gradient");
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_button failed with %u\n", res);
+        return res;
+    }
+
+    // display it
+    res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_DISPLAY());
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+        return res;
+    }
+
+    // write everything to the DL ram and then swap it in
+    res = ft81x_graphics_engine_end_display_list(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_end_display_list failed with %u\n", res);
+        return res;
+    }
+
+    vTaskDelay(3000);
+
+    return FT81X_RESULT_OK;
+}
+
+ft81x_result test2_clocks_and_guages(FT81X_Handle *handle)
+{
+    ft81x_result res;
+
+    // reset the co-proc to it's default state
+    res = ft81x_coproc_cmd_coldstart(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+        return res;
+    }
+
+    // clear the screen
+    res = ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(clear_dl_snippet), clear_dl_snippet);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+        return res;
+    }
+
+    // draw a default clock
+    res = ft81x_coproc_cmd_clock(handle, 50, 50, 50, 0, 6, 30, 15, 500);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_clock failed with %u\n", res);
+        return res;
+    }
+
+    // draw a default gauge
+    res = ft81x_coproc_cmd_gauge(handle, 250, 50, 50, 0, 5, 2, 75, 100);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_clock failed with %u\n", res);
+        return res;
+    }
+
+    // change the bg colour to green
+    res = ft81x_coproc_cmd_bgcolour(handle, 0, 255, 0);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_bgcolour failed with %u\n", res);
+        return res;
+    }
+
+    // draw a flat clock with no ticks
+    res = ft81x_coproc_cmd_clock(handle, 50, 170, 60, FT81X_COPROC_OPTION_FLAT | FT81X_COPROC_OPTION_NOTICKS, 3, 45, 35, 100);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_clock failed with %u\n", res);
+        return res;
+    }
+
+    // draw a flat gauge with no ticks
+    res = ft81x_coproc_cmd_gauge(handle, 250, 170, 60, FT81X_COPROC_OPTION_FLAT | FT81X_COPROC_OPTION_NOTICKS, 5, 1, 25, 100);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_clock failed with %u\n", res);
+        return res;
+    }
+
+    // draw a clock with no hands and no background
+    res = ft81x_coproc_cmd_clock(handle, 100, 300, 90, FT81X_COPROC_OPTION_NOBACK | FT81X_COPROC_OPTION_NOHANDS, 3, 45, 35, 100);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_clock failed with %u\n", res);
+        return res;
+    }
+
+    // draw a gauge with no pointer and no background
+    res = ft81x_coproc_cmd_gauge(handle, 250, 300, 90, FT81X_COPROC_OPTION_NOPOINTER | FT81X_COPROC_OPTION_NOBACK, 2, 10, 25, 100);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_clock failed with %u\n", res);
+        return res;
+    }
+
+    // display it
+    res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_DISPLAY());
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+        return res;
+    }
+
+    // write everything to the DL ram and then swap it in
+    res = ft81x_graphics_engine_end_display_list(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_end_display_list failed with %u\n", res);
+        return res;
+    }
+
+    vTaskDelay(3000);
+
+    return FT81X_RESULT_OK;
+}
+
+ft81x_result test2_keys_dials_toggles(FT81X_Handle *handle)
+{
+    ft81x_result res;
+
+    // reset the co-proc to it's default state
+    res = ft81x_coproc_cmd_coldstart(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+        return res;
+    }
+
+    // clear the screen
+    res = ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(clear_dl_snippet), clear_dl_snippet);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+        return res;
+    }
+
+    // draw some keys
+    res = ft81x_coproc_cmd_keys(handle, 50, 50, 270, 50, 23, 'a', "aaAbBcC");
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_clock failed with %u\n", res);
+        return res;
+    }
+
+    // draw a dial
+    res = ft81x_coproc_cmd_dial(handle, 80, 240, 80, 0, 0x2000);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_dial failed with %u\n", res);
+        return res;
+    }
+
+    // draw a toggle
+    res = ft81x_coproc_cmd_toggle(handle, 50, 330, 80, 23, 0, 0, "off\xffon");
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_toggle failed with %u\n", res);
+        return res;
+    }
+
+    // change the fg colour to red
+    res = ft81x_coproc_cmd_fgcolour(handle, 255, 0, 0);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_fgcolour failed with %u\n", res);
+        return res;
+    }
+
+    // change the bg colour to white
+    res = ft81x_coproc_cmd_bgcolour(handle, 255, 255, 255);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_bgcolour failed with %u\n", res);
+        return res;
+    }
+
+    // set the text colour to black
+    res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_COLOUR_RGB(0,0,0));
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+        return res;
+    }
+
+    // change the grad colour to blue
+    res = ft81x_coproc_cmd_gradcolour(handle, 0, 0, 255);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_gradcolour failed with %u\n", res);
+        return res;
+    }
+
+    // draw some keys
+    res = ft81x_coproc_cmd_keys(handle, 50, 110, 250, 50, 23, FT81X_COPROC_OPTION_CENTRE | 'B', "aAbBcC123");
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_clock failed with %u\n", res);
+        return res;
+    }
+
+    // draw a flat dial
+    res = ft81x_coproc_cmd_dial(handle, 240, 240, 80, FT81X_COPROC_OPTION_FLAT, 6000);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_dial failed with %u\n", res);
+        return res;
+    }
+
+    // draw a flat toggle
+    res = ft81x_coproc_cmd_toggle(handle, 190, 330, 80, 23, 0, 1, "off\xffon");
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_toggle failed with %u\n", res);
+        return res;
+    }
+
+    // display it
+    res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_DISPLAY());
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+        return res;
+    }
+
+    // write everything to the DL ram and then swap it in
+    res = ft81x_graphics_engine_end_display_list(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_end_display_list failed with %u\n", res);
+        return res;
+    }
+
+    vTaskDelay(3000);
+
+    return FT81X_RESULT_OK;
+}
+
+ft81x_result test2_gradient(FT81X_Handle *handle)
+{
+    ft81x_result res;
+
+    // reset the co-proc to it's default state
+    res = ft81x_coproc_cmd_coldstart(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+        return res;
+    }
+
+    // clear the screen
+    res = ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(clear_dl_snippet), clear_dl_snippet);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+        return res;
+    }
+
+    // show a gradient
+    res = ft81x_coproc_cmd_gradient(handle, 200, 100, 255, 0, 0, 300, 400, 0, 0, 255);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_gradient failed with %u\n", res);
+        return res;
+    }
+
+#warning TODO: add support for scissor commands then improve test2_gradient()
+
+    // display it
+    res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_DISPLAY());
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+        return res;
+    }
+
+    // write everything to the DL ram and then swap it in
+    res = ft81x_graphics_engine_end_display_list(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_end_display_list failed with %u\n", res);
+        return res;
+    }
+
+    vTaskDelay(3000);
+
+    return FT81X_RESULT_OK;
+}
+
+ft81x_result test2_progress_scrollbars_sliders(FT81X_Handle *handle)
+{
+    ft81x_result res;
+
+    for (int i = 0; i <= 100; i++)
+    {
+        // reset the co-proc to it's default state
+        res = ft81x_coproc_cmd_coldstart(handle);
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+            return res;
+        }
+
+        // clear the screen
+        res = ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(clear_dl_snippet), clear_dl_snippet);
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+            return res;
+        }
+
+        // show a progress bar
+        res = ft81x_coproc_cmd_progress(handle, 50, 50, 220, 30, 0, i, 100);
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_coproc_cmd_progress failed with %u\n", res);
+            return res;
+        }
+
+        // show a horizontal scrollbar
+        res = ft81x_coproc_cmd_scrollbar(handle, 0, 460, 320, 20, 0, i, 10, 110);
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_coproc_cmd_scrollbar failed with %u\n", res);
+            return res;
+        }
+
+        // show a vertical scrollbar
+        res = ft81x_coproc_cmd_scrollbar(handle, 300, 0, 20, 480, 0, i, 30, 130);
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_coproc_cmd_scrollbar failed with %u\n", res);
+            return res;
+        }
+
+        // show a slider
+        res = ft81x_coproc_cmd_slider(handle, 50, 150, 100, 40, 0, i, 100);
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_coproc_cmd_slider failed with %u\n", res);
+            return res;
+        }
+
+        // show the current value of i
+        res = ft81x_coproc_cmd_number(handle, 100, 300, 31, FT81X_COPROC_OPTION_RIGHTX, i);
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_coproc_cmd_text failed with %u\n", res);
+            return res;
+        }
+
+        // display it
+        res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_DISPLAY());
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+            return res;
+        }
+
+        // write everything to the DL ram and then swap it in
+        res = ft81x_graphics_engine_end_display_list(handle);
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_graphics_engine_end_display_list failed with %u\n", res);
+            return res;
+        }
+
+        vTaskDelay(100);
+    }
+    vTaskDelay(3000);
+
+    return FT81X_RESULT_OK;
+}
+
 ft81x_result test2(FT81X_Handle *handle)
 {
     ft81x_result res;
+
+    // ----------------------------------------------------------
+    // Display some text
+    // ----------------------------------------------------------
+    res = test2_text(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("test2_text failed with %u\n", res);
+        return res;
+    }
 
     // ----------------------------------------------------------
     // Display the FTDI logo animation
@@ -258,12 +763,52 @@ ft81x_result test2(FT81X_Handle *handle)
     }
 
     // ----------------------------------------------------------
-    // Display some text
+    // Display some buttons
     // ----------------------------------------------------------
-    res = test2_text(handle);
+    res = test2_buttons(handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("test2_text failed with %u\n", res);
+        DbgConsole_Printf("test2_buttons failed with %u\n", res);
+        return res;
+    }
+
+    // ----------------------------------------------------------
+    // Display some clocks and guages
+    // ----------------------------------------------------------
+    res = test2_clocks_and_guages(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("test2_clocks_and_guages failed with %u\n", res);
+        return res;
+    }
+
+    // ----------------------------------------------------------
+    // Display some keys, dials and toggles
+    // ----------------------------------------------------------
+    res = test2_keys_dials_toggles(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("test2_keys_dials_toggles failed with %u\n", res);
+        return res;
+    }
+
+    // ----------------------------------------------------------
+    // Display a gradient
+    // ----------------------------------------------------------
+    res = test2_gradient(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("test2_gradient failed with %u\n", res);
+        return res;
+    }
+
+    // ----------------------------------------------------------
+    // Display a progress bar, some scrollbars and sliders
+    // ----------------------------------------------------------
+    res = test2_progress_scrollbars_sliders(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("test2_progress_scrollbars_sliders failed with %u\n", res);
         return res;
     }
 
