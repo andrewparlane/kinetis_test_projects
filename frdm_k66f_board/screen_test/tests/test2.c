@@ -16,7 +16,7 @@
 #include "resources/cat_l8_compressed.h"
 #include "resources/cat_argb1555_compressed.h"
 #include "resources/cat_paletted8_compressed.h"
-
+#include "resources/blink_font_l2_raw.h"
 
 static const uint32_t clear_dl_snippet[] =
 {
@@ -196,6 +196,20 @@ ft81x_result test2_text(FT81X_Handle *handle)
 {
     ft81x_result res;
 
+    // ----------------------------------------------------------
+    // load our custom font into g RAM
+    // ----------------------------------------------------------
+    FT81X_Font_Handle font_handle;
+    res = ft81x_text_manager_load_custom_font(handle, &blink_font_l2_raw_font_properties, &font_handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_text_manager_load_custom_font failed with %u\n", res);
+        return res;
+    }
+
+    // ----------------------------------------------------------
+    // Build and display the display list
+    // ----------------------------------------------------------
     // reset the co-proc to it's default state
     res = ft81x_coproc_cmd_coldstart(handle);
     if (res != FT81X_RESULT_OK)
@@ -209,6 +223,19 @@ ft81x_result test2_text(FT81X_Handle *handle)
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+        return res;
+    }
+
+    // initialise the custom font
+    res = ft81x_text_manager_send_font_init_dl(handle,
+                                               &blink_font_l2_raw_font_properties,
+                                               &font_handle,
+                                               FT81X_BITMAP_FILTER_NEAREST,
+                                               FT81X_BITMAP_WRAP_BORDER,
+                                               FT81X_BITMAP_WRAP_BORDER);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_text_manager_send_font_init_dl failed with %u\n", res);
         return res;
     }
 
@@ -243,21 +270,30 @@ ft81x_result test2_text(FT81X_Handle *handle)
         return res;
     }
 
-    res = ft81x_coproc_cmd_number(handle, 10, 200, 26, 0, -1);
+    // custom font text (note I replaced the data for ~ with a smiley)
+    res = ft81x_coproc_cmd_text(handle, 10, 180, font_handle.font_id, 0, "Custom Font -> ~");
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_coproc_cmd_text failed with %u\n", res);
         return res;
     }
 
-    res = ft81x_coproc_cmd_number(handle, 10, 250, 26, FT81X_COPROC_OPTION_SIGNED, -1);
+    // numbers with custom font
+    res = ft81x_coproc_cmd_number(handle, 10, 210, font_handle.font_id, 0, -1);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_coproc_cmd_text failed with %u\n", res);
         return res;
     }
 
-    res = ft81x_coproc_cmd_number(handle, 10, 300, 26, 0, 1337);
+    res = ft81x_coproc_cmd_number(handle, 10, 240, font_handle.font_id, FT81X_COPROC_OPTION_SIGNED, -1);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_text failed with %u\n", res);
+        return res;
+    }
+
+    res = ft81x_coproc_cmd_number(handle, 10, 270, font_handle.font_id, 0, 1337);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_coproc_cmd_text failed with %u\n", res);
