@@ -194,10 +194,10 @@ ft81x_result ft81x_coproc_cmd_dial(FT81X_Handle *handle, uint16_t x, uint16_t y,
 // Draw a number to the screen
 //  x       - x co-ord of number
 //  y       - y co-ord of number
-//  font   - bitmap id for font 0-31 (0-14 are for custom RAM fonts)
-//                                   (15 is for scratch)
-//                                   (16-31 are ROM fonts)
-//                                   (there are also 32 - 34, see CMD_ROMFONT)
+//  font_id - bitmap id for font 0-31 (0-14 are for custom RAM fonts)
+//                                    (15 is for scratch)
+//                                    (16-31 are ROM fonts)
+//                                    (there are also 32 - 34, see CMD_ROMFONT)
 //  options - FT81X_COPROC_OPTION_SIGNED for signed number
 //            FT81X_COPROC_OPTION_CENTREX
 //            FT81X_COPROC_OPTION_CENTREY
