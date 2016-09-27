@@ -2,6 +2,8 @@
 #define __FT81X_TEXT_MANAGER
 
 #include "ft81x.h"
+#include "ft81x_image_manager.h"
+#include "ft81x_co_processor.h"
 
 #include <stdint.h>
 
@@ -48,6 +50,23 @@
 #define FT81X_TEXT_MANAGER_FONT_33_HEIGHT       83
 #define FT81X_TEXT_MANAGER_FONT_34_HEIGHT       108
 
+typedef struct
+{
+    const FT81X_Image_Properties   *image_properties;
+    const uint8_t                  *character_widths;
+    const uint32_t                  character_widths_size;
+} FT81X_Font_Properties;
+
+typedef struct
+{
+    FT81X_Image_Handle image_handle;
+    uint32_t           metric_block_offset; // offset of the metric block in g_ram
+    uint8_t            font_id;
+} FT81X_Font_Handle;
+
+ft81x_result ft81x_text_manager_load_custom_font(FT81X_Handle *handle, const FT81X_Font_Properties *font_properties, FT81X_Font_Handle *font_handle);
+
+ft81x_result ft81x_text_manager_send_font_init_dl(FT81X_Handle *handle, const FT81X_Font_Properties *font_properties, const FT81X_Font_Handle *font_handle, FT81X_Bitmap_Filter filter, FT81X_Bitmap_Wrap wrapx, FT81X_Bitmap_Wrap wrapy);
 
 // Note: If you want to write static test directly to the display list
 //       You can use the EVE Screen editor tool.
