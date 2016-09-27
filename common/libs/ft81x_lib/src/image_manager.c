@@ -287,6 +287,39 @@ ft81x_result ft81x_image_manager_load_image(FT81X_Handle *handle, const FT81X_Im
     return FT81X_RESULT_OK;
 }
 
+// Note: this function is (hopefully) a tempory work around until I can
+// get CMD_SETFONT2 working.
+#warning TODO: Either make this nice or remove it
+ft81x_result ft81x_image_manager_load_raw_non_paletted_image_at_offset(FT81X_Handle *handle, const FT81X_Image_Properties *image_properties, FT81X_Image_Handle *image_handle, uint32_t offset)
+{
+    ft81x_result res;
+
+    // allocate space in g_ram, storing the offset in the image_handle
+    res = ft81x_g_ram_manager_allocate(handle, image_properties->size + offset, &(image_handle->load_offset));
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // write the image to g_ram
+    res = ft81x_g_ram_manager_write(handle, image_handle->load_offset + offset, image_properties->size, image_properties->data);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // assign a free bitmap ID
+    res = allocate_bitmap_id(handle, &(image_handle->bitmap_handle));
+    if (res != FT81X_RESULT_OK)
+    {
+        // failed, free the image data (LUT + indices)
+#warning TODO: free the indices data + LUT data
+        return res;
+    }
+
+    return FT81X_RESULT_OK;
+}
+
 // ----------------------------------------------------------------------------
 // Display list functions
 // ----------------------------------------------------------------------------
