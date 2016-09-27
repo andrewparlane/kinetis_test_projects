@@ -25,11 +25,13 @@
 #define FT81X_COPROC_CMD_ID_CLOCK           0xFFFFFF14
 #define FT81X_COPROC_CMD_ID_INFLATE         0xFFFFFF22
 #define FT81X_COPROC_CMD_ID_GETPTR          0xFFFFFF23
+#define FT81X_COPROC_CMD_ID_SETFONT         0xFFFFFF2B
 #define FT81X_COPROC_CMD_ID_DIAL            0xFFFFFF2D
 #define FT81X_COPROC_CMD_ID_NUMBER          0xFFFFFF2E
 #define FT81X_COPROC_CMD_ID_LOGO            0xFFFFFF31
 #define FT81X_COPROC_CMD_ID_COLDSTART       0xFFFFFF32
 #define FT81X_COPROC_CMD_ID_GRADCOLOUR      0xFFFFFF34
+#define FT81X_COPROC_CMD_ID_SETFONT2        0xFFFFFF3B
 
 // ----------------------------------------------------------------------------
 // CMD functions
@@ -238,6 +240,16 @@ ft81x_result ft81x_coproc_cmd_getptr(FT81X_Handle *handle)
     return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(cmd), cmd);
 }
 
+ft81x_result ft81x_coproc_cmd_setfont(FT81X_Handle *handle, uint8_t font_id, uint32_t font_metric_block_offset)
+{
+    // first the command and a padding byte
+    const uint32_t cmd[] = { FT81X_COPROC_CMD_ID_SETFONT,
+                             font_id,
+                             font_metric_block_offset};
+
+    return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(cmd), cmd);
+}
+
 ft81x_result ft81x_coproc_cmd_dial(FT81X_Handle *handle, uint16_t x, uint16_t y, uint16_t radius, uint16_t options, uint16_t val)
 {
     const uint32_t data[] = { FT81X_COPROC_CMD_ID_DIAL,
@@ -275,4 +287,16 @@ ft81x_result ft81x_coproc_cmd_gradcolour(FT81X_Handle *handle, uint8_t r, uint8_
                               (r << 16) | (g << 8) | b };
 
     return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(data), data);
+}
+
+ft81x_result ft81x_coproc_cmd_setfont2(FT81X_Handle *handle, uint8_t font_id, uint32_t font_metric_block_offset, char first_char)
+{
+    // first the command and a padding byte
+    const uint32_t cmd[] = { FT81X_COPROC_CMD_ID_SETFONT2,
+                             font_id,
+                             font_metric_block_offset,
+                             first_char};
+
+
+    return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(cmd), cmd);
 }

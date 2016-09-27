@@ -174,6 +174,15 @@ ft81x_result ft81x_coproc_cmd_inflate(FT81X_Handle *handle, uint32_t offset, uin
 // Get the end memory address of data inflated using CMD_INFLATE
 ft81x_result ft81x_coproc_cmd_getptr(FT81X_Handle *handle);
 
+// Set up a custom font
+// Note: this should be used through the Text Manager and not directly
+//  font_id - bitmap id to use for font 0-31 (0-14 are for custom RAM fonts)
+//                                           (15 is for scratch)
+//                                           (16-31 are ROM fonts)
+//                                           (there are also 32 - 34, see CMD_ROMFONT)
+//  font_metric_block_offset - the offset into g_ram of the font metric block
+ft81x_result ft81x_coproc_cmd_setfont(FT81X_Handle *handle, uint8_t font_id, uint32_t font_metric_block_offset);
+
 // Draw a rotary dial to the screen
 //  x       - x co-ord of clock
 //  y       - y co-ord of clock
@@ -207,4 +216,15 @@ ft81x_result ft81x_coproc_cmd_coldstart(FT81X_Handle *handle);
 // A button or key starts with the gradient colour at the top
 // and fades to the fg colour at the bottom
 ft81x_result ft81x_coproc_cmd_gradcolour(FT81X_Handle *handle, uint8_t r, uint8_t g, uint8_t b);
+
+// Set up a custom font (note: I can't get this working yet)
+// Note: this should be used through the Text Manager and not directly
+//  font_id - bitmap id to use for font 0-31 (0-14 are for custom RAM fonts)
+//                                           (15 is for scratch)
+//                                           (16-31 are ROM fonts)
+//                                           (there are also 32 - 34, see CMD_ROMFONT)
+//  font_metric_block_offset - the offset into g_ram of the font metric block
+//  first_char - The first character in your custom font image, probably ' '
+ft81x_result ft81x_coproc_cmd_setfont2(FT81X_Handle *handle, uint8_t font_id, uint32_t font_metric_block_offset, char first_char);
+
 #endif
