@@ -68,12 +68,4 @@ ft81x_result ft81x_text_manager_load_custom_font(FT81X_Handle *handle, const FT8
 
 ft81x_result ft81x_text_manager_send_font_init_dl(FT81X_Handle *handle, const FT81X_Font_Properties *font_properties, const FT81X_Font_Handle *font_handle, FT81X_Bitmap_Filter filter, FT81X_Bitmap_Wrap wrapx, FT81X_Bitmap_Wrap wrapy);
 
-// Note: If you want to write static test directly to the display list
-//       You can use the EVE Screen editor tool.
-//       Add a text widget to the display, choose your font and string.
-//       Look at the inspector tab and copy the DL commands.
-//       The vertex2ii call have the corecct spacing for each character.
-
-ft81x_result ft81x_text_manager_write_fixed_width_font_string(FT81X_Handle *handle, uint8_t font_id, uint8_t font_width, uint8_t font_height, char *str, uint32_t x, uint32_t y);
-
 #endif
