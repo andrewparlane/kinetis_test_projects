@@ -86,7 +86,10 @@ static ft81x_result configure_gpu(FT81X_Handle *handle)
 
     // Horizontal parameters
     // total pixels per line (visible + not visible)
-    WRITE_GPU_REG_16(FT81X_REG_HCYCLE, (FT81X_SCREEN_TOTAL_WIDTH));
+    // note: HCYCLE must be > HSIZE + HOFFSET
+    //       this is according to FTDI support
+    //       Hence the +1 for HCYCLE
+    WRITE_GPU_REG_16(FT81X_REG_HCYCLE, (FT81X_SCREEN_TOTAL_WIDTH)+1);
     // horizontal resolution
     WRITE_GPU_REG_16(FT81X_REG_HSIZE, (FT81X_SCREEN_WIDTH));
     // non visible section
@@ -98,7 +101,10 @@ static ft81x_result configure_gpu(FT81X_Handle *handle)
 
     // vertical parameters
     // total lines per frame (visible + not visible)
-    WRITE_GPU_REG_16(FT81X_REG_VCYCLE, (FT81X_SCREEN_TOTAL_HEIGHT));
+    // note: VCYCLE must be > VSIZE + VOFFSET
+    //       this is according to FTDI support
+    //       Hence the +1 for VCYCLE
+    WRITE_GPU_REG_16(FT81X_REG_VCYCLE, (FT81X_SCREEN_TOTAL_HEIGHT)+1);
     // vertical resolution
     WRITE_GPU_REG_16(FT81X_REG_VSIZE, (FT81X_SCREEN_HEIGHT));
     // non visible section
