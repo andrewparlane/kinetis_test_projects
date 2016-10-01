@@ -46,12 +46,8 @@ ft81x_result ft81x_text_manager_load_custom_font(FT81X_Handle *handle, const FT8
         return FT81X_RESULT_INVALID_ARG;
     }
 
-    // load the image into g_ram offsetted to allow for the unprintable
-    // characters that come before our first char this is required by
-    // CMD_SETFONT but not by CMD_SETFONT2, unfortunately I can't get
-    // CMD_SETFONT2 to work yet
-    #warning TODO CMD_SETFONT2
-    res = ft81x_image_manager_load_raw_non_paletted_image_at_offset(handle, ip, &font_handle->image_handle, (FIRST_CHAR * ip->linestride * ip->height));
+    // load the image into g_ram
+    res = ft81x_image_manager_load_image(handle, ip, &font_handle->image_handle);
     if (res != FT81X_RESULT_OK)
     {
         return res;
@@ -102,5 +98,5 @@ ft81x_result ft81x_text_manager_send_font_init_dl(FT81X_Handle *handle, const FT
     }
 
     // then we use the setfont2 co-proc command to set this image up as a font
-    return ft81x_coproc_cmd_setfont(handle, font_handle->font_id, font_handle->metric_block_offset);
+    return ft81x_coproc_cmd_setfont2(handle, font_handle->font_id, font_handle->metric_block_offset, FIRST_CHAR);
 }
