@@ -87,7 +87,7 @@ ft81x_result ft81x_text_manager_load_custom_font(FT81X_Handle *handle, const FT8
     }
 
     // write the metric block
-    return ft81x_g_ram_manager_write(handle, font_handle->metric_block_offset, sizeof(Font_Metric_Block), (uint8_t *)&fmb);
+    return ft81x_g_ram_manager_write(handle, font_handle->metric_block_offset + NUM_CHARS, sizeof(Font_Metric_Block), (uint8_t *)&fmb);
 }
 
 ft81x_result ft81x_text_manager_send_font_init_dl(FT81X_Handle *handle, const FT81X_Font_Properties *font_properties, const FT81X_Font_Handle *font_handle, FT81X_Bitmap_Filter filter, FT81X_Bitmap_Wrap wrapx, FT81X_Bitmap_Wrap wrapy)
