@@ -53,6 +53,9 @@ ft81x_result ft81x_text_manager_load_custom_font(FT81X_Handle *handle, const FT8
     // copy the bitmap_handle to fontfont_id
     font_handle->font_id = font_handle->image_handle.bitmap_handle;
 
+    // we're a custom font
+    font_handle->custom = 1;
+
     // build the metric block
     Font_Metric_Block fmb =
     {
@@ -83,19 +86,35 @@ ft81x_result ft81x_text_manager_load_custom_font(FT81X_Handle *handle, const FT8
     return ft81x_g_ram_manager_write(handle, font_handle->metric_block_offset + NUM_CHARS, sizeof(Font_Metric_Block), (uint8_t *)&fmb);
 }
 
+ft81x_result ft81x_text_manager_get_font_handle_for_inbuilt_font(FT81X_Handle *handle, FT81X_Font_Handle *font_handle, uint8_t font_id)
+{
+    font_handle->font_id = font_id;
+    font_handle->custom = 0;
+
+    return FT81X_RESULT_OK;
+}
+
 ft81x_result ft81x_text_manager_send_font_init_dl(FT81X_Handle *handle, const FT81X_Font_Properties *font_properties, const FT81X_Font_Handle *font_handle, FT81X_Bitmap_Filter filter, FT81X_Bitmap_Wrap wrapx, FT81X_Bitmap_Wrap wrapy)
 {
     ft81x_result res;
 
-    // first send the image init display list stuff
-    res = ft81x_image_manager_send_image_init_dl(handle, font_properties->image_properties, &font_handle->image_handle, filter, wrapx, wrapy);
-    if (res != FT81X_RESULT_OK)
+    if (font_handle->custom)
     {
-        return res;
-    }
+        // first send the image init display list stuff
+        res = ft81x_image_manager_send_image_init_dl(handle, font_properties->image_properties, &font_handle->image_handle, filter, wrapx, wrapy);
+        if (res != FT81X_RESULT_OK)
+        {
+            return res;
+        }
 
-    // then we use the setfont2 co-proc command to set this image up as a font
-    return ft81x_coproc_cmd_setfont2(handle, font_handle->font_id, font_handle->metric_block_offset, FIRST_CHAR);
+        // then we use the setfont2 co-proc command to set this image up as a font
+        return ft81x_coproc_cmd_setfont2(handle, font_handle->font_id, font_handle->metric_block_offset, FIRST_CHAR);
+    }
+    else
+    {
+        // inbuilt font, nothing to do
+        return FT81X_RESULT_OK;
+    }
 }
 
 inline ft81x_result ft81x_text_manager_write_text(FT81X_Handle *handle, const FT81X_Font_Handle *font_handle, uint16_t x, uint16_t y, FT81X_Text_Manager_Options options, const char *str)

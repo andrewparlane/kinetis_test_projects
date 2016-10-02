@@ -70,12 +70,11 @@ typedef struct
     FT81X_Image_Handle image_handle;
     uint32_t           metric_block_offset; // offset of the metric block in g_ram
     uint8_t            font_id;
+    uint8_t            custom;              // are we a custom / or an inbuilt font?
 } FT81X_Font_Handle;
 
-// Note: None of these functions sholud be used for inbuilt fonts
-//       use the ft81x_coproc_cmd_text() directly for those
-
 ft81x_result ft81x_text_manager_load_custom_font(FT81X_Handle *handle, const FT81X_Font_Properties *font_properties, FT81X_Font_Handle *font_handle);
+ft81x_result ft81x_text_manager_get_font_handle_for_inbuilt_font(FT81X_Handle *handle, FT81X_Font_Handle *font_handle, uint8_t font_id);
 
 ft81x_result ft81x_text_manager_send_font_init_dl(FT81X_Handle *handle, const FT81X_Font_Properties *font_properties, const FT81X_Font_Handle *font_handle, FT81X_Bitmap_Filter filter, FT81X_Bitmap_Wrap wrapx, FT81X_Bitmap_Wrap wrapy);
 
