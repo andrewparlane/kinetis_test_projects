@@ -50,7 +50,9 @@ ft81x_result ft81x_image_manager_load_image(FT81X_Handle *handle, const FT81X_Im
 
 ft81x_result ft81x_image_manager_send_image_init_dl(FT81X_Handle *handle, const FT81X_Image_Properties *image_properties, const FT81X_Image_Handle *image_handle, FT81X_Bitmap_Filter filter, FT81X_Bitmap_Wrap wrapx, FT81X_Bitmap_Wrap wrapy);
 ft81x_result ft81x_image_manager_send_non_paletted8_image_draw_dl(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle, uint32_t x, uint32_t y);
+ft81x_result ft81x_image_manager_send_non_paletted8_image_draw_dl_with_macro_0(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle);
 ft81x_result ft81x_image_manager_send_paletted8_image_draw_dl(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle, uint32_t x, uint32_t y);
+ft81x_result ft81x_image_manager_send_paletted8_image_draw_dl_with_macro_0(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle);
 
 ft81x_result ft81x_image_manager_set_active_bitmap(FT81X_Handle *handle, FT81X_Image_Handle *image_handle);
 
