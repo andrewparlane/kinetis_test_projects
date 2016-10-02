@@ -271,32 +271,32 @@ ft81x_result test2_text(FT81X_Handle *handle)
     }
 
     // custom font text (note I replaced the data for ~ with a smiley)
-    res = ft81x_coproc_cmd_text(handle, 10, 180, font_handle.font_id, 0, "Custom Font -> ~");
+    res = ft81x_text_manager_write_text(handle, &font_handle, 10, 180, FT81X_TEXT_COORDS_TOP_LEFT, "Custom Font -> ~");
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_coproc_cmd_text failed with %u\n", res);
+        DbgConsole_Printf("ft81x_text_manager_write_text failed with %u\n", res);
         return res;
     }
 
     // numbers with custom font
-    res = ft81x_coproc_cmd_number(handle, 10, 210, font_handle.font_id, 0, -1);
+    res = ft81x_text_manager_write_unsigned_number(handle, &font_handle, 10, 210, FT81X_TEXT_COORDS_TOP_LEFT, (uint32_t)-1);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_coproc_cmd_number failed with %u\n", res);
+        DbgConsole_Printf("ft81x_text_manager_write_unsigned_number failed with %u\n", res);
         return res;
     }
 
-    res = ft81x_coproc_cmd_number(handle, 10, 240, font_handle.font_id, FT81X_COPROC_OPTION_SIGNED, -1);
+    res = ft81x_text_manager_write_signed_number(handle, &font_handle, 10, 240, FT81X_TEXT_COORDS_TOP_LEFT, -1);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_coproc_cmd_number failed with %u\n", res);
+        DbgConsole_Printf("ft81x_text_manager_write_signed_number failed with %u\n", res);
         return res;
     }
 
-    res = ft81x_coproc_cmd_number(handle, 10, 270, font_handle.font_id, 0, 1337);
+    res = ft81x_text_manager_write_unsigned_number(handle, &font_handle, 10, 270, FT81X_TEXT_COORDS_TOP_LEFT, 1337);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_coproc_cmd_number failed with %u\n", res);
+        DbgConsole_Printf("ft81x_text_manager_write_unsigned_number failed with %u\n", res);
         return res;
     }
 
