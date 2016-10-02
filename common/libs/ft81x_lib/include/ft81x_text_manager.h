@@ -50,6 +50,14 @@
 #define FT81X_TEXT_MANAGER_FONT_33_HEIGHT       83
 #define FT81X_TEXT_MANAGER_FONT_34_HEIGHT       108
 
+typedef enum
+{
+    FT81X_TEXT_COORDS_TOP_LEFT = 0,
+    FT81X_TEXT_COORDS_CENTRE_X = FT81X_COPROC_OPTION_CENTREX,
+    FT81X_TEXT_COORDS_CENTRE_Y = FT81X_COPROC_OPTION_CENTREY,
+    FT81X_TEXT_COORDS_CENTRE   = FT81X_COPROC_OPTION_CENTRE,
+} FT81X_Text_Manager_Options;
+
 typedef struct
 {
     const FT81X_Image_Properties   *image_properties;
@@ -64,8 +72,15 @@ typedef struct
     uint8_t            font_id;
 } FT81X_Font_Handle;
 
+// Note: None of these functions sholud be used for inbuilt fonts
+//       use the ft81x_coproc_cmd_text() directly for those
+
 ft81x_result ft81x_text_manager_load_custom_font(FT81X_Handle *handle, const FT81X_Font_Properties *font_properties, FT81X_Font_Handle *font_handle);
 
 ft81x_result ft81x_text_manager_send_font_init_dl(FT81X_Handle *handle, const FT81X_Font_Properties *font_properties, const FT81X_Font_Handle *font_handle, FT81X_Bitmap_Filter filter, FT81X_Bitmap_Wrap wrapx, FT81X_Bitmap_Wrap wrapy);
+
+ft81x_result ft81x_text_manager_write_text(FT81X_Handle *handle, const FT81X_Font_Handle *font_handle, uint16_t x, uint16_t y, FT81X_Text_Manager_Options options, const char *str);
+ft81x_result ft81x_text_manager_write_unsigned_number(FT81X_Handle *handle, const FT81X_Font_Handle *font_handle, uint16_t x, uint16_t y, FT81X_Text_Manager_Options options, uint32_t num);
+ft81x_result ft81x_text_manager_write_signed_number(FT81X_Handle *handle, const FT81X_Font_Handle *font_handle, uint16_t x, uint16_t y, FT81X_Text_Manager_Options options, int32_t num);
 
 #endif

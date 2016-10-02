@@ -21,9 +21,6 @@ typedef struct
 // + NUM_CHARS for the widths array
 #define SIZEOF_FONT_METRIC_BLOCK    (NUM_CHARS + sizeof(Font_Metric_Block))
 
-// need to create handles for default fonts
-#warning TODO: Instead of passing in a font id, pass in a font handle
-
 ft81x_result ft81x_text_manager_load_custom_font(FT81X_Handle *handle, const FT81X_Font_Properties *font_properties, FT81X_Font_Handle *font_handle)
 {
     ft81x_result res;
@@ -99,4 +96,31 @@ ft81x_result ft81x_text_manager_send_font_init_dl(FT81X_Handle *handle, const FT
 
     // then we use the setfont2 co-proc command to set this image up as a font
     return ft81x_coproc_cmd_setfont2(handle, font_handle->font_id, font_handle->metric_block_offset, FIRST_CHAR);
+}
+
+inline ft81x_result ft81x_text_manager_write_text(FT81X_Handle *handle, const FT81X_Font_Handle *font_handle, uint16_t x, uint16_t y, FT81X_Text_Manager_Options options, const char *str)
+{
+    return ft81x_coproc_cmd_text(handle,
+                                 x, y,
+                                 font_handle->font_id,
+                                 (uint16_t)options,
+                                 str);
+}
+
+inline ft81x_result ft81x_text_manager_write_unsigned_number(FT81X_Handle *handle, const FT81X_Font_Handle *font_handle, uint16_t x, uint16_t y, FT81X_Text_Manager_Options options, uint32_t num)
+{
+    return ft81x_coproc_cmd_number(handle,
+                                   x, y,
+                                   font_handle->font_id,
+                                   (uint16_t)options,
+                                   num);
+}
+
+inline ft81x_result ft81x_text_manager_write_signed_number(FT81X_Handle *handle, const FT81X_Font_Handle *font_handle, uint16_t x, uint16_t y, FT81X_Text_Manager_Options options, int32_t num)
+{
+    return ft81x_coproc_cmd_number(handle,
+                                   x, y,
+                                   font_handle->font_id,
+                                   ((uint16_t)options) | FT81X_COPROC_OPTION_SIGNED,
+                                   num);
 }
