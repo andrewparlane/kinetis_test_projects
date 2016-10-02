@@ -199,11 +199,22 @@ ft81x_result test2_text(FT81X_Handle *handle)
     // ----------------------------------------------------------
     // load our custom font into g RAM
     // ----------------------------------------------------------
-    FT81X_Font_Handle font_handle;
-    res = ft81x_text_manager_load_custom_font(handle, &blink_font_l2_raw_font_properties, &font_handle);
+    FT81X_Font_Handle blink_font_handle;
+    res = ft81x_text_manager_load_custom_font(handle, &blink_font_l2_raw_font_properties, &blink_font_handle);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_text_manager_load_custom_font failed with %u\n", res);
+        return res;
+    }
+
+    // ----------------------------------------------------------
+    // Get font handles for inbuilt fonts
+    // ----------------------------------------------------------
+    FT81X_Font_Handle inbuilt_31_font_handle;
+    res = ft81x_text_manager_get_font_handle_for_inbuilt_font(handle, &inbuilt_31_font_handle, 31);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_text_manager_get_font_handle_for_inbuilt_font failed with %u\n", res);
         return res;
     }
 
@@ -227,9 +238,11 @@ ft81x_result test2_text(FT81X_Handle *handle)
     }
 
     // initialise the custom font
+    // note: don't need to init inbuilt fonts
+    // the API lets you, it just won't do anything
     res = ft81x_text_manager_send_font_init_dl(handle,
                                                &blink_font_l2_raw_font_properties,
-                                               &font_handle,
+                                               &blink_font_handle,
                                                FT81X_BITMAP_FILTER_NEAREST,
                                                FT81X_BITMAP_WRAP_BORDER,
                                                FT81X_BITMAP_WRAP_BORDER);
@@ -248,30 +261,30 @@ ft81x_result test2_text(FT81X_Handle *handle)
     }
 
     // show some text
-    res = ft81x_coproc_cmd_text(handle, 10, 30, 31, 0, "Test 2");
+    res = ft81x_text_manager_write_text(handle, &inbuilt_31_font_handle, 10, 30, FT81X_TEXT_COORDS_TOP_LEFT, "Test 2");
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_coproc_cmd_text failed with %u\n", res);
+        DbgConsole_Printf("ft81x_text_manager_write_text failed with %u\n", res);
         return res;
     }
 
     // show some numbers
-    res = ft81x_coproc_cmd_number(handle, 10, 100, 31, 0, (int32_t)0xFFFFFFFF);
+    res = ft81x_text_manager_write_unsigned_number(handle, &inbuilt_31_font_handle, 10, 100, FT81X_TEXT_COORDS_TOP_LEFT, 0xFFFFFFFF);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_coproc_cmd_number failed with %u\n", res);
+        DbgConsole_Printf("ft81x_text_manager_write_unsigned_number failed with %u\n", res);
         return res;
     }
 
-    res = ft81x_coproc_cmd_number(handle, 10, 150, 26, FT81X_COPROC_OPTION_SIGNED, (int32_t)0xFFFFFFFF);
+    res = ft81x_text_manager_write_signed_number(handle, &inbuilt_31_font_handle, 10, 150, FT81X_TEXT_COORDS_TOP_LEFT, (int32_t)0xFFFFFFFF);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_coproc_cmd_number failed with %u\n", res);
+        DbgConsole_Printf("ft81x_text_manager_write_signed_number failed with %u\n", res);
         return res;
     }
 
     // custom font text (note I replaced the data for ~ with a smiley)
-    res = ft81x_text_manager_write_text(handle, &font_handle, 10, 180, FT81X_TEXT_COORDS_TOP_LEFT, "Custom Font -> ~");
+    res = ft81x_text_manager_write_text(handle, &blink_font_handle, 10, 200, FT81X_TEXT_COORDS_TOP_LEFT, "Custom Font -> ~");
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_text_manager_write_text failed with %u\n", res);
@@ -279,21 +292,21 @@ ft81x_result test2_text(FT81X_Handle *handle)
     }
 
     // numbers with custom font
-    res = ft81x_text_manager_write_unsigned_number(handle, &font_handle, 10, 210, FT81X_TEXT_COORDS_TOP_LEFT, (uint32_t)-1);
+    res = ft81x_text_manager_write_unsigned_number(handle, &blink_font_handle, 10, 230, FT81X_TEXT_COORDS_TOP_LEFT, (uint32_t)-1);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_text_manager_write_unsigned_number failed with %u\n", res);
         return res;
     }
 
-    res = ft81x_text_manager_write_signed_number(handle, &font_handle, 10, 240, FT81X_TEXT_COORDS_TOP_LEFT, -1);
+    res = ft81x_text_manager_write_signed_number(handle, &blink_font_handle, 10, 260, FT81X_TEXT_COORDS_TOP_LEFT, -1);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_text_manager_write_signed_number failed with %u\n", res);
         return res;
     }
 
-    res = ft81x_text_manager_write_unsigned_number(handle, &font_handle, 10, 270, FT81X_TEXT_COORDS_TOP_LEFT, 1337);
+    res = ft81x_text_manager_write_unsigned_number(handle, &blink_font_handle, 10, 290, FT81X_TEXT_COORDS_TOP_LEFT, 1337);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_text_manager_write_unsigned_number failed with %u\n", res);
