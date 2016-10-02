@@ -351,3 +351,8 @@ ft81x_result ft81x_image_manager_send_paletted8_image_draw_dl(FT81X_Handle *hand
 
     return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(dl), dl);
 }
+
+inline ft81x_result ft81x_image_manager_set_active_bitmap(FT81X_Handle *handle, FT81X_Image_Handle *image_handle)
+{
+    return ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_BITMAP_HANDLE(image_handle->bitmap_handle));
+}

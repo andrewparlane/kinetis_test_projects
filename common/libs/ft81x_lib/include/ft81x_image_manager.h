@@ -52,4 +52,6 @@ ft81x_result ft81x_image_manager_send_image_init_dl(FT81X_Handle *handle, const 
 ft81x_result ft81x_image_manager_send_non_paletted8_image_draw_dl(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle, uint32_t x, uint32_t y);
 ft81x_result ft81x_image_manager_send_paletted8_image_draw_dl(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle, uint32_t x, uint32_t y);
 
+ft81x_result ft81x_image_manager_set_active_bitmap(FT81X_Handle *handle, FT81X_Image_Handle *image_handle);
+
 #endif
