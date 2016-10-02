@@ -764,6 +764,234 @@ ft81x_result test2_progress_scrollbars_sliders(FT81X_Handle *handle)
     return FT81X_RESULT_OK;
 }
 
+ft81x_result test2_screensaver(FT81X_Handle *handle)
+{
+    ft81x_result res;
+
+    // ----------------------------------------------------------
+    // load our resources into g RAM
+    // ----------------------------------------------------------
+    // The l8 image
+    FT81X_Image_Handle cat_l8_compressed_image_handle;
+    res = ft81x_image_manager_load_image(handle, &cat_l8_compressed_image_properties, &cat_l8_compressed_image_handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_image_manager_load_image failed with %u\n", res);
+        return res;
+    }
+
+    // The paletted8 image
+    FT81X_Image_Handle cat_paletted8_compressed_image_handle;
+    res = ft81x_image_manager_load_image(handle, &cat_paletted8_compressed_image_properties, &cat_paletted8_compressed_image_handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_image_manager_load_image failed with %u\n", res);
+        return res;
+    }
+
+    // ----------------------------------------------------------
+    // Build and display the display list
+    // ----------------------------------------------------------
+    // reset the co-proc to it's default state
+    res = ft81x_coproc_cmd_coldstart(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_coldstart failed with %u\n", res);
+        return res;
+    }
+
+    res = ft81x_coproc_cmd_screensaver(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_screensaver failed with %u\n", res);
+        return res;
+    }
+
+    // clear the screen
+    res = ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(clear_dl_snippet), clear_dl_snippet);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+        return res;
+    }
+
+    // initialise the l8 image in the DL
+    res = ft81x_image_manager_send_image_init_dl(handle,
+                                                 &cat_l8_compressed_image_properties,
+                                                 &cat_l8_compressed_image_handle,
+                                                 FT81X_BITMAP_FILTER_NEAREST,
+                                                 FT81X_BITMAP_WRAP_BORDER,
+                                                 FT81X_BITMAP_WRAP_BORDER);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_image_manager_send_image_init_dl failed with %u\n", res);
+        return res;
+    }
+
+    // initialise the paletted8 image in the DL
+    res = ft81x_image_manager_send_image_init_dl(handle,
+                                                 &cat_paletted8_compressed_image_properties,
+                                                 &cat_paletted8_compressed_image_handle,
+                                                 FT81X_BITMAP_FILTER_NEAREST,
+                                                 FT81X_BITMAP_WRAP_BORDER,
+                                                 FT81X_BITMAP_WRAP_BORDER);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_image_manager_send_image_init_dl failed with %u\n", res);
+        return res;
+    }
+
+    // because we are using vertex2f (see CMD_SCREENSAVER)
+    // we have to specify the bitmap source first
+    res = ft81x_image_manager_set_active_bitmap(handle, &cat_l8_compressed_image_handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_image_manager_set_active_bitmap failed with %u\n", res);
+        return res;
+    }
+
+    // draw l8 image using macro_0
+    // the co-proc replaces macro_0 with vertex2f
+    // due to the CMD_SCREENSAVER above
+    res = ft81x_image_manager_send_non_paletted8_image_draw_dl_with_macro_0(handle,
+                                                                            &cat_l8_compressed_image_handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_image_manager_send_paletted8_image_draw_dl failed with %u\n", res);
+        return res;
+    }
+
+    // display it
+    res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_DISPLAY());
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+        return res;
+    }
+
+    // write everything to the DL ram and then swap it in
+    res = ft81x_graphics_engine_end_display_list(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_end_display_list failed with %u\n", res);
+        return res;
+    }
+
+    vTaskDelay(5000);
+
+    // stop it
+    res = ft81x_coproc_cmd_stop(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_stop failed with %u\n", res);
+        return res;
+    }
+
+    // reset the co-proc to it's default state
+    res = ft81x_coproc_cmd_coldstart(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_coldstart failed with %u\n", res);
+        return res;
+    }
+
+    res = ft81x_coproc_cmd_screensaver(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_screensaver failed with %u\n", res);
+        return res;
+    }
+
+    // clear the screen
+    res = ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(clear_dl_snippet), clear_dl_snippet);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+        return res;
+    }
+
+    // initialise the l8 image in the DL
+    res = ft81x_image_manager_send_image_init_dl(handle,
+                                                 &cat_l8_compressed_image_properties,
+                                                 &cat_l8_compressed_image_handle,
+                                                 FT81X_BITMAP_FILTER_NEAREST,
+                                                 FT81X_BITMAP_WRAP_BORDER,
+                                                 FT81X_BITMAP_WRAP_BORDER);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_image_manager_send_image_init_dl failed with %u\n", res);
+        return res;
+    }
+
+    // initialise the paletted8 image in the DL
+    res = ft81x_image_manager_send_image_init_dl(handle,
+                                                 &cat_paletted8_compressed_image_properties,
+                                                 &cat_paletted8_compressed_image_handle,
+                                                 FT81X_BITMAP_FILTER_NEAREST,
+                                                 FT81X_BITMAP_WRAP_BORDER,
+                                                 FT81X_BITMAP_WRAP_BORDER);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_image_manager_send_image_init_dl failed with %u\n", res);
+        return res;
+    }
+
+    // because we are using vertex2f (see CMD_SCREENSAVER)
+    // we have to specify the bitmap source first
+    res = ft81x_image_manager_set_active_bitmap(handle, &cat_paletted8_compressed_image_handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_image_manager_set_active_bitmap failed with %u\n", res);
+        return res;
+    }
+
+    // draw paletted8 image using macro_0
+    // the co-proc replaces macro_0 with vertex2f
+    // due to the CMD_SCREENSAVER above
+    res = ft81x_image_manager_send_paletted8_image_draw_dl_with_macro_0(handle,
+                                                                        &cat_paletted8_compressed_image_handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_image_manager_send_paletted8_image_draw_dl failed with %u\n", res);
+        return res;
+    }
+
+    // display it
+    res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_DISPLAY());
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+        return res;
+    }
+
+    // write everything to the DL ram and then swap it in
+    res = ft81x_graphics_engine_end_display_list(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_end_display_list failed with %u\n", res);
+        return res;
+    }
+
+    vTaskDelay(5000);
+
+    // stop it
+    res = ft81x_coproc_cmd_stop(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_stop failed with %u\n", res);
+        return res;
+    }
+
+    res = ft81x_graphics_engine_flush_and_synchronise(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_flush_and_synchronise failed with %u\n", res);
+        return res;
+    }
+
+    return FT81X_RESULT_OK;
+}
+
 ft81x_result test2(FT81X_Handle *handle)
 {
     ft81x_result res;
@@ -845,6 +1073,16 @@ ft81x_result test2(FT81X_Handle *handle)
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("test2_progress_scrollbars_sliders failed with %u\n", res);
+        return res;
+    }
+
+    // ----------------------------------------------------------
+    // Demonstrtate screensaver
+    // ----------------------------------------------------------
+    res = test2_screensaver(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("test2_screensaver failed with %u\n", res);
         return res;
     }
 
