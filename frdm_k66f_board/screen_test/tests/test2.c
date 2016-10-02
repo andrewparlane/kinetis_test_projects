@@ -88,7 +88,7 @@ ft81x_result test2_compressed_images(FT81X_Handle *handle)
     res = ft81x_coproc_cmd_coldstart(handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+        DbgConsole_Printf("ft81x_coproc_cmd_coldstart failed with %u\n", res);
         return res;
     }
 
@@ -214,7 +214,7 @@ ft81x_result test2_text(FT81X_Handle *handle)
     res = ft81x_coproc_cmd_coldstart(handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+        DbgConsole_Printf("ft81x_coproc_cmd_coldstart failed with %u\n", res);
         return res;
     }
 
@@ -259,14 +259,14 @@ ft81x_result test2_text(FT81X_Handle *handle)
     res = ft81x_coproc_cmd_number(handle, 10, 100, 31, 0, (int32_t)0xFFFFFFFF);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_coproc_cmd_text failed with %u\n", res);
+        DbgConsole_Printf("ft81x_coproc_cmd_number failed with %u\n", res);
         return res;
     }
 
     res = ft81x_coproc_cmd_number(handle, 10, 150, 26, FT81X_COPROC_OPTION_SIGNED, (int32_t)0xFFFFFFFF);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_coproc_cmd_text failed with %u\n", res);
+        DbgConsole_Printf("ft81x_coproc_cmd_number failed with %u\n", res);
         return res;
     }
 
@@ -282,21 +282,21 @@ ft81x_result test2_text(FT81X_Handle *handle)
     res = ft81x_coproc_cmd_number(handle, 10, 210, font_handle.font_id, 0, -1);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_coproc_cmd_text failed with %u\n", res);
+        DbgConsole_Printf("ft81x_coproc_cmd_number failed with %u\n", res);
         return res;
     }
 
     res = ft81x_coproc_cmd_number(handle, 10, 240, font_handle.font_id, FT81X_COPROC_OPTION_SIGNED, -1);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_coproc_cmd_text failed with %u\n", res);
+        DbgConsole_Printf("ft81x_coproc_cmd_number failed with %u\n", res);
         return res;
     }
 
     res = ft81x_coproc_cmd_number(handle, 10, 270, font_handle.font_id, 0, 1337);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_coproc_cmd_text failed with %u\n", res);
+        DbgConsole_Printf("ft81x_coproc_cmd_number failed with %u\n", res);
         return res;
     }
 
@@ -329,7 +329,7 @@ ft81x_result test2_buttons(FT81X_Handle *handle)
     res = ft81x_coproc_cmd_coldstart(handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+        DbgConsole_Printf("ft81x_coproc_cmd_coldstart failed with %u\n", res);
         return res;
     }
 
@@ -418,7 +418,7 @@ ft81x_result test2_clocks_and_guages(FT81X_Handle *handle)
     res = ft81x_coproc_cmd_coldstart(handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+        DbgConsole_Printf("ft81x_coproc_cmd_coldstart failed with %u\n", res);
         return res;
     }
 
@@ -515,7 +515,7 @@ ft81x_result test2_keys_dials_toggles(FT81X_Handle *handle)
     res = ft81x_coproc_cmd_coldstart(handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+        DbgConsole_Printf("ft81x_coproc_cmd_coldstart failed with %u\n", res);
         return res;
     }
 
@@ -636,7 +636,7 @@ ft81x_result test2_gradient(FT81X_Handle *handle)
     res = ft81x_coproc_cmd_coldstart(handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+        DbgConsole_Printf("ft81x_coproc_cmd_coldstart failed with %u\n", res);
         return res;
     }
 
@@ -689,7 +689,7 @@ ft81x_result test2_progress_scrollbars_sliders(FT81X_Handle *handle)
         res = ft81x_coproc_cmd_coldstart(handle);
         if (res != FT81X_RESULT_OK)
         {
-            DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+            DbgConsole_Printf("ft81x_coproc_cmd_coldstart failed with %u\n", res);
             return res;
         }
 
@@ -737,7 +737,7 @@ ft81x_result test2_progress_scrollbars_sliders(FT81X_Handle *handle)
         res = ft81x_coproc_cmd_number(handle, 100, 300, 31, FT81X_COPROC_OPTION_RIGHTX, i);
         if (res != FT81X_RESULT_OK)
         {
-            DbgConsole_Printf("ft81x_coproc_cmd_text failed with %u\n", res);
+            DbgConsole_Printf("ft81x_coproc_cmd_number failed with %u\n", res);
             return res;
         }
 
