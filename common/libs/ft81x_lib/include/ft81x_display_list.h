@@ -103,6 +103,7 @@ typedef enum
 #define FT81X_DL_CMD_ID_END                 0x21
 #define FT81X_DL_CMD_ID_SAVE_CONTEXT        0x22
 #define FT81X_DL_CMD_ID_RESTORE_CONTEXT     0x23
+#define FT81X_DL_CMD_ID_MACRO               0x25
 #define FT81X_DL_CMD_ID_PALETTE_SOURCE      0x2A
 #define FT81X_DL_CMD_ID_CLEAR               0x26
 #define FT81X_DL_CMD_ID_VERTEX2II           0x80
@@ -242,6 +243,12 @@ typedef enum
             FT81X_DL_8BIT_CMD((FT81X_DL_CMD_ID_RESTORE_CONTEXT), \
                               0)
 
+// Replace this instruction with the one in REG_MACRO_0 or _1
+//  m - which register to use (0 or 1)
+#define FT81X_DL_CMD_MACRO(m) \
+            FT81X_DL_8BIT_CMD((FT81X_DL_CMD_ID_MACRO), \
+                              (m) & 0x01)
+
 // Specifies the base address of the palette
 //  addr - specify the address of the palette in g_ram
 #define FT81X_DL_CMD_PALETTE_SOURCE(addr) \
@@ -300,7 +307,6 @@ typedef enum
 #define VERTEX_TRANSLATE_Y(y) ((44UL<<24)|(((y)&131071UL)<<0))
 #define NOP() ((45UL<<24))
 #define RETURN() ((36UL<<24))
-#define MACRO(m) ((37UL<<24)|(((m)&1UL)<<0))
 */
 
 #endif
