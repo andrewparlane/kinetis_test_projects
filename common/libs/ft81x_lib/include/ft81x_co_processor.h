@@ -53,7 +53,7 @@ ft81x_result ft81x_coproc_cmd_gradient(FT81X_Handle *handle, uint16_t x0, uint16
 //  options - how to align the text with the x,y co-ords
 //            see FT81X_COPROC_OPTION_CENTRE... and FT81X_COPROC_OPTION_RIGHTX
 //  str     - NULL terminated ascii string
-ft81x_result ft81x_coproc_cmd_text(FT81X_Handle *handle, uint16_t x, uint16_t y, uint8_t font_id, uint16_t options, char *str);
+ft81x_result ft81x_coproc_cmd_text(FT81X_Handle *handle, uint16_t x, uint16_t y, uint8_t font_id, uint16_t options, const char *str);
 
 // Draws a button to the screen
 //  x      - x co-ord of button
@@ -66,7 +66,7 @@ ft81x_result ft81x_coproc_cmd_text(FT81X_Handle *handle, uint16_t x, uint16_t y,
 //                                   (there are also 32 - 34, see CMD_ROMFONT)
 //  options - FT81X_COPROC_OPTION_FLAT for no 3D effect
 //  str     - button label (NULL terminated ascii string)
-ft81x_result ft81x_coproc_cmd_button(FT81X_Handle *handle, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t font_id, uint16_t options, char *str);
+ft81x_result ft81x_coproc_cmd_button(FT81X_Handle *handle, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t font_id, uint16_t options, const char *str);
 
 // Draws a set of keys horizontally access the screen
 //  x      - x co-ord of top left of keys
@@ -84,7 +84,7 @@ ft81x_result ft81x_coproc_cmd_button(FT81X_Handle *handle, uint16_t x, uint16_t 
 //            ascii code if an ascii code is specified, that key is shown as pressed.
 //            IE. FT81X_COPROC_OPTION_FLAT | 'a' draws the keys flat and shows 'a' as pressed
 //  str     - key labels (one per key) (NULL terminated ascii string)
-ft81x_result ft81x_coproc_cmd_keys(FT81X_Handle *handle, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t font_id, uint16_t options, char *str);
+ft81x_result ft81x_coproc_cmd_keys(FT81X_Handle *handle, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t font_id, uint16_t options, const char *str);
 
 // Draws a progress bar to the screen
 //  x       - top left co-ord
@@ -130,7 +130,7 @@ ft81x_result ft81x_coproc_cmd_scrollbar(FT81X_Handle *handle, uint16_t x, uint16
 //  str     - labels (NULL terminated ascii string)
 //            the two state labels are seperated with '\xff'
 //            e.g "off\xffon"
-ft81x_result ft81x_coproc_cmd_toggle(FT81X_Handle *handle, uint16_t x, uint16_t y, uint16_t width, uint8_t font_id, uint16_t options, uint16_t state, char *str);
+ft81x_result ft81x_coproc_cmd_toggle(FT81X_Handle *handle, uint16_t x, uint16_t y, uint16_t width, uint8_t font_id, uint16_t options, uint16_t state, const char *str);
 
 // Draws a gauge to the screen
 //  x       - x co-ord of gauge

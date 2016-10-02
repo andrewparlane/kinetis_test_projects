@@ -76,7 +76,7 @@ ft81x_result ft81x_coproc_cmd_gradient(FT81X_Handle *handle, uint16_t x0, uint16
     return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(data), data);
 }
 
-ft81x_result ft81x_coproc_cmd_text(FT81X_Handle *handle, uint16_t x, uint16_t y, uint8_t font_id, uint16_t options, char *str)
+ft81x_result ft81x_coproc_cmd_text(FT81X_Handle *handle, uint16_t x, uint16_t y, uint8_t font_id, uint16_t options, const char *str)
 {
     // first the command and the parameters
     const uint32_t data[] = { FT81X_COPROC_CMD_ID_TEXT,
@@ -95,7 +95,7 @@ ft81x_result ft81x_coproc_cmd_text(FT81X_Handle *handle, uint16_t x, uint16_t y,
     return ft81x_graphics_engine_write_display_list_data(handle, len, (uint8_t *)str);
 }
 
-ft81x_result ft81x_coproc_cmd_button(FT81X_Handle *handle, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t font_id, uint16_t options, char *str)
+ft81x_result ft81x_coproc_cmd_button(FT81X_Handle *handle, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t font_id, uint16_t options, const char *str)
 {
     // first the command and the parameters
     const uint32_t data[] = { FT81X_COPROC_CMD_ID_BUTTON,
@@ -115,7 +115,7 @@ ft81x_result ft81x_coproc_cmd_button(FT81X_Handle *handle, uint16_t x, uint16_t 
     return ft81x_graphics_engine_write_display_list_data(handle, len, (uint8_t *)str);
 }
 
-ft81x_result ft81x_coproc_cmd_keys(FT81X_Handle *handle, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t font_id, uint16_t options, char *str)
+ft81x_result ft81x_coproc_cmd_keys(FT81X_Handle *handle, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t font_id, uint16_t options, const char *str)
 {
     // first the command and the parameters
     const uint32_t data[] = { FT81X_COPROC_CMD_ID_KEYS,
@@ -168,7 +168,7 @@ ft81x_result ft81x_coproc_cmd_scrollbar(FT81X_Handle *handle, uint16_t x, uint16
     return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(data), data);
 }
 
-ft81x_result ft81x_coproc_cmd_toggle(FT81X_Handle *handle, uint16_t x, uint16_t y, uint16_t width, uint8_t font_id, uint16_t options, uint16_t state, char *str)
+ft81x_result ft81x_coproc_cmd_toggle(FT81X_Handle *handle, uint16_t x, uint16_t y, uint16_t width, uint8_t font_id, uint16_t options, uint16_t state, const char *str)
 {
     // state 0 is off, 65535 is on
     if (state)
