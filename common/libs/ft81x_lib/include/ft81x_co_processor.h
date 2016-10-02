@@ -162,6 +162,10 @@ ft81x_result ft81x_coproc_cmd_gauge(FT81X_Handle *handle, uint16_t x, uint16_t y
 //  milliseconds - time in ms (0 - 1000)
 ft81x_result ft81x_coproc_cmd_clock(FT81X_Handle *handle, uint16_t x, uint16_t y, uint16_t radius, uint16_t options, uint16_t hours, uint16_t minutes, uint16_t seconds, uint16_t milliseconds);
 
+// Stops the update of REG_MACRO_0 and REG_MACRO_1
+// IE. It stops the current screensave, spinner or sketch
+ft81x_result ft81x_coproc_cmd_stop(FT81X_Handle *handle);
+
 // Decompresses data that has been compressed with the DEFLATE algorithm
 // for example using the zlib library.
 // Note: This should be used in conjunction with the G_RAM manager.
@@ -205,6 +209,13 @@ ft81x_result ft81x_coproc_cmd_dial(FT81X_Handle *handle, uint16_t x, uint16_t y,
 //            FT81X_COPROC_OPTION_RIGHTX
 //  num     - the number to display 32 bit, signed or unsigned (depending on options
 ft81x_result ft81x_coproc_cmd_number(FT81X_Handle *handle, uint16_t x, uint16_t y, uint8_t font_id, uint16_t options, int32_t num);
+
+// Updates REG_MACRO_0 with a VERTEX2F DL instruction
+// with varying x and y co-ordinates.
+// This allows you to move a bitmap around the screen with no MCU work
+// until CMD_STOP is sent
+// Note: Can't be used with CMD_SPINNER or CMD_SKETCH
+ft81x_result ft81x_coproc_cmd_screensaver(FT81X_Handle *handle);
 
 // Show the FTDI logo animation
 ft81x_result ft81x_coproc_cmd_logo(FT81X_Handle *handle);
