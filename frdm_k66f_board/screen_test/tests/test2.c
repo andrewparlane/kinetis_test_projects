@@ -777,6 +777,203 @@ ft81x_result test2_progress_scrollbars_sliders(FT81X_Handle *handle)
     return FT81X_RESULT_OK;
 }
 
+ft81x_result test2_transformations(FT81X_Handle *handle)
+{
+    ft81x_result res;
+
+    // ----------------------------------------------------------
+    // load our resources into g RAM
+    // ----------------------------------------------------------
+    FT81X_Image_Handle cat_argb1555_compressed_image_handle;
+    res = ft81x_image_manager_load_image(handle, &cat_argb1555_compressed_image_properties, &cat_argb1555_compressed_image_handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_image_manager_load_image failed with %u\n", res);
+        return res;
+    }
+
+    // ----------------------------------------------------------
+    // Get font handles for inbuilt fonts
+    // ----------------------------------------------------------
+    FT81X_Font_Handle inbuilt_31_font_handle;
+    res = ft81x_text_manager_get_font_handle_for_inbuilt_font(handle, &inbuilt_31_font_handle, 31);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_text_manager_get_font_handle_for_inbuilt_font failed with %u\n", res);
+        return res;
+    }
+
+    // ----------------------------------------------------------
+    // Build and display the display list
+    // ----------------------------------------------------------
+    // reset the co-proc to it's default state
+    res = ft81x_coproc_cmd_coldstart(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_coldstart failed with %u\n", res);
+        return res;
+    }
+
+    // clear the screen
+    res = ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(clear_dl_snippet), clear_dl_snippet);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+        return res;
+    }
+
+    // initialise the argb1555 image in the DL
+    res = ft81x_image_manager_send_image_init_dl(handle,
+                                                 &cat_argb1555_compressed_image_properties,
+                                                 &cat_argb1555_compressed_image_handle,
+                                                 FT81X_BITMAP_FILTER_NEAREST,
+                                                 FT81X_BITMAP_WRAP_BORDER,
+                                                 FT81X_BITMAP_WRAP_BORDER);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_image_manager_send_image_init_dl failed with %u\n", res);
+        return res;
+    }
+
+    // draw ARGB1555 image
+    res = ft81x_image_manager_send_non_paletted8_image_draw_dl(handle,
+                                                               &cat_argb1555_compressed_image_handle,
+                                                               0, 0);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_image_manager_send_non_paletted8_image_draw_dl failed with %u\n", res);
+        return res;
+    }
+
+    // draw some text
+    res = ft81x_text_manager_write_text(handle, &inbuilt_31_font_handle, 79, 230, FT81X_TEXT_COORDS_CENTRE, "Transforms");
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_text_manager_write_text failed with %u\n", res);
+        return res;
+    }
+
+    // load the identity matrix
+    res = ft81x_coproc_cmd_loadidentity(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_loadidentity failed with %u\n", res);
+        return res;
+    }
+
+    // set up a translation to move the rotate and
+    // scale point to the middle of the image
+    res = ft81x_coproc_cmd_translate_int(handle, cat_argb1555_compressed_image_properties.width/2, cat_argb1555_compressed_image_properties.height/2);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_translate_int failed with %u\n", res);
+        return res;
+    }
+
+    // scale by 3/4 about the centre
+    res = ft81x_coproc_cmd_scale_double(handle, 0.75, 0.75);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_scale_double failed with %u\n", res);
+        return res;
+    }
+
+    // rotate clockwise 45 degrees around the middle of the image
+    res = ft81x_coproc_cmd_rotate_int(handle, 45);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_rotate_int failed with %u\n", res);
+        return res;
+    }
+
+    // reverse the translation, so the
+    // top left corner is where we want it
+    res = ft81x_coproc_cmd_translate_int(handle, -cat_argb1555_compressed_image_properties.width/2, -cat_argb1555_compressed_image_properties.height/2);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_translate_int failed with %u\n", res);
+        return res;
+    }
+
+    // use this matrix for drawing
+    res = ft81x_coproc_cmd_setmatrix(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_setmatrix failed with %u\n", res);
+        return res;
+    }
+
+    // draw the ARGB1555 image again
+    res = ft81x_image_manager_send_non_paletted8_image_draw_dl(handle,
+                                                               &cat_argb1555_compressed_image_handle,
+                                                               158, 210);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_image_manager_send_non_paletted8_image_draw_dl failed with %u\n", res);
+        return res;
+    }
+
+    // load the identity matrix
+    res = ft81x_coproc_cmd_loadidentity(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_loadidentity failed with %u\n", res);
+        return res;
+    }
+
+    // scale to 2/5th about the centre
+    res = ft81x_coproc_cmd_scale_double(handle, 0.4, 0.4);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_scale_double failed with %u\n", res);
+        return res;
+    }
+
+    // use this matrix for drawing
+    res = ft81x_coproc_cmd_setmatrix(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_setmatrix failed with %u\n", res);
+        return res;
+    }
+
+    // show some text again
+    res = ft81x_text_manager_write_text(handle, &inbuilt_31_font_handle, 237, 450, FT81X_TEXT_COORDS_CENTRE, "Transforms");
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_text_manager_write_text failed with %u\n", res);
+        return res;
+    }
+
+    // show some text again
+    res = ft81x_text_manager_write_text(handle, &inbuilt_31_font_handle, 0, 400, FT81X_TEXT_COORDS_TOP_LEFT, "Transforms");
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_text_manager_write_text failed with %u\n", res);
+        return res;
+    }
+
+    // display it
+    res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_DISPLAY());
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+        return res;
+    }
+
+    // write everything to the DL ram and then swap it in
+    res = ft81x_graphics_engine_end_display_list(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_graphics_engine_end_display_list failed with %u\n", res);
+        return res;
+    }
+
+    vTaskDelay(3000);
+
+    return FT81X_RESULT_OK;
+}
+
 ft81x_result test2_screensaver(FT81X_Handle *handle)
 {
     ft81x_result res;
@@ -1086,6 +1283,16 @@ ft81x_result test2(FT81X_Handle *handle)
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("test2_progress_scrollbars_sliders failed with %u\n", res);
+        return res;
+    }
+
+    // ----------------------------------------------------------
+    // Demonstrtate transformations
+    // ----------------------------------------------------------
+    res = test2_transformations(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("test2_transformations failed with %u\n", res);
         return res;
     }
 
