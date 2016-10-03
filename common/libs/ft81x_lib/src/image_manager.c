@@ -218,6 +218,104 @@ static ft81x_result load_compressed_image_lut(FT81X_Handle *handle, const FT81X_
     return FT81X_RESULT_OK;
 }
 
+static ft81x_result send_non_paletted8_image_draw_dl(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle, uint32_t x, uint32_t y)
+{
+    const uint32_t dl[] =
+    {
+        FT81X_DL_CMD_BEGIN(FT81X_PRIMITIVE_BITMAP),
+            FT81X_DL_CMD_VERTEX2II(x, y, image_handle->bitmap_handle, 0),
+        FT81X_DL_CMD_END()
+    };
+
+    return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(dl), dl);
+}
+
+static ft81x_result send_non_paletted8_image_draw_dl_with_macro_0(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle)
+{
+    const uint32_t dl[] =
+    {
+        FT81X_DL_CMD_BEGIN(FT81X_PRIMITIVE_BITMAP),
+            FT81X_DL_CMD_MACRO(0),
+        FT81X_DL_CMD_END()
+    };
+
+    return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(dl), dl);
+}
+
+static ft81x_result send_paletted8_image_draw_dl(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle, uint32_t x, uint32_t y)
+{
+    const uint32_t dl[] =
+    {
+        FT81X_DL_CMD_BEGIN((FT81X_PRIMITIVE_BITMAP)),
+            /* save the context so we can restore it afterwards */
+            FT81X_DL_CMD_SAVE_CONTEXT(),
+
+            /* alpha */
+            FT81X_DL_CMD_BLEND_FUNC(FT81X_BLEND_FUNC_ONE, FT81X_BLEND_FUNC_ZERO),
+            FT81X_DL_CMD_COLOUR_MASK(0, 0, 0, 1),
+            FT81X_DL_CMD_PALETTE_SOURCE(image_handle->lut_load_offset+3),
+            FT81X_DL_CMD_VERTEX2II(x, y, image_handle->bitmap_handle, 0),
+
+            /* colours */
+            FT81X_DL_CMD_BLEND_FUNC(FT81X_BLEND_FUNC_DST_ALPHA, FT81X_BLEND_FUNC_ONE_MINUS_DST_ALPHA),
+            /* red */
+            FT81X_DL_CMD_COLOUR_MASK(1, 0, 0, 0),
+            FT81X_DL_CMD_PALETTE_SOURCE(image_handle->lut_load_offset+2),
+            FT81X_DL_CMD_VERTEX2II(x, y, image_handle->bitmap_handle, 0),
+            /* green */
+            FT81X_DL_CMD_COLOUR_MASK(0, 1, 0, 0),
+            FT81X_DL_CMD_PALETTE_SOURCE(image_handle->lut_load_offset+1),
+            FT81X_DL_CMD_VERTEX2II(x, y, image_handle->bitmap_handle, 0),
+            /* blue */
+            FT81X_DL_CMD_COLOUR_MASK(0, 0, 1, 0),
+            FT81X_DL_CMD_PALETTE_SOURCE(image_handle->lut_load_offset+0),
+            FT81X_DL_CMD_VERTEX2II(x, y, image_handle->bitmap_handle, 0),
+
+            /* revert the changes to colour mask and blend func */
+            FT81X_DL_CMD_RESTORE_CONTEXT(),
+        FT81X_DL_CMD_END()
+    };
+
+    return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(dl), dl);
+}
+
+static ft81x_result send_paletted8_image_draw_dl_with_macro_0(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle)
+{
+    const uint32_t dl[] =
+    {
+        FT81X_DL_CMD_BEGIN((FT81X_PRIMITIVE_BITMAP)),
+            /* save the context so we can restore it afterwards */
+            FT81X_DL_CMD_SAVE_CONTEXT(),
+
+            /* alpha */
+            FT81X_DL_CMD_BLEND_FUNC(FT81X_BLEND_FUNC_ONE, FT81X_BLEND_FUNC_ZERO),
+            FT81X_DL_CMD_COLOUR_MASK(0, 0, 0, 1),
+            FT81X_DL_CMD_PALETTE_SOURCE(image_handle->lut_load_offset+3),
+            FT81X_DL_CMD_MACRO(0),
+
+            /* colours */
+            FT81X_DL_CMD_BLEND_FUNC(FT81X_BLEND_FUNC_DST_ALPHA, FT81X_BLEND_FUNC_ONE_MINUS_DST_ALPHA),
+            /* red */
+            FT81X_DL_CMD_COLOUR_MASK(1, 0, 0, 0),
+            FT81X_DL_CMD_PALETTE_SOURCE(image_handle->lut_load_offset+2),
+            FT81X_DL_CMD_MACRO(0),
+            /* green */
+            FT81X_DL_CMD_COLOUR_MASK(0, 1, 0, 0),
+            FT81X_DL_CMD_PALETTE_SOURCE(image_handle->lut_load_offset+1),
+            FT81X_DL_CMD_MACRO(0),
+            /* blue */
+            FT81X_DL_CMD_COLOUR_MASK(0, 0, 1, 0),
+            FT81X_DL_CMD_PALETTE_SOURCE(image_handle->lut_load_offset+0),
+            FT81X_DL_CMD_MACRO(0),
+
+            /* revert the changes to colour mask and blend func */
+            FT81X_DL_CMD_RESTORE_CONTEXT(),
+        FT81X_DL_CMD_END()
+    };
+
+    return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(dl), dl);
+}
+
 // ----------------------------------------------------------------------------
 // API functions
 // ----------------------------------------------------------------------------
@@ -275,6 +373,9 @@ ft81x_result ft81x_image_manager_load_image(FT81X_Handle *handle, const FT81X_Im
         }
     }
 
+    // store a pointer to the properties in the handle
+    image_handle->image_properties = image_properties;
+
     // assign a free bitmap ID
     res = allocate_bitmap_id(handle, &(image_handle->bitmap_handle));
     if (res != FT81X_RESULT_OK)
@@ -303,102 +404,28 @@ ft81x_result ft81x_image_manager_send_image_init_dl(FT81X_Handle *handle, const 
     return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(dl), dl);
 }
 
-ft81x_result ft81x_image_manager_send_non_paletted8_image_draw_dl(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle, uint32_t x, uint32_t y)
+ft81x_result ft81x_image_manager_send_image_draw_dl(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle, uint32_t x, uint32_t y)
 {
-    const uint32_t dl[] =
+    if (image_handle->image_properties->format != FT81X_BITMAP_FORMAT_PALETTED8)
     {
-        FT81X_DL_CMD_BEGIN(FT81X_PRIMITIVE_BITMAP),
-            FT81X_DL_CMD_VERTEX2II(x, y, image_handle->bitmap_handle, 0),
-        FT81X_DL_CMD_END()
-    };
-
-    return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(dl), dl);
+        return send_non_paletted8_image_draw_dl(handle, image_handle, x, y);
+    }
+    else
+    {
+        return send_paletted8_image_draw_dl(handle, image_handle, x, y);
+    }
 }
 
-ft81x_result ft81x_image_manager_send_non_paletted8_image_draw_dl_with_macro_0(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle)
+ft81x_result ft81x_image_manager_send_image_draw_dl_with_macro_0(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle)
 {
-    const uint32_t dl[] =
+    if (image_handle->image_properties->format != FT81X_BITMAP_FORMAT_PALETTED8)
     {
-        FT81X_DL_CMD_BEGIN(FT81X_PRIMITIVE_BITMAP),
-            FT81X_DL_CMD_MACRO(0),
-        FT81X_DL_CMD_END()
-    };
-
-    return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(dl), dl);
-}
-
-ft81x_result ft81x_image_manager_send_paletted8_image_draw_dl(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle, uint32_t x, uint32_t y)
-{
-    const uint32_t dl[] =
+        return send_non_paletted8_image_draw_dl_with_macro_0(handle, image_handle);
+    }
+    else
     {
-        FT81X_DL_CMD_BEGIN((FT81X_PRIMITIVE_BITMAP)),
-            /* save the context so we can restore it afterwards */
-            FT81X_DL_CMD_SAVE_CONTEXT(),
-
-            /* alpha */
-            FT81X_DL_CMD_BLEND_FUNC(FT81X_BLEND_FUNC_ONE, FT81X_BLEND_FUNC_ZERO),
-            FT81X_DL_CMD_COLOUR_MASK(0, 0, 0, 1),
-            FT81X_DL_CMD_PALETTE_SOURCE(image_handle->lut_load_offset+3),
-            FT81X_DL_CMD_VERTEX2II(x, y, image_handle->bitmap_handle, 0),
-
-            /* colours */
-            FT81X_DL_CMD_BLEND_FUNC(FT81X_BLEND_FUNC_DST_ALPHA, FT81X_BLEND_FUNC_ONE_MINUS_DST_ALPHA),
-            /* red */
-            FT81X_DL_CMD_COLOUR_MASK(1, 0, 0, 0),
-            FT81X_DL_CMD_PALETTE_SOURCE(image_handle->lut_load_offset+2),
-            FT81X_DL_CMD_VERTEX2II(x, y, image_handle->bitmap_handle, 0),
-            /* green */
-            FT81X_DL_CMD_COLOUR_MASK(0, 1, 0, 0),
-            FT81X_DL_CMD_PALETTE_SOURCE(image_handle->lut_load_offset+1),
-            FT81X_DL_CMD_VERTEX2II(x, y, image_handle->bitmap_handle, 0),
-            /* blue */
-            FT81X_DL_CMD_COLOUR_MASK(0, 0, 1, 0),
-            FT81X_DL_CMD_PALETTE_SOURCE(image_handle->lut_load_offset+0),
-            FT81X_DL_CMD_VERTEX2II(x, y, image_handle->bitmap_handle, 0),
-
-            /* revert the changes to colour mask and blend func */
-            FT81X_DL_CMD_RESTORE_CONTEXT(),
-        FT81X_DL_CMD_END()
-    };
-
-    return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(dl), dl);
-}
-
-ft81x_result ft81x_image_manager_send_paletted8_image_draw_dl_with_macro_0(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle)
-{
-    const uint32_t dl[] =
-    {
-        FT81X_DL_CMD_BEGIN((FT81X_PRIMITIVE_BITMAP)),
-            /* save the context so we can restore it afterwards */
-            FT81X_DL_CMD_SAVE_CONTEXT(),
-
-            /* alpha */
-            FT81X_DL_CMD_BLEND_FUNC(FT81X_BLEND_FUNC_ONE, FT81X_BLEND_FUNC_ZERO),
-            FT81X_DL_CMD_COLOUR_MASK(0, 0, 0, 1),
-            FT81X_DL_CMD_PALETTE_SOURCE(image_handle->lut_load_offset+3),
-            FT81X_DL_CMD_MACRO(0),
-
-            /* colours */
-            FT81X_DL_CMD_BLEND_FUNC(FT81X_BLEND_FUNC_DST_ALPHA, FT81X_BLEND_FUNC_ONE_MINUS_DST_ALPHA),
-            /* red */
-            FT81X_DL_CMD_COLOUR_MASK(1, 0, 0, 0),
-            FT81X_DL_CMD_PALETTE_SOURCE(image_handle->lut_load_offset+2),
-            FT81X_DL_CMD_MACRO(0),
-            /* green */
-            FT81X_DL_CMD_COLOUR_MASK(0, 1, 0, 0),
-            FT81X_DL_CMD_PALETTE_SOURCE(image_handle->lut_load_offset+1),
-            FT81X_DL_CMD_MACRO(0),
-            /* blue */
-            FT81X_DL_CMD_COLOUR_MASK(0, 0, 1, 0),
-            FT81X_DL_CMD_PALETTE_SOURCE(image_handle->lut_load_offset+0),
-            FT81X_DL_CMD_MACRO(0),
-
-            /* revert the changes to colour mask and blend func */
-            FT81X_DL_CMD_RESTORE_CONTEXT(),
-        FT81X_DL_CMD_END()
-    };
-
-    return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(dl), dl);
+        return send_paletted8_image_draw_dl_with_macro_0(handle, image_handle);
+    }
 }
 
 inline ft81x_result ft81x_image_manager_set_active_bitmap(FT81X_Handle *handle, FT81X_Image_Handle *image_handle)
