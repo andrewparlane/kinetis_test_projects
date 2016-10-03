@@ -101,7 +101,7 @@ ft81x_result ft81x_text_manager_send_font_init_dl(FT81X_Handle *handle, const FT
     if (font_handle->custom)
     {
         // first send the image init display list stuff
-        res = ft81x_image_manager_send_image_init_dl(handle, font_properties->image_properties, &font_handle->image_handle, filter, wrapx, wrapy);
+        res = ft81x_image_manager_send_image_init_dl(handle, &font_handle->image_handle, filter, wrapx, wrapy);
         if (res != FT81X_RESULT_OK)
         {
             return res;

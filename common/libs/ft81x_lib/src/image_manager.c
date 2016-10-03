@@ -347,13 +347,15 @@ ft81x_result ft81x_image_manager_load_image(FT81X_Handle *handle, const FT81X_Im
 // ----------------------------------------------------------------------------
 // Display list functions
 // ----------------------------------------------------------------------------
-ft81x_result ft81x_image_manager_send_image_init_dl(FT81X_Handle *handle, const FT81X_Image_Properties *image_properties, const FT81X_Image_Handle *image_handle, FT81X_Bitmap_Filter filter, FT81X_Bitmap_Wrap wrapx, FT81X_Bitmap_Wrap wrapy)
+ft81x_result ft81x_image_manager_send_image_init_dl(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle, FT81X_Bitmap_Filter filter, FT81X_Bitmap_Wrap wrapx, FT81X_Bitmap_Wrap wrapy)
 {
+    const FT81X_Image_Properties *ip = image_handle->image_properties;
+
     const uint32_t dl[] =
     {
         FT81X_DL_CMD_BITMAP_HANDLE(image_handle->bitmap_handle),
-        FT81X_DL_CMD_BITMAP_LAYOUT(image_properties->format, image_properties->linestride, image_properties->height),
-        FT81X_DL_CMD_BITMAP_SIZE(filter, wrapx, wrapy, image_properties->width, image_properties->height),
+        FT81X_DL_CMD_BITMAP_LAYOUT(ip->format, ip->linestride, ip->height),
+        FT81X_DL_CMD_BITMAP_SIZE(filter, wrapx, wrapy, ip->width, ip->height),
         FT81X_DL_CMD_BITMAP_SOURCE(image_handle->load_offset)
     };
 
