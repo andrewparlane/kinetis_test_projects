@@ -178,6 +178,74 @@ ft81x_result ft81x_coproc_cmd_inflate(FT81X_Handle *handle, uint32_t offset, uin
 // Get the end memory address of data inflated using CMD_INFLATE
 ft81x_result ft81x_coproc_cmd_getptr(FT81X_Handle *handle);
 
+// Sets the co-processors transformation matrix to the identity matrix
+// NOTE: This doesn't affect anything until CMD_SETMATRIX is used
+ft81x_result ft81x_coproc_cmd_loadidentity(FT81X_Handle *handle);
+
+// Add a translation to the current co-processor matrix
+// NOTE1: Only works for images.
+// NOTE2: If the image does not fit in the rectangle defined by:
+//          vertex2f / vertex2ii co-ord and
+//          vertex2f / vertex2ii co-ord + original image width, height
+//        Then only the section of the image that is in that rectangle
+//          get's drawn.
+//        Unless the BITMAP_SIZE DL instruction is used
+// NOTE3: This doesn't affect anything until CMD_SETMATRIX is used
+//  x,y - in pixels
+ft81x_result ft81x_coproc_cmd_translate_double(FT81X_Handle *handle, double x, double y);
+
+// Add a translation to the current co-processor matrix
+// NOTE1: Only works for images.
+// NOTE2: If the image does not fit in the rectangle defined by:
+//          vertex2f / vertex2ii co-ord and
+//          vertex2f / vertex2ii co-ord + original image width, height
+//        Then only the section of the image that is in that rectangle
+//          get's drawn.
+//        Unless the BITMAP_SIZE DL instruction is used
+// NOTE3: This doesn't affect anything until CMD_SETMATRIX is used
+//  x,y - in pixels
+ft81x_result ft81x_coproc_cmd_translate_int(FT81X_Handle *handle, int32_t x, int32_t y);
+
+// Add a scale to the current co-processor matrix
+// NOTE1: Only works for images.
+// NOTE2: If the image does not fit in the rectangle defined by:
+//          vertex2f / vertex2ii co-ord and
+//          vertex2f / vertex2ii co-ord + original image width, height
+//        Then only the section of the image that is in that rectangle
+//          get's drawn.
+//        Unless the BITMAP_SIZE DL instruction is used
+// NOTE3: This doesn't affect anything until CMD_SETMATRIX is used
+//  x,y - in pixels
+ft81x_result ft81x_coproc_cmd_scale_double(FT81X_Handle *handle, double x, double y);
+
+// Add a rotation to the current co-processor matrix
+// NOTE1: Only works for images.
+// NOTE2: If the image does not fit in the rectangle defined by:
+//          vertex2f / vertex2ii co-ord and
+//          vertex2f / vertex2ii co-ord + original image width, height
+//        Then only the section of the image that is in that rectangle
+//          get's drawn.
+//        Unless the BITMAP_SIZE DL instruction is used
+// NOTE3: This doesn't affect anything until CMD_SETMATRIX is used
+//  degrees - clockwise rotation in degrees
+ft81x_result ft81x_coproc_cmd_rotate_double(FT81X_Handle *handle, double degrees);
+
+// Add a rotation to the current co-processor matrix
+// NOTE1: Only works for images.
+// NOTE2: If the image does not fit in the rectangle defined by:
+//          vertex2f / vertex2ii co-ord and
+//          vertex2f / vertex2ii co-ord + original image width, height
+//        Then only the section of the image that is in that rectangle
+//          get's drawn.
+//        Unless the BITMAP_SIZE DL instruction is used
+// NOTE3: This doesn't affect anything until CMD_SETMATRIX is used
+//  degrees - clockwise rotation in degrees
+ft81x_result ft81x_coproc_cmd_rotate_int(FT81X_Handle *handle, int32_t degrees);
+
+// Writes the co-processor matrix to the display list
+// The transformations don't affect anything before this command
+ft81x_result ft81x_coproc_cmd_setmatrix(FT81X_Handle *handle);
+
 // Set up a custom font
 // Note: this should be used through the Text Manager and not directly
 //  font_id - bitmap id to use for font 0-31 (0-14 are for custom RAM fonts)
@@ -222,6 +290,9 @@ ft81x_result ft81x_coproc_cmd_logo(FT81X_Handle *handle);
 
 // Sets the co-proc to default reset states
 ft81x_result ft81x_coproc_cmd_coldstart(FT81X_Handle *handle);
+
+// Reads the transformation matrix values A-F into the command buffer
+ft81x_result ft81x_coproc_cmd_getmatrix(FT81X_Handle *handle);
 
 // Change the gradient colour for buttons and keys
 // A button or key starts with the gradient colour at the top

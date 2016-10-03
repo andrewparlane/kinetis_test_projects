@@ -26,12 +26,18 @@
 #define FT81X_COPROC_CMD_ID_STOP            0xFFFFFF17
 #define FT81X_COPROC_CMD_ID_INFLATE         0xFFFFFF22
 #define FT81X_COPROC_CMD_ID_GETPTR          0xFFFFFF23
+#define FT81X_COPROC_CMD_ID_LOADIDENTITY    0xFFFFFF26
+#define FT81X_COPROC_CMD_ID_TRANSLATE       0xFFFFFF27
+#define FT81X_COPROC_CMD_ID_SCALE           0xFFFFFF28
+#define FT81X_COPROC_CMD_ID_ROTATE          0xFFFFFF29
+#define FT81X_COPROC_CMD_ID_SETMATRIX       0xFFFFFF2A
 #define FT81X_COPROC_CMD_ID_SETFONT         0xFFFFFF2B
 #define FT81X_COPROC_CMD_ID_DIAL            0xFFFFFF2D
 #define FT81X_COPROC_CMD_ID_NUMBER          0xFFFFFF2E
 #define FT81X_COPROC_CMD_ID_SCREENSAVER     0xFFFFFF2F
 #define FT81X_COPROC_CMD_ID_LOGO            0xFFFFFF31
 #define FT81X_COPROC_CMD_ID_COLDSTART       0xFFFFFF32
+#define FT81X_COPROC_CMD_ID_GETMATRIX       0xFFFFFF33
 #define FT81X_COPROC_CMD_ID_GRADCOLOUR      0xFFFFFF34
 #define FT81X_COPROC_CMD_ID_SETFONT2        0xFFFFFF3B
 
@@ -247,6 +253,62 @@ ft81x_result ft81x_coproc_cmd_getptr(FT81X_Handle *handle)
     return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(cmd), cmd);
 }
 
+ft81x_result ft81x_coproc_cmd_loadidentity(FT81X_Handle *handle)
+{
+    return ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_COPROC_CMD_ID_LOADIDENTITY);
+}
+
+ft81x_result ft81x_coproc_cmd_translate_double(FT81X_Handle *handle, double x, double y)
+{
+    // pass x and y to the processor in 16.16 fixed point format
+    const uint32_t cmd[] = { FT81X_COPROC_CMD_ID_TRANSLATE,
+                             x * 65536,
+                             y * 65536};
+
+    return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(cmd), cmd);
+}
+
+ft81x_result ft81x_coproc_cmd_translate_int(FT81X_Handle *handle, int32_t x, int32_t y)
+{
+    // pass x and y to the processor in 16.16 fixed point format
+    const uint32_t cmd[] = { FT81X_COPROC_CMD_ID_TRANSLATE,
+                             x << 16,
+                             y << 16};
+
+    return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(cmd), cmd);
+}
+
+ft81x_result ft81x_coproc_cmd_scale_double(FT81X_Handle *handle, double x, double y)
+{
+    // pass x and y to the processor in 16.16 fixed point format
+    const uint32_t cmd[] = { FT81X_COPROC_CMD_ID_SCALE,
+                             x * 65536,
+                             y * 65536};
+
+    return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(cmd), cmd);
+}
+
+ft81x_result ft81x_coproc_cmd_rotate_double(FT81X_Handle *handle, double degrees)
+{
+    const uint32_t cmd[] = { FT81X_COPROC_CMD_ID_ROTATE,
+                             (degrees * 65536) / 360 };
+
+    return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(cmd), cmd);
+}
+
+ft81x_result ft81x_coproc_cmd_rotate_int(FT81X_Handle *handle, int32_t degrees)
+{
+    const uint32_t cmd[] = { FT81X_COPROC_CMD_ID_ROTATE,
+                             (degrees * 65536) / 360 };
+
+    return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(cmd), cmd);
+}
+
+ft81x_result ft81x_coproc_cmd_setmatrix(FT81X_Handle *handle)
+{
+    return ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_COPROC_CMD_ID_SETMATRIX);
+}
+
 ft81x_result ft81x_coproc_cmd_setfont(FT81X_Handle *handle, uint8_t font_id, uint32_t font_metric_block_offset)
 {
     // first the command and a padding byte
@@ -292,6 +354,16 @@ inline ft81x_result ft81x_coproc_cmd_coldstart(FT81X_Handle *handle)
 {
     return ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_COPROC_CMD_ID_COLDSTART);
 }
+
+ft81x_result ft81x_coproc_cmd_getmatrix(FT81X_Handle *handle)
+{
+    // first the command and padding words for A-F
+    const uint32_t cmd[] = { FT81X_COPROC_CMD_ID_GETMATRIX,
+                             0,0,0,0,0,0 };
+
+    return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(cmd), cmd);
+}
+
 
 ft81x_result ft81x_coproc_cmd_gradcolour(FT81X_Handle *handle, uint8_t r, uint8_t g, uint8_t b)
 {
