@@ -113,11 +113,7 @@ ft81x_result test1(FT81X_Handle *handle)
 
     // initialise the L8 image in the DL
     res = ft81x_image_manager_send_image_init_dl(handle,
-                                                 &cat_l8_raw_image_properties,
-                                                 &cat_l8_raw_image_handle,
-                                                 FT81X_BITMAP_FILTER_NEAREST,
-                                                 FT81X_BITMAP_WRAP_BORDER,
-                                                 FT81X_BITMAP_WRAP_BORDER);
+                                                 &cat_l8_raw_image_handle);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_image_manager_send_image_init_dl failed with %u\n", res);
@@ -126,11 +122,7 @@ ft81x_result test1(FT81X_Handle *handle)
 
     // initialise the argb1555 image in the DL
     res = ft81x_image_manager_send_image_init_dl(handle,
-                                                 &cat_argb1555_raw_image_properties,
-                                                 &cat_argb1555_raw_image_handle,
-                                                 FT81X_BITMAP_FILTER_NEAREST,
-                                                 FT81X_BITMAP_WRAP_BORDER,
-                                                 FT81X_BITMAP_WRAP_BORDER);
+                                                 &cat_argb1555_raw_image_handle);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_image_manager_send_image_init_dl failed with %u\n", res);
@@ -139,11 +131,7 @@ ft81x_result test1(FT81X_Handle *handle)
 
     // initialise the paletted8 image in the DL
     res = ft81x_image_manager_send_image_init_dl(handle,
-                                                 &cat_paletted8_raw_image_properties,
-                                                 &cat_paletted8_raw_image_handle,
-                                                 FT81X_BITMAP_FILTER_NEAREST,
-                                                 FT81X_BITMAP_WRAP_BORDER,
-                                                 FT81X_BITMAP_WRAP_BORDER);
+                                                 &cat_paletted8_raw_image_handle);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_image_manager_send_image_init_dl failed with %u\n", res);
@@ -151,10 +139,12 @@ ft81x_result test1(FT81X_Handle *handle)
     }
 
     // draw L8 image
-    res = ft81x_image_manager_send_non_paletted8_image_draw_dl(handle,
-                                                               &cat_l8_raw_image_handle,
-                                                               160-(cat_l8_raw_image_properties.width/2),
-                                                               240-(cat_l8_raw_image_properties.height/2));
+    res = ft81x_image_manager_send_image_draw_dl(handle,
+                                                 &cat_l8_raw_image_handle,
+                                                 FT81X_BITMAP_FILTER_NEAREST,
+                                                 160-(cat_l8_raw_image_properties.width/2),
+                                                 240-(cat_l8_raw_image_properties.height/2),
+                                                 NULL);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_image_manager_send_non_paletted8_image_draw_dl failed with %u\n", res);
@@ -162,9 +152,11 @@ ft81x_result test1(FT81X_Handle *handle)
     }
 
     // draw ARGB1555 image
-    res = ft81x_image_manager_send_non_paletted8_image_draw_dl(handle,
-                                                               &cat_argb1555_raw_image_handle,
-                                                               0, 0);
+    res = ft81x_image_manager_send_image_draw_dl(handle,
+                                                 &cat_argb1555_raw_image_handle,
+                                                 FT81X_BITMAP_FILTER_NEAREST,
+                                                 0, 0,
+                                                 NULL);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_image_manager_send_non_paletted8_image_draw_dl failed with %u\n", res);
@@ -173,9 +165,11 @@ ft81x_result test1(FT81X_Handle *handle)
 
     // draw paletted8 image
     // (note saves the context on the stack and restores it)
-    res = ft81x_image_manager_send_paletted8_image_draw_dl(handle,
-                                                           &cat_paletted8_raw_image_handle,
-                                                           162, 270);
+    res = ft81x_image_manager_send_image_draw_dl(handle,
+                                                 &cat_paletted8_raw_image_handle,
+                                                 FT81X_BITMAP_FILTER_NEAREST,
+                                                 162, 270,
+                                                 NULL);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_image_manager_send_paletted8_image_draw_dl failed with %u\n", res);
