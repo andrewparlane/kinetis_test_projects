@@ -16,6 +16,7 @@
 #include "resources/cat_l8_compressed.h"
 #include "resources/cat_argb1555_compressed.h"
 #include "resources/cat_paletted8_compressed.h"
+#include "resources/nyam_rgb565_compressed.h"
 #include "resources/blink_font_l2_raw.h"
 
 static const uint32_t clear_dl_snippet[] =
@@ -777,22 +778,11 @@ ft81x_result test2_transformations(FT81X_Handle *handle)
     // ----------------------------------------------------------
     // load our resources into g RAM
     // ----------------------------------------------------------
-    FT81X_Image_Handle cat_argb1555_compressed_image_handle;
-    res = ft81x_image_manager_load_image(handle, &cat_argb1555_compressed_image_properties, &cat_argb1555_compressed_image_handle);
+    FT81X_Image_Handle nyam_rgb565_compressed_image_handle;
+    res = ft81x_image_manager_load_image(handle, &nyam_rgb565_compressed_image_properties, &nyam_rgb565_compressed_image_handle);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_image_manager_load_image failed with %u\n", res);
-        return res;
-    }
-
-    // ----------------------------------------------------------
-    // Get font handles for inbuilt fonts
-    // ----------------------------------------------------------
-    FT81X_Font_Handle inbuilt_31_font_handle;
-    res = ft81x_text_manager_get_font_handle_for_inbuilt_font(handle, &inbuilt_31_font_handle, 31);
-    if (res != FT81X_RESULT_OK)
-    {
-        DbgConsole_Printf("ft81x_text_manager_get_font_handle_for_inbuilt_font failed with %u\n", res);
         return res;
     }
 
@@ -815,18 +805,18 @@ ft81x_result test2_transformations(FT81X_Handle *handle)
         return res;
     }
 
-    // initialise the argb1555 image in the DL
+    // initialise the rgb565 image in the DL
     res = ft81x_image_manager_send_image_init_dl(handle,
-                                                 &cat_argb1555_compressed_image_handle);
+                                                 &nyam_rgb565_compressed_image_handle);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_image_manager_send_image_init_dl failed with %u\n", res);
         return res;
     }
 
-    // draw ARGB1555 image
+    // draw rgb565 image
     res = ft81x_image_manager_send_image_draw_dl(handle,
-                                                 &cat_argb1555_compressed_image_handle,
+                                                 &nyam_rgb565_compressed_image_handle,
                                                  FT81X_BITMAP_FILTER_NEAREST,
                                                  0, 0,
                                                  NULL);
@@ -836,113 +826,35 @@ ft81x_result test2_transformations(FT81X_Handle *handle)
         return res;
     }
 
-    // draw some text
-    res = ft81x_text_manager_write_text(handle, &inbuilt_31_font_handle, 79, 230, FT81X_TEXT_COORDS_CENTRE, "Transforms");
-    if (res != FT81X_RESULT_OK)
+    // draw the rgb565 image again this time twice as big
+    FT81X_Image_Transform tform =
     {
-        DbgConsole_Printf("ft81x_text_manager_write_text failed with %u\n", res);
-        return res;
-    }
-
-    // load the identity matrix
-    res = ft81x_coproc_cmd_loadidentity(handle);
-    if (res != FT81X_RESULT_OK)
-    {
-        DbgConsole_Printf("ft81x_coproc_cmd_loadidentity failed with %u\n", res);
-        return res;
-    }
-
-    // set up a translation to move the rotate and
-    // scale point to the middle of the image
-    res = ft81x_coproc_cmd_translate_int(handle, cat_argb1555_compressed_image_properties.width/2, cat_argb1555_compressed_image_properties.height/2);
-    if (res != FT81X_RESULT_OK)
-    {
-        DbgConsole_Printf("ft81x_coproc_cmd_translate_int failed with %u\n", res);
-        return res;
-    }
-
-    // scale by 3/4 about the centre
-    res = ft81x_coproc_cmd_scale_double(handle, 0.75, 0.75);
-    if (res != FT81X_RESULT_OK)
-    {
-        DbgConsole_Printf("ft81x_coproc_cmd_scale_double failed with %u\n", res);
-        return res;
-    }
-
-    // rotate clockwise 45 degrees around the middle of the image
-    res = ft81x_coproc_cmd_rotate_int(handle, 45);
-    if (res != FT81X_RESULT_OK)
-    {
-        DbgConsole_Printf("ft81x_coproc_cmd_rotate_int failed with %u\n", res);
-        return res;
-    }
-
-    // reverse the translation, so the
-    // top left corner is where we want it
-    res = ft81x_coproc_cmd_translate_int(handle, -cat_argb1555_compressed_image_properties.width/2, -cat_argb1555_compressed_image_properties.height/2);
-    if (res != FT81X_RESULT_OK)
-    {
-        DbgConsole_Printf("ft81x_coproc_cmd_translate_int failed with %u\n", res);
-        return res;
-    }
-
-    // use this matrix for drawing
-    res = ft81x_coproc_cmd_setmatrix(handle);
-    if (res != FT81X_RESULT_OK)
-    {
-        DbgConsole_Printf("ft81x_coproc_cmd_setmatrix failed with %u\n", res);
-        return res;
-    }
-
-    // draw the ARGB1555 image again
+        .scale          = 1,        // scale by 3/4 in both dimensions
+        .scale_x        = 2,
+        .scale_y        = 2,
+    };
     res = ft81x_image_manager_send_image_draw_dl(handle,
-                                                 &cat_argb1555_compressed_image_handle,
+                                                 &nyam_rgb565_compressed_image_handle,
                                                  FT81X_BITMAP_FILTER_NEAREST,
-                                                 158, 210,
-                                                 NULL);
+                                                 100, 0,
+                                                 &tform);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_image_manager_send_image_draw_dl failed with %u\n", res);
         return res;
     }
 
-    // load the identity matrix
-    res = ft81x_coproc_cmd_loadidentity(handle);
+    // again buut half the original size
+    tform.scale_x = 0.5;
+    tform.scale_y = 0.5;
+    res = ft81x_image_manager_send_image_draw_dl(handle,
+                                                 &nyam_rgb565_compressed_image_handle,
+                                                 FT81X_BITMAP_FILTER_NEAREST,
+                                                 0, 50,
+                                                 &tform);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_coproc_cmd_loadidentity failed with %u\n", res);
-        return res;
-    }
-
-    // scale to 2/5th about the centre
-    res = ft81x_coproc_cmd_scale_double(handle, 0.4, 0.4);
-    if (res != FT81X_RESULT_OK)
-    {
-        DbgConsole_Printf("ft81x_coproc_cmd_scale_double failed with %u\n", res);
-        return res;
-    }
-
-    // use this matrix for drawing
-    res = ft81x_coproc_cmd_setmatrix(handle);
-    if (res != FT81X_RESULT_OK)
-    {
-        DbgConsole_Printf("ft81x_coproc_cmd_setmatrix failed with %u\n", res);
-        return res;
-    }
-
-    // show some text again
-    res = ft81x_text_manager_write_text(handle, &inbuilt_31_font_handle, 237, 450, FT81X_TEXT_COORDS_CENTRE, "Transforms");
-    if (res != FT81X_RESULT_OK)
-    {
-        DbgConsole_Printf("ft81x_text_manager_write_text failed with %u\n", res);
-        return res;
-    }
-
-    // show some text again
-    res = ft81x_text_manager_write_text(handle, &inbuilt_31_font_handle, 0, 400, FT81X_TEXT_COORDS_TOP_LEFT, "Transforms");
-    if (res != FT81X_RESULT_OK)
-    {
-        DbgConsole_Printf("ft81x_text_manager_write_text failed with %u\n", res);
+        DbgConsole_Printf("ft81x_image_manager_send_image_draw_dl failed with %u\n", res);
         return res;
     }
 
