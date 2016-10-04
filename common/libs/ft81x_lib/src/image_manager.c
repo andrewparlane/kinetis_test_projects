@@ -218,6 +218,63 @@ static ft81x_result load_compressed_image_lut(FT81X_Handle *handle, const FT81X_
     return FT81X_RESULT_OK;
 }
 
+static ft81x_result setup_draw_transforms(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle, FT81X_Bitmap_Filter filter, const FT81X_Image_Transform *transform)
+{
+    ft81x_result res;
+
+    const FT81X_Image_Properties *ip = image_handle->image_properties;
+
+    double new_width = ip->width;
+    double new_height = ip->height;
+
+    // load the identity matrix
+    res = ft81x_coproc_cmd_loadidentity(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    if (transform &&
+        (transform->scale))
+    {
+        // apply the scale
+        res = ft81x_coproc_cmd_scale_double(handle,
+                                            transform->scale_x,
+                                            transform->scale_y);
+        if (res != FT81X_RESULT_OK)
+        {
+            return res;
+        }
+        new_width *= transform->scale_x;
+        new_height *= transform->scale_y;
+    }
+
+    // use this matrix for drawing
+    res = ft81x_coproc_cmd_setmatrix(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // set up the bitmap size, so we see all of it
+    return ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_BITMAP_SIZE(filter, FT81X_BITMAP_WRAP_BORDER, FT81X_BITMAP_WRAP_BORDER, (uint32_t)new_width, (uint32_t)new_height));
+}
+
+static ft81x_result cleanup_draw_transforms(FT81X_Handle *handle)
+{
+    ft81x_result res;
+
+    // load the identity matrix
+    res = ft81x_coproc_cmd_loadidentity(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // use this matrix for drawing
+    return ft81x_coproc_cmd_setmatrix(handle);
+}
+
 static ft81x_result send_non_paletted8_image_draw_dl(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle, uint32_t x, uint32_t y, uint8_t use_macro_0)
 {
     const uint32_t dl[] =
@@ -347,7 +404,7 @@ ft81x_result ft81x_image_manager_load_image(FT81X_Handle *handle, const FT81X_Im
 // ----------------------------------------------------------------------------
 // Display list functions
 // ----------------------------------------------------------------------------
-ft81x_result ft81x_image_manager_send_image_init_dl(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle, FT81X_Bitmap_Filter filter, FT81X_Bitmap_Wrap wrapx, FT81X_Bitmap_Wrap wrapy)
+ft81x_result ft81x_image_manager_send_image_init_dl(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle)
 {
     const FT81X_Image_Properties *ip = image_handle->image_properties;
 
@@ -355,34 +412,83 @@ ft81x_result ft81x_image_manager_send_image_init_dl(FT81X_Handle *handle, const 
     {
         FT81X_DL_CMD_BITMAP_HANDLE(image_handle->bitmap_handle),
         FT81X_DL_CMD_BITMAP_LAYOUT(ip->format, ip->linestride, ip->height),
-        FT81X_DL_CMD_BITMAP_SIZE(filter, wrapx, wrapy, ip->width, ip->height),
         FT81X_DL_CMD_BITMAP_SOURCE(image_handle->load_offset)
     };
 
     return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(dl), dl);
 }
 
-ft81x_result ft81x_image_manager_send_image_draw_dl(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle, uint32_t x, uint32_t y)
+ft81x_result ft81x_image_manager_send_image_draw_dl(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle, FT81X_Bitmap_Filter filter, uint32_t x, uint32_t y, const FT81X_Image_Transform *transform)
 {
+    // first we set up the matrix for any transforms
+    ft81x_result res = setup_draw_transforms(handle, image_handle, filter, transform);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // then draw the image
     if (image_handle->image_properties->format != FT81X_BITMAP_FORMAT_PALETTED8)
     {
-        return send_non_paletted8_image_draw_dl(handle, image_handle, x, y, 0);
+        res = send_non_paletted8_image_draw_dl(handle, image_handle, x, y, 0);
     }
     else
     {
-        return send_paletted8_image_draw_dl(handle, image_handle, x, y, 0);
+        res = send_paletted8_image_draw_dl(handle, image_handle, x, y, 0);
+    }
+
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // finally cleanup the trantransforms (load the identity matrix)
+    // only needed if we transformed the image
+    if (transform &&
+        (transform->scale))
+    {
+        return cleanup_draw_transforms(handle);
+    }
+    else
+    {
+        return FT81X_RESULT_OK;
     }
 }
 
-ft81x_result ft81x_image_manager_send_image_draw_dl_with_macro_0(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle)
+ft81x_result ft81x_image_manager_send_image_draw_dl_with_macro_0(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle, FT81X_Bitmap_Filter filter, const FT81X_Image_Transform *transform)
 {
+    // first we set up the matrix for any transforms
+    ft81x_result res = setup_draw_transforms(handle, image_handle, filter, transform);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // then draw the image
     if (image_handle->image_properties->format != FT81X_BITMAP_FORMAT_PALETTED8)
     {
-        return send_non_paletted8_image_draw_dl(handle, image_handle, 0, 0, 1);
+        res = send_non_paletted8_image_draw_dl(handle, image_handle, 0, 0, 1);
     }
     else
     {
-        return send_paletted8_image_draw_dl(handle, image_handle, 0, 0, 1);
+        res = send_paletted8_image_draw_dl(handle, image_handle, 0, 0, 1);
+    }
+
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // finally cleanup the trantransforms (load the identity matrix)
+    // only needed if we transformed the image
+    if (transform &&
+        (transform->scale))
+    {
+        return cleanup_draw_transforms(handle);
+    }
+    else
+    {
+        return FT81X_RESULT_OK;
     }
 }
 

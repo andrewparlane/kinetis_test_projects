@@ -100,8 +100,18 @@ ft81x_result ft81x_text_manager_send_font_init_dl(FT81X_Handle *handle, const FT
 
     if (font_handle->custom)
     {
+        const FT81X_Image_Properties *ip = font_handle->image_handle.image_properties;
+
         // first send the image init display list stuff
-        res = ft81x_image_manager_send_image_init_dl(handle, &font_handle->image_handle, filter, wrapx, wrapy);
+        res = ft81x_image_manager_send_image_init_dl(handle, &font_handle->image_handle);
+        if (res != FT81X_RESULT_OK)
+        {
+            return res;
+        }
+
+        // the image manager only sends the BITMAP_SIZE field when we draw it.
+        // so we have to send this here
+        res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_BITMAP_SIZE(filter, wrapx, wrapy, ip->width, ip->height));
         if (res != FT81X_RESULT_OK)
         {
             return res;
