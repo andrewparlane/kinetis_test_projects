@@ -85,6 +85,14 @@ ft81x_result ft81x_text_manager_load_custom_font(FT81X_Handle *handle, const FT8
 
 ft81x_result ft81x_text_manager_get_font_handle_for_inbuilt_font(FT81X_Handle *handle, FT81X_Font_Handle *font_handle, uint8_t font_id)
 {
+    // inbuilt fonts are 16 - 34
+    // but we currently only support 16 - 31
+    // we must use CMD_ROMFONT to get access to 32 - 34
+    if (font_id < 16 || font_id > 31)
+    {
+        return FT81X_RESULT_INVALID_ARG;
+    }
+
     font_handle->image_handle.bitmap_handle = font_id;
     font_handle->custom = 0;
 
