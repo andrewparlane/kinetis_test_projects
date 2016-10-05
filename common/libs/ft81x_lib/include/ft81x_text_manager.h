@@ -69,7 +69,6 @@ typedef struct
 {
     FT81X_Image_Handle image_handle;
     uint32_t           metric_block_offset; // offset of the metric block in g_ram
-    uint8_t            font_id;
     uint8_t            custom;              // are we a custom / or an inbuilt font?
 } FT81X_Font_Handle;
 

@@ -50,9 +50,6 @@ ft81x_result ft81x_text_manager_load_custom_font(FT81X_Handle *handle, const FT8
         return res;
     }
 
-    // copy the bitmap_handle to fontfont_id
-    font_handle->font_id = font_handle->image_handle.bitmap_handle;
-
     // we're a custom font
     font_handle->custom = 1;
 
@@ -88,7 +85,7 @@ ft81x_result ft81x_text_manager_load_custom_font(FT81X_Handle *handle, const FT8
 
 ft81x_result ft81x_text_manager_get_font_handle_for_inbuilt_font(FT81X_Handle *handle, FT81X_Font_Handle *font_handle, uint8_t font_id)
 {
-    font_handle->font_id = font_id;
+    font_handle->image_handle.bitmap_handle = font_id;
     font_handle->custom = 0;
 
     return FT81X_RESULT_OK;
@@ -118,7 +115,7 @@ ft81x_result ft81x_text_manager_send_font_init_dl(FT81X_Handle *handle, const FT
         }
 
         // then we use the setfont2 co-proc command to set this image up as a font
-        return ft81x_coproc_cmd_setfont2(handle, font_handle->font_id, font_handle->metric_block_offset, FIRST_CHAR);
+        return ft81x_coproc_cmd_setfont2(handle, font_handle->image_handle.bitmap_handle, font_handle->metric_block_offset, FIRST_CHAR);
     }
     else
     {
@@ -131,7 +128,7 @@ inline ft81x_result ft81x_text_manager_write_text(FT81X_Handle *handle, const FT
 {
     return ft81x_coproc_cmd_text(handle,
                                  x, y,
-                                 font_handle->font_id,
+                                 font_handle->image_handle.bitmap_handle,
                                  (uint16_t)options,
                                  str);
 }
@@ -140,7 +137,7 @@ inline ft81x_result ft81x_text_manager_write_unsigned_number(FT81X_Handle *handl
 {
     return ft81x_coproc_cmd_number(handle,
                                    x, y,
-                                   font_handle->font_id,
+                                   font_handle->image_handle.bitmap_handle,
                                    (uint16_t)options,
                                    num);
 }
@@ -149,7 +146,7 @@ inline ft81x_result ft81x_text_manager_write_signed_number(FT81X_Handle *handle,
 {
     return ft81x_coproc_cmd_number(handle,
                                    x, y,
-                                   font_handle->font_id,
+                                   font_handle->image_handle.bitmap_handle,
                                    ((uint16_t)options) | FT81X_COPROC_OPTION_SIGNED,
                                    num);
 }
