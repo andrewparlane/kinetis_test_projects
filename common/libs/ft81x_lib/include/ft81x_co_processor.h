@@ -310,6 +310,10 @@ ft81x_result ft81x_coproc_cmd_getmatrix(FT81X_Handle *handle);
 // and fades to the fg colour at the bottom
 ft81x_result ft81x_coproc_cmd_gradcolour(FT81X_Handle *handle, uint8_t r, uint8_t g, uint8_t b);
 
+// Set the base for use with CMD_NUMBER
+//  base - the base to output in 2-36
+ft81x_result ft81x_coproc_cmd_setbase(FT81X_Handle *handle, uint8_t base);
+
 // Set up a custom font
 // Note: this should be used through the Text Manager and not directly
 //  font_id                     - The bitmap id to use for font (0 - 31)
