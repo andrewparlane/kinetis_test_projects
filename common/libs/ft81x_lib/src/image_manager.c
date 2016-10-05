@@ -2,6 +2,7 @@
 #include "ft81x_image_manager.h"
 #include "ft81x_co_processor.h"
 #include "ft81x/g_ram_manager.h"
+#include "ft81x/bitmap_handles.h"
 #include "ft81x/platforms/platform.h"
 
 #include <stdlib.h>
@@ -9,35 +10,6 @@
 // ----------------------------------------------------------------------------
 // local functions
 // ----------------------------------------------------------------------------
-static ft81x_result allocate_bitmap_id(FT81X_Handle *handle, uint8_t *id)
-{
-    uint16_t ids = handle->image_manager_data.free_bitmap_ids;
-
-    // check each bit until we find a 1.
-    // abort if ids == 0, ie. there are none free
-    for (uint8_t i = 0; ids != 0; i++)
-    {
-        if (ids & 0x01)
-        {
-            *id = i;
-            break;
-        }
-
-        ids >>= 1;
-    }
-
-    // did we manage to allocate one?
-    if (ids == 0)
-    {
-        return FT81X_RESULT_OUT_OF_BITMAP_IDS;
-    }
-
-    // clear that bit, as it's not free any more
-    handle->image_manager_data.free_bitmap_ids &= ~(1 << *id);
-
-    return FT81X_RESULT_OK;
-}
-
 static ft81x_result load_raw_image(FT81X_Handle *handle, const FT81X_Image_Properties *image_properties, FT81X_Image_Handle *image_handle)
 {
     ft81x_result res;
@@ -332,18 +304,6 @@ static ft81x_result send_paletted8_image_draw_dl(FT81X_Handle *handle, const FT8
 // ----------------------------------------------------------------------------
 // API functions
 // ----------------------------------------------------------------------------
-ft81x_result ft81x_image_manager_initialise(FT81X_Handle *handle)
-{
-    if (handle == NULL)
-    {
-        return FT81X_RESULT_NO_HANDLE;
-    }
-
-    handle->image_manager_data.free_bitmap_ids = FT81X_VALID_BITMAP_IDS_MASK;
-
-    return FT81X_RESULT_OK;
-}
-
 ft81x_result ft81x_image_manager_load_image(FT81X_Handle *handle, const FT81X_Image_Properties *image_properties, FT81X_Image_Handle *image_handle)
 {
     ft81x_result res;
@@ -390,7 +350,7 @@ ft81x_result ft81x_image_manager_load_image(FT81X_Handle *handle, const FT81X_Im
     image_handle->image_properties = image_properties;
 
     // assign a free bitmap ID
-    res = allocate_bitmap_id(handle, &(image_handle->bitmap_handle));
+    res = ft81x_bitmap_handles_allocate(handle, &(image_handle->bitmap_handle));
     if (res != FT81X_RESULT_OK)
     {
         // failed, free the image data (LUT + indices)

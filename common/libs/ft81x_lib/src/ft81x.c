@@ -234,7 +234,7 @@ ft81x_result ft81x_initialise(FT81X_Handle *handle, uint32_t buffer_size, uint8_
     }
 
     // image manager initialise
-    res = ft81x_image_manager_initialise(handle);
+    res = ft81x_bitmap_handles_initialise(handle);
     if (res != FT81X_RESULT_OK)
     {
         return res;

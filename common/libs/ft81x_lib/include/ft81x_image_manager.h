@@ -1,16 +1,8 @@
 #ifndef __FT81X_IMAGE_MANAGER_H
 #define __FT81X_IMAGE_MANAGER_H
 
+#include "ft81x.h"
 #include "ft81x_display_list.h"
-
-// the FT81x supports bitmap IDs 0-14
-#define FT81X_NUM_VALID_BITMAP_IDS      15
-#define FT81X_VALID_BITMAP_IDS_MASK     0x7FFF
-
-typedef struct
-{
-    uint16_t free_bitmap_ids;
-} FT81X_Image_Manager_Data;
 
 typedef struct
 {
@@ -44,15 +36,6 @@ typedef struct
     double scale_x;         // how much x?
     double scale_y;         // how much y?
 } FT81X_Image_Transform;
-
-// forward declarations for ft81x.h
-enum _ft81x_result;
-typedef enum _ft81x_result ft81x_result;
-struct _FT81X_Handle;
-typedef struct _FT81X_Handle FT81X_Handle;
-
-// don't call initialise in user code, auto called in ft81x.c
-ft81x_result ft81x_image_manager_initialise(FT81X_Handle *handle);
 
 ft81x_result ft81x_image_manager_load_image(FT81X_Handle *handle, const FT81X_Image_Properties *image_properties, FT81X_Image_Handle *image_handle);
 

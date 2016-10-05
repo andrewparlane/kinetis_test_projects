@@ -2,7 +2,7 @@
 #define __FT81X_H
 
 #include "ft81x/g_ram_manager.h"
-#include "ft81x_image_manager.h"
+#include "ft81x/bitmap_handles.h"
 #include "ft81x_graphics_engine.h"
 
 #include <stdint.h>
@@ -47,7 +47,7 @@ typedef struct _FT81X_Handle
 {
     void                       *platform_user_data;
     FT81X_G_RAM_Manager_Data    g_ram_manager_data;
-    FT81X_Image_Manager_Data    image_manager_data;
+    FT81X_Bitmap_Handles        bitmap_handles;
     FT81X_Graphics_Engine_Data  graphics_engine_data;
 } FT81X_Handle;
 
