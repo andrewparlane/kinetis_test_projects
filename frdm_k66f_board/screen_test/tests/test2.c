@@ -212,6 +212,13 @@ ft81x_result test2_text(FT81X_Handle *handle)
         DbgConsole_Printf("ft81x_text_manager_get_font_handle_for_inbuilt_font failed with %u\n", res);
         return res;
     }
+    FT81X_Font_Handle inbuilt_34_font_handle;
+    res = ft81x_text_manager_get_font_handle_for_inbuilt_font(handle, &inbuilt_34_font_handle, 34);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_text_manager_get_font_handle_for_inbuilt_font failed with %u\n", res);
+        return res;
+    }
 
     // ----------------------------------------------------------
     // Build and display the display list
@@ -301,6 +308,16 @@ ft81x_result test2_text(FT81X_Handle *handle)
     }
 
     res = ft81x_text_manager_write_unsigned_number(handle, &blink_font_handle, 10, 290, FT81X_TEXT_COORDS_TOP_LEFT, 1337);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_text_manager_write_unsigned_number failed with %u\n", res);
+        return res;
+    }
+
+    // test using inbuilt font 34 - note this has to be remapped
+    // to a different bitmap_handle as only bitmap handles 0 - 31
+    // are supported by the FT81X
+    res = ft81x_text_manager_write_unsigned_number(handle, &inbuilt_34_font_handle, 10, 330, FT81X_TEXT_COORDS_TOP_LEFT, 34);
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_text_manager_write_unsigned_number failed with %u\n", res);

@@ -731,6 +731,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>ft81x_lib/src/bitmap_handles.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/common/libs/ft81x_lib/src/bitmap_handles.c</locationURI>
+		</link>
+		<link>
 			<name>ft81x_lib/src/boards</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
