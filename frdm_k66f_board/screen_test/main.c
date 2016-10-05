@@ -142,7 +142,7 @@ static void main_thread(void *arg)
         return;
     }
 
-    // draws some images, primitives and text
+    // draws some images, and primitives
     // all directly through the DL
     res = test1(&handle);
     if (res != FT81X_RESULT_OK)
@@ -151,8 +151,6 @@ static void main_thread(void *arg)
         ft81x_cleanup(&handle);
         return;
     }
-    vTaskDelay(5000);
-
 
     // tests using the co-proc
     res = test2(&handle);

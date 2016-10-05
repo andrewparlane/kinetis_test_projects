@@ -1,5 +1,9 @@
 #include "fsl_debug_console.h"
 
+// freeRTOS includes
+#include "FreeRTOS.h"
+#include "task.h"
+
 // ft81x_lib includes
 #include "ft81x.h"
 #include "ft81x_graphics_engine.h"
@@ -199,6 +203,8 @@ ft81x_result test1(FT81X_Handle *handle)
         DbgConsole_Printf("ft81x_graphics_engine_end_display_list failed with %u\n", res);
         return res;
     }
+
+    vTaskDelay(3000);
 
     return FT81X_RESULT_OK;
 }
