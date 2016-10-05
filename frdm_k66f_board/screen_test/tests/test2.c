@@ -879,6 +879,111 @@ ft81x_result test2_transformations(FT81X_Handle *handle)
     return FT81X_RESULT_OK;
 }
 
+ft81x_result test2_spinners(FT81X_Handle *handle)
+{
+    ft81x_result res;
+
+    uint8_t colours[4][3] =
+    {
+        { 255, 0, 0 },
+        { 0, 255, 0 },
+        { 0, 0, 255 },
+        { 255, 255, 255 },
+    };
+
+    // reset the co-proc to it's default state
+    res = ft81x_coproc_cmd_coldstart(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_coldstart failed with %u\n", res);
+        return res;
+    }
+
+    for (int i = 0; i < 4; i++)
+    {
+        // clear the screen
+        res = ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(clear_dl_snippet), clear_dl_snippet);
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+            return res;
+        }
+
+        // put something on the screen
+        uint32_t draw_lines[] =
+        {
+            FT81X_DL_CMD_COLOUR_RGB(255, 255, 255),
+            FT81X_DL_CMD_LINE_WIDTH(5 * 16),
+            FT81X_DL_CMD_BEGIN(FT81X_PRIMITIVE_LINES),
+                FT81X_DL_CMD_VERTEX2II(0, 0, 0, 0),
+                FT81X_DL_CMD_VERTEX2II(320, 480, 0, 0),
+                FT81X_DL_CMD_VERTEX2II(320, 0, 0, 0),
+                FT81X_DL_CMD_VERTEX2II(0, 480, 0, 0),
+                FT81X_DL_CMD_VERTEX2II(0, 0, 0, 0),
+            FT81X_DL_CMD_END(),
+        };
+        res = ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(draw_lines), draw_lines);
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+            return res;
+        }
+
+        // set the spinner colour
+        res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_COLOUR_RGB(colours[i][0],colours[i][1],colours[i][2]));
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+            return res;
+        }
+
+        // start a spinner
+        res = ft81x_coproc_cmd_spinner(handle, 160, 240, i, 1);
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_coproc_cmd_spinner failed with %u\n", res);
+            return res;
+        }
+
+        // display it
+        res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_DISPLAY());
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+            return res;
+        }
+
+        // write everything to the DL ram and then swap it in
+        res = ft81x_graphics_engine_end_display_list(handle);
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_graphics_engine_end_display_list failed with %u\n", res);
+            return res;
+        }
+
+        vTaskDelay(2000);
+
+        // stop it
+        res = ft81x_coproc_cmd_stop(handle);
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_coproc_cmd_stop failed with %u\n", res);
+            return res;
+        }
+
+        res = ft81x_graphics_engine_flush_and_synchronise(handle);
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_graphics_engine_flush_and_synchronise failed with %u\n", res);
+            return res;
+        }
+
+        vTaskDelay(1000);
+    }
+
+    return FT81X_RESULT_OK;
+}
+
 ft81x_result test2_screensaver(FT81X_Handle *handle)
 {
     ft81x_result res;
@@ -1186,6 +1291,16 @@ ft81x_result test2(FT81X_Handle *handle)
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("test2_transformations failed with %u\n", res);
+        return res;
+    }
+
+    // ----------------------------------------------------------
+    // Demonstrtate spinners
+    // ----------------------------------------------------------
+    res = test2_spinners(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("test2_spinners failed with %u\n", res);
         return res;
     }
 
