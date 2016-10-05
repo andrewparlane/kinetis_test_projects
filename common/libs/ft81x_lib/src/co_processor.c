@@ -41,6 +41,7 @@
 #define FT81X_COPROC_CMD_ID_GETMATRIX       0xFFFFFF33
 #define FT81X_COPROC_CMD_ID_GRADCOLOUR      0xFFFFFF34
 #define FT81X_COPROC_CMD_ID_SETFONT2        0xFFFFFF3B
+#define FT81X_COPROC_CMD_ID_ROMFONT         0xFFFFFF3F
 
 // ----------------------------------------------------------------------------
 // CMD functions
@@ -391,6 +392,14 @@ ft81x_result ft81x_coproc_cmd_setfont2(FT81X_Handle *handle, uint8_t font_id, ui
                              font_metric_block_offset,
                              first_char};
 
+    return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(cmd), cmd);
+}
+
+ft81x_result ft81x_coproc_cmd_romfont(FT81X_Handle *handle, uint8_t bitmap_handle, uint8_t rom_font_id)
+{
+    const uint32_t cmd[] = { FT81X_COPROC_CMD_ID_ROMFONT,
+                             bitmap_handle,
+                             rom_font_id };
 
     return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(cmd), cmd);
 }

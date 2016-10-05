@@ -331,4 +331,10 @@ ft81x_result ft81x_coproc_cmd_gradcolour(FT81X_Handle *handle, uint8_t r, uint8_
 //  first_char - The first character in your custom font image, probably ' '
 ft81x_result ft81x_coproc_cmd_setfont2(FT81X_Handle *handle, uint8_t font_id, uint32_t font_metric_block_offset, char first_char);
 
+// Remap a romfont to a different bitmap_handle
+// Note: this should be used through the Text Manager and not directly
+//  bitmap_handle - bitmap id to use for this font (0-31)
+//  rom_font_id   - font id for an inbuilt font (16-34)
+ft81x_result ft81x_coproc_cmd_romfont(FT81X_Handle *handle, uint8_t bitmap_handle, uint8_t rom_font_id);
+
 #endif
