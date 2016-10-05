@@ -45,7 +45,7 @@ ft81x_result ft81x_platform_initialise(FT81X_Handle *handle)
 
     if (handle->platform_user_data != NULL)
     {
-        return FT81X_RESULT_AREADY_INITIALISED;
+        return FT81X_RESULT_ALREADY_INITIALISED;
     }
 
     handle->platform_user_data = (void *)malloc(sizeof(FT81X_NXP_kinetis_k66_user_data));
