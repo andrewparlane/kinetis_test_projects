@@ -165,6 +165,11 @@ ft81x_result ft81x_coproc_cmd_gauge(FT81X_Handle *handle, uint16_t x, uint16_t y
 //  milliseconds - time in ms (0 - 1000)
 ft81x_result ft81x_coproc_cmd_clock(FT81X_Handle *handle, uint16_t x, uint16_t y, uint16_t radius, uint16_t options, uint16_t hours, uint16_t minutes, uint16_t seconds, uint16_t milliseconds);
 
+// Calibrate the touch screen
+// Note: Only for resistive touch.
+//       but can be used with capacitive touch in compatability mode
+ft81x_result ft81x_coproc_cmd_calibrate(FT81X_Handle *handle);
+
 // Shows a "thinking" animation on the screen in one of several styles
 // until CMD_STOP is sent
 // Note: Can't be used with CMD_SCREENSAVER or CMD_SKETCH
