@@ -4,6 +4,12 @@
 
 #include <stdlib.h>
 
+// the FT81x supports bitmap IDs 0-31
+// number 15 is used as scratch, this can be overridden
+// but I see no reason to do so.
+#define INVALID_BITMAP_IDS_MASK   (1 << 15)
+#define VALID_BITMAP_IDS_MASK     (0xFFFFFFFF & ~(INVALID_BITMAP_IDS_MASK))
+
 ft81x_result ft81x_bitmap_handles_initialise(FT81X_Handle *handle)
 {
     if (handle == NULL)
@@ -11,14 +17,14 @@ ft81x_result ft81x_bitmap_handles_initialise(FT81X_Handle *handle)
         return FT81X_RESULT_NO_HANDLE;
     }
 
-    handle->bitmap_handles.free_bitmap_ids = FT81X_VALID_BITMAP_IDS_MASK;
+    handle->bitmap_handles.free_bitmap_ids = VALID_BITMAP_IDS_MASK;
 
     return FT81X_RESULT_OK;
 }
 
 ft81x_result ft81x_bitmap_handles_allocate(FT81X_Handle *handle, uint8_t *id)
 {
-    uint16_t ids = handle->bitmap_handles.free_bitmap_ids;
+    uint32_t ids = handle->bitmap_handles.free_bitmap_ids;
 
     // check each bit until we find a 1.
     // abort if ids == 0, ie. there are none free

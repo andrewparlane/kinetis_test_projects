@@ -3,13 +3,9 @@
 
 #include <stdint.h>
 
-// the FT81x supports bitmap IDs 0-14
-#define FT81X_NUM_VALID_BITMAP_IDS      15
-#define FT81X_VALID_BITMAP_IDS_MASK     0x7FFF
-
 typedef struct
 {
-    uint16_t free_bitmap_ids;
+    uint32_t free_bitmap_ids;
 } FT81X_Bitmap_Handles;
 
 // forward declarations for ft81x.h
