@@ -76,6 +76,7 @@ uint8_t dl_buffer[DL_BUFFER_SIZE];
 
 ft81x_result test1(FT81X_Handle *handle);
 ft81x_result test2(FT81X_Handle *handle);
+ft81x_result test3(FT81X_Handle *handle);
 
 // ----------------------------------------------------------------------------
 // Main thread
@@ -157,6 +158,15 @@ static void main_thread(void *arg)
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("test2 failed with %u\n", res);
+        ft81x_cleanup(&handle);
+        return;
+    }
+
+    // touch stuff
+    res = test3(&handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("test3 failed with %u\n", res);
         ft81x_cleanup(&handle);
         return;
     }
