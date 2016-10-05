@@ -7,6 +7,9 @@
 
 #include <stdint.h>
 
+#define FT81X_TEXT_MANAGER_FIRST_INBUILT_FONT   16
+#define FT81X_TEXT_MANAGER_LAST_INBUILT_FONT    34
+
 // ----------------------------------------------------------------------------
 // Built in font sizes (see datasheet table 4-8)
 // ----------------------------------------------------------------------------

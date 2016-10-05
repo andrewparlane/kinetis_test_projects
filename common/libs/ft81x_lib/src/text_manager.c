@@ -85,18 +85,25 @@ ft81x_result ft81x_text_manager_load_custom_font(FT81X_Handle *handle, const FT8
 
 ft81x_result ft81x_text_manager_get_font_handle_for_inbuilt_font(FT81X_Handle *handle, FT81X_Font_Handle *font_handle, uint8_t font_id)
 {
-    // inbuilt fonts are 16 - 34
-    // but we currently only support 16 - 31
-    // we must use CMD_ROMFONT to get access to 32 - 34
-    if (font_id < 16 || font_id > 31)
+    // Make sure we actual request an inbuilt font
+    if (font_id < FT81X_TEXT_MANAGER_FIRST_INBUILT_FONT ||
+        font_id > FT81X_TEXT_MANAGER_LAST_INBUILT_FONT)
     {
         return FT81X_RESULT_INVALID_ARG;
     }
 
-    font_handle->image_handle.bitmap_handle = font_id;
+    // allocate a bitmap handle
+    ft81x_result res = ft81x_bitmap_handles_allocate(handle, &font_handle->image_handle.bitmap_handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // this isn't a custom font
     font_handle->custom = 0;
 
-    return FT81X_RESULT_OK;
+    // Now use CMD_ROMFONT to assign this font to this bitmap_handle
+    return ft81x_coproc_cmd_romfont(handle, font_handle->image_handle.bitmap_handle, font_id);
 }
 
 ft81x_result ft81x_text_manager_send_font_init_dl(FT81X_Handle *handle, const FT81X_Font_Handle *font_handle, FT81X_Bitmap_Filter filter, FT81X_Bitmap_Wrap wrapx, FT81X_Bitmap_Wrap wrapy)
