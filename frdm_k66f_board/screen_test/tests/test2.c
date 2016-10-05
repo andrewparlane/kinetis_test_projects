@@ -160,7 +160,7 @@ ft81x_result test2_compressed_images(FT81X_Handle *handle)
                                                  FT81X_BITMAP_FILTER_NEAREST,
                                                  162, 270,
                                                  NULL);
-if (res != FT81X_RESULT_OK)
+    if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("ft81x_image_manager_send_image_draw_dl failed with %u\n", res);
         return res;
