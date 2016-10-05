@@ -11,6 +11,7 @@
 #include "ft81x_graphics_engine.h"
 #include "ft81x_image_manager.h"
 #include "ft81x_text_manager.h"
+#include "ft81x_touch_manager.h"
 
 static const uint32_t clear_dl_snippet[] =
 {
@@ -94,26 +95,13 @@ ft81x_result test3_calibrate(FT81X_Handle *handle)
     }
 
     // calibrate
-    res = ft81x_coproc_cmd_calibrate(handle);
+    // Note: This sends the DISPLAY() instruction and swaps the DL in
+    //       Any DL stuff before this will be in the background of the
+    //       calibration process
+    res = ft81x_touch_manager_calibrate(handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_coproc_cmd_calibrate failed with %u\n", res);
-        return res;
-    }
-
-    // write everything to the DL ram and then swap it in
-    res = ft81x_graphics_engine_end_display_list(handle);
-    if (res != FT81X_RESULT_OK)
-    {
-        DbgConsole_Printf("ft81x_graphics_engine_end_display_list failed with %u\n", res);
-        return res;
-    }
-
-    // wait for it to be done
-    res = ft81x_graphics_engine_flush_and_synchronise(handle);
-    if (res != FT81X_RESULT_OK)
-    {
-        DbgConsole_Printf("ft81x_graphics_engine_flush_and_synchronise failed with %u\n", res);
+        DbgConsole_Printf("ft81x_touch_manager_calibrate failed with %u\n", res);
         return res;
     }
 
