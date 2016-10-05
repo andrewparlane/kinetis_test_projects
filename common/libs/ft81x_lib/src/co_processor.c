@@ -23,6 +23,7 @@
 #define FT81X_COPROC_CMD_ID_TOGGLE          0xFFFFFF12
 #define FT81X_COPROC_CMD_ID_GAUGE           0xFFFFFF13
 #define FT81X_COPROC_CMD_ID_CLOCK           0xFFFFFF14
+#define FT81X_COPROC_CMD_ID_SPINNER         0xFFFFFF16
 #define FT81X_COPROC_CMD_ID_STOP            0xFFFFFF17
 #define FT81X_COPROC_CMD_ID_INFLATE         0xFFFFFF22
 #define FT81X_COPROC_CMD_ID_GETPTR          0xFFFFFF23
@@ -219,6 +220,15 @@ ft81x_result ft81x_coproc_cmd_clock(FT81X_Handle *handle, uint16_t x, uint16_t y
                               (options << 16) | radius,
                               (minutes << 16) | hours,
                               (milliseconds << 16) | seconds };
+
+    return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(data), data);
+}
+
+ft81x_result ft81x_coproc_cmd_spinner(FT81X_Handle *handle, uint16_t x, uint16_t y, FT81X_Coproc_Spinner_Style style, uint16_t scale)
+{
+    const uint32_t data[] = { FT81X_COPROC_CMD_ID_SPINNER,
+                              (y << 16) | x,
+                              (scale << 16) | (style & 0xFFFF) };
 
     return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(data), data);
 }

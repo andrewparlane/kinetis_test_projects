@@ -21,6 +21,20 @@
 #define FT81X_COPROC_OPTION_NOSECS          0x8000
 #define FT81X_COPROC_OPTION_NOHANDS         ((FT81X_COPROC_OPTION_NOSECS) | (FT81X_COPROC_OPTION_NOHM))
 
+// ----------------------------------------------------------------------------
+// Enums
+// ----------------------------------------------------------------------------
+typedef enum
+{
+    FT81X_COPROC_SPINNER_STYLE_CIRCLE       = 0,
+    FT81X_COPROC_SPINNER_STYLE_LINE         = 1,
+    FT81X_COPROC_SPINNER_STYLE_CLOCK_HAND   = 2,
+    FT81X_COPROC_SPINNER_STYLE_ORBIT        = 3,
+} FT81X_Coproc_Spinner_Style;
+
+// ----------------------------------------------------------------------------
+// Functions
+// ----------------------------------------------------------------------------
 // Starts a new display list
 ft81x_result ft81x_coproc_cmd_dlstart(FT81X_Handle *handle);
 
@@ -161,6 +175,14 @@ ft81x_result ft81x_coproc_cmd_gauge(FT81X_Handle *handle, uint16_t x, uint16_t y
 //  seconds - time in seconds (0 - 59)
 //  milliseconds - time in ms (0 - 1000)
 ft81x_result ft81x_coproc_cmd_clock(FT81X_Handle *handle, uint16_t x, uint16_t y, uint16_t radius, uint16_t options, uint16_t hours, uint16_t minutes, uint16_t seconds, uint16_t milliseconds);
+
+// Shows a "thinking" animation on the screen in one of several styles
+// until CMD_STOP is sent
+// Note: Can't be used with CMD_SCREENSAVER or CMD_SKETCH
+//  x, y    - top left of spinner
+//  style   - type of spinner to show (see enum FT81X_Coproc_Spinner_Style)
+//  scale   - size of spinner, probably should be 0, 1 or 2
+ft81x_result ft81x_coproc_cmd_spinner(FT81X_Handle *handle, uint16_t x, uint16_t y, FT81X_Coproc_Spinner_Style style, uint16_t scale);
 
 // Stops the update of REG_MACRO_0 and REG_MACRO_1
 // IE. It stops the current screensave, spinner or sketch
