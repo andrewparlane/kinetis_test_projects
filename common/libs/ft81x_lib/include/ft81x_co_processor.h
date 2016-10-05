@@ -58,39 +58,31 @@ ft81x_result ft81x_coproc_cmd_fgcolour(FT81X_Handle *handle, uint8_t r, uint8_t 
 ft81x_result ft81x_coproc_cmd_gradient(FT81X_Handle *handle, uint16_t x0, uint16_t y0, uint8_t r0, uint8_t g0, uint8_t b0, uint16_t x1, uint16_t y1, uint8_t r1, uint8_t g1, uint8_t b1);
 
 // Draws font to the screen
-//  x    - x co-ord of text (see options)
-//  y    - y co-ord of text (see options)
-//  font - bitmap id for font 0-31 (0-14 are for custom RAM fonts)
-//                                    (15 is for scratch)
-//                                    (16-31 are ROM fonts)
-//                                    (there are also 32 - 34, see CMD_ROMFONT)
+// Note: this should be used through the Text Manager and not directly
+//  x       - x co-ord of text (see options)
+//  y       - y co-ord of text (see options)
+//  font_id - bitmap id for font (0-31)
 //  options - how to align the text with the x,y co-ords
 //            see FT81X_COPROC_OPTION_CENTRE... and FT81X_COPROC_OPTION_RIGHTX
 //  str     - NULL terminated ascii string
 ft81x_result ft81x_coproc_cmd_text(FT81X_Handle *handle, uint16_t x, uint16_t y, uint8_t font_id, uint16_t options, const char *str);
 
 // Draws a button to the screen
-//  x      - x co-ord of button
-//  y      - y co-ord of button
-//  width  - width of button
-//  height - height of button
-//  font   - bitmap id for font 0-31 (0-14 are for custom RAM fonts)
-//                                   (15 is for scratch)
-//                                   (16-31 are ROM fonts)
-//                                   (there are also 32 - 34, see CMD_ROMFONT)
+//  x       - x co-ord of button
+//  y       - y co-ord of button
+//  width   - width of button
+//  height  - height of button
+//  font_id - bitmap id for font (0-31)
 //  options - FT81X_COPROC_OPTION_FLAT for no 3D effect
 //  str     - button label (NULL terminated ascii string)
 ft81x_result ft81x_coproc_cmd_button(FT81X_Handle *handle, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t font_id, uint16_t options, const char *str);
 
 // Draws a set of keys horizontally access the screen
-//  x      - x co-ord of top left of keys
-//  y      - y co-ord of top left of keys
-//  width  - width of keys (in total, not each)
-//  height - height of keys
-//  font   - bitmap id for font 0-31 (0-14 are for custom RAM fonts)
-//                                   (15 is for scratch)
-//                                   (16-31 are ROM fonts)
-//                                   (there are also 32 - 34, see CMD_ROMFONT)
+//  x       - x co-ord of top left of keys
+//  y       - y co-ord of top left of keys
+//  width   - width of keys (in total, not each)
+//  height  - height of keys
+//  font_id - bitmap id for font (0-31)
 //  options - FT81X_COPROC_OPTION_FLAT for no 3D effect
 //            FT81X_COPROC_OPTION_CENTRE keys are drawn at the minimum size
 //                                       (based on font) in the centre of
@@ -132,13 +124,10 @@ ft81x_result ft81x_coproc_cmd_slider(FT81X_Handle *handle, uint16_t x, uint16_t 
 ft81x_result ft81x_coproc_cmd_scrollbar(FT81X_Handle *handle, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t options, uint16_t val, uint16_t size, uint16_t range);
 
 // Draws a toggle to the screen
-//  y      - y co-ord of top left of toggle
-//  x      - x co-ord of top left of toggle
-//  width  - width of toggle
-//  font   - bitmap id for font 0-31 (0-14 are for custom RAM fonts)
-//                                   (15 is for scratch)
-//                                   (16-31 are ROM fonts)
-//                                   (there are also 32 - 34, see CMD_ROMFONT)
+//  y       - y co-ord of top left of toggle
+//  x       - x co-ord of top left of toggle
+//  width   - width of toggle
+//  font_id - bitmap id for font (0 - 31)
 //  options - FT81X_COPROC_OPTION_FLAT for no 3D effect
 //  state   - 0 = off, anything else = on
 //  str     - labels (NULL terminated ascii string)
@@ -270,11 +259,8 @@ ft81x_result ft81x_coproc_cmd_setmatrix(FT81X_Handle *handle);
 
 // Set up a custom font
 // Note: this should be used through the Text Manager and not directly
-//  font_id - bitmap id to use for font 0-31 (0-14 are for custom RAM fonts)
-//                                           (15 is for scratch)
-//                                           (16-31 are ROM fonts)
-//                                           (there are also 32 - 34, see CMD_ROMFONT)
-//  font_metric_block_offset - the offset into g_ram of the font metric block
+//  font_id                     - The bitmap id to use for font (0 - 31)
+//  font_metric_block_offset    - The offset into g_ram of the font metric block
 ft81x_result ft81x_coproc_cmd_setfont(FT81X_Handle *handle, uint8_t font_id, uint32_t font_metric_block_offset);
 
 // Draw a rotary dial to the screen
@@ -286,12 +272,10 @@ ft81x_result ft81x_coproc_cmd_setfont(FT81X_Handle *handle, uint8_t font_id, uin
 ft81x_result ft81x_coproc_cmd_dial(FT81X_Handle *handle, uint16_t x, uint16_t y, uint16_t radius, uint16_t options, uint16_t val);
 
 // Draw a number to the screen
+// Note: this should be used through the Text Manager and not directly
 //  x       - x co-ord of number
 //  y       - y co-ord of number
-//  font_id - bitmap id for font 0-31 (0-14 are for custom RAM fonts)
-//                                    (15 is for scratch)
-//                                    (16-31 are ROM fonts)
-//                                    (there are also 32 - 34, see CMD_ROMFONT)
+//  font_id - bitmap id for font (0-31)
 //  options - FT81X_COPROC_OPTION_SIGNED for signed number
 //            FT81X_COPROC_OPTION_CENTREX
 //            FT81X_COPROC_OPTION_CENTREY
@@ -321,14 +305,11 @@ ft81x_result ft81x_coproc_cmd_getmatrix(FT81X_Handle *handle);
 // and fades to the fg colour at the bottom
 ft81x_result ft81x_coproc_cmd_gradcolour(FT81X_Handle *handle, uint8_t r, uint8_t g, uint8_t b);
 
-// Set up a custom font (note: I can't get this working yet)
+// Set up a custom font
 // Note: this should be used through the Text Manager and not directly
-//  font_id - bitmap id to use for font 0-31 (0-14 are for custom RAM fonts)
-//                                           (15 is for scratch)
-//                                           (16-31 are ROM fonts)
-//                                           (there are also 32 - 34, see CMD_ROMFONT)
-//  font_metric_block_offset - the offset into g_ram of the font metric block
-//  first_char - The first character in your custom font image, probably ' '
+//  font_id                     - The bitmap id to use for font (0 - 31)
+//  font_metric_block_offset    - The offset into g_ram of the font metric block
+//  first_char                  - The first character in your custom font image, probably ' '
 ft81x_result ft81x_coproc_cmd_setfont2(FT81X_Handle *handle, uint8_t font_id, uint32_t font_metric_block_offset, char first_char);
 
 // Remap a romfont to a different bitmap_handle
