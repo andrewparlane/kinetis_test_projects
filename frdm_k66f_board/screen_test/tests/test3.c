@@ -228,6 +228,109 @@ ft81x_result test3_display_calibration_matrix(FT81X_Handle *handle)
     return FT81X_RESULT_OK;
 }
 
+ft81x_result test3_tags(FT81X_Handle *handle)
+{
+    ft81x_result res;
+
+    // ----------------------------------------------------------
+    // Build and display the display list
+    // ----------------------------------------------------------
+    // reset the co-proc to it's default state
+    res = ft81x_coproc_cmd_coldstart(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_coldstart failed with %u\n", res);
+        return res;
+    }
+
+    uint8_t touched_tag = 0;
+    while (1)
+    {
+        // draw a couple of rectangles
+        // some with tags, some not
+        // red = with tag, not pressed
+        // green = with tag, pressed
+        // blue = no tag
+        const uint32_t dl[] =
+        {
+            // clear the tag buffer to 4s
+            // when tag 4 is pressed, set the background colour to green
+            // this should happen when you touch anywhere that's not another tag
+            FT81X_DL_CMD_CLEAR_TAG(4),
+            FT81X_DL_CMD_CLEAR_COLOUR_RGB(0,
+                                          (touched_tag == 4) ? 255 : 0,
+                                          0),
+            FT81X_DL_CMD_CLEAR(1,1,1),
+
+            // set up a rectangle with tag 1
+            // when pressed it's red, otherwise green
+            FT81X_DL_CMD_TAG(1),
+            FT81X_DL_CMD_TAG_MASK(1),
+            FT81X_DL_CMD_COLOUR_RGB((touched_tag == 1) ? 0 : 255,
+                                    (touched_tag == 1) ? 255 : 0,
+                                    0),
+            FT81X_DL_CMD_BEGIN(FT81X_PRIMITIVE_RECTS),
+                FT81X_DL_CMD_VERTEX2II(50, 50, 0, 0),
+                FT81X_DL_CMD_VERTEX2II(150, 150, 0, 0),
+            FT81X_DL_CMD_END(),
+
+            // set up another rectangle with no tag (ie the clear tag)
+            // it's blue, we set it green if tag 2 is pressed, to prove
+            // that TAG_MASK works
+            FT81X_DL_CMD_TAG(2),
+            FT81X_DL_CMD_TAG_MASK(0),
+            FT81X_DL_CMD_COLOUR_RGB(0,
+                                    (touched_tag == 2) ? 255 : 0,
+                                    (touched_tag == 2) ? 0 : 255),
+            FT81X_DL_CMD_BEGIN(FT81X_PRIMITIVE_RECTS),
+                FT81X_DL_CMD_VERTEX2II(200, 50, 0, 0),
+                FT81X_DL_CMD_VERTEX2II(300, 150, 0, 0),
+            FT81X_DL_CMD_END(),
+
+            // set up a third rectangle with tag 3
+            // it's red when it's not press,d and green when it is
+            FT81X_DL_CMD_TAG(3),
+            FT81X_DL_CMD_TAG_MASK(1),
+            FT81X_DL_CMD_COLOUR_RGB((touched_tag == 3) ? 0 : 255,
+                                    (touched_tag == 3) ? 255 : 0,
+                                    0),
+            FT81X_DL_CMD_BEGIN(FT81X_PRIMITIVE_RECTS),
+                FT81X_DL_CMD_VERTEX2II(50, 200, 0, 0),
+                FT81X_DL_CMD_VERTEX2II(150, 300, 0, 0),
+            FT81X_DL_CMD_END(),
+
+            FT81X_DL_CMD_DISPLAY(),
+        };
+
+        res = ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(dl), dl);
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+            return res;
+        }
+
+        // write everything to the DL ram and then swap it in
+        res = ft81x_graphics_engine_end_display_list(handle);
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_graphics_engine_end_display_list failed with %u\n", res);
+            return res;
+        }
+
+        uint8_t last_tag = touched_tag;
+        while(touched_tag == last_tag)
+        {
+            res = ft81x_touch_manager_check_for_touched_tag(handle, &touched_tag);
+            if (res != FT81X_RESULT_OK)
+            {
+                DbgConsole_Printf("ft81x_touch_manager_check_for_touched_tag failed with %u\n", res);
+                return res;
+            }
+        }
+        DbgConsole_Printf("last_tag %d, touched_tag %d\n", last_tag, touched_tag);
+    }
+}
+
 ft81x_result test3(FT81X_Handle *handle)
 {
     ft81x_result res;
@@ -259,6 +362,16 @@ ft81x_result test3(FT81X_Handle *handle)
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("test3_display_calibration_matrix failed with %u\n", res);
+        return res;
+    }
+
+    // ----------------------------------------------------------
+    // Do a tag test
+    // ----------------------------------------------------------
+    res = test3_tags(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("test3_tags failed with %u\n", res);
         return res;
     }
 
