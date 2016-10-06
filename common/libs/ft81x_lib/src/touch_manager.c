@@ -74,3 +74,10 @@ ft81x_result ft81x_touch_manager_get_calibration_values(FT81X_Handle *handle, ui
     }
     return FT81X_RESULT_OK;
 }
+
+ft81x_result ft81x_touch_manager_check_for_touched_tag(FT81X_Handle *handle, uint8_t *tag)
+{
+    READ_GPU_REG_8(FT81X_REG_TOUCH_TAG, *tag);
+
+    return FT81X_RESULT_OK;
+}

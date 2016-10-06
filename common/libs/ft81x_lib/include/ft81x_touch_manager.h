@@ -11,4 +11,6 @@ ft81x_result ft81x_touch_manager_calibrate(FT81X_Handle *handle);
 ft81x_result ft81x_touch_manager_write_calibration_values(FT81X_Handle *handle, uint32_t values[6]);
 ft81x_result ft81x_touch_manager_get_calibration_values(FT81X_Handle *handle, uint32_t values[6]);
 
+ft81x_result ft81x_touch_manager_check_for_touched_tag(FT81X_Handle *handle, uint8_t *tag);
+
 #endif
