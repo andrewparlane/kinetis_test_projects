@@ -91,6 +91,7 @@ typedef enum
 #define FT81X_DL_CMD_ID_DISPLAY             0x00
 #define FT81X_DL_CMD_ID_BITMAP_SOURCE       0x01
 #define FT81X_DL_CMD_ID_CLEAR_COLOUR_RGB    0x02
+#define FT81X_DL_CMD_ID_TAG                 0x03
 #define FT81X_DL_CMD_ID_COLOUR_RGB          0x04
 #define FT81X_DL_CMD_ID_BITMAP_HANDLE       0x05
 #define FT81X_DL_CMD_ID_BITMAP_LAYOUT       0x07
@@ -98,6 +99,8 @@ typedef enum
 #define FT81X_DL_CMD_ID_BLEND_FUNC          0x0B
 #define FT81X_DL_CMD_ID_POINT_SIZE          0x0D
 #define FT81X_DL_CMD_ID_LINE_WIDTH          0x0E
+#define FT81X_DL_CMD_ID_CLEAR_TAG           0x12
+#define FT81X_DL_CMD_ID_TAG_MASK            0x14
 #define FT81X_DL_CMD_ID_BEGIN               0x1F
 #define FT81X_DL_CMD_ID_COLOUR_MASK         0x20
 #define FT81X_DL_CMD_ID_END                 0x21
@@ -143,6 +146,13 @@ typedef enum
                               ((((red)   & 0xFF) << 16) | \
                                (((green) & 0xFF) <<  8) | \
                                (((blue)  & 0xFF) <<  0)))
+
+// Tag
+//  value - 1-255 - the value to write into the tag buffer
+//                  for any following draw commands
+#define FT81X_DL_CMD_TAG(value) \
+            FT81X_DL_8BIT_CMD((FT81X_DL_CMD_ID_TAG), \
+                              ((value) & 0xFF))
 
 // Set the current colour
 #define FT81X_DL_CMD_COLOUR_RGB(red, green, blue) \
@@ -195,6 +205,21 @@ typedef enum
             FT81X_DL_8BIT_CMD((FT81X_DL_CMD_ID_BLEND_FUNC) , \
                               ((((src)  & 0x07)     << 3) | \
                                (((dst)  & 0x07)     << 0)))
+
+// Clear tag
+//  value - 0-255 the value to use when the tag buffer
+//          is cleared, using the CLEAR() instruction
+#define FT81X_DL_CMD_CLEAR_TAG(value) \
+            FT81X_DL_8BIT_CMD((FT81X_DL_CMD_ID_CLEAR_TAG), \
+                              ((value) & 0xFF))
+
+// Tag mask
+//  enabled - if enabled the tag buffer is filled with the
+//            value set by the prvious TAG instruction
+//            if disabled, the tag buffer is left as is
+#define FT81X_DL_CMD_TAG_MASK(enabled) \
+            FT81X_DL_8BIT_CMD((FT81X_DL_CMD_ID_TAG_MASK), \
+                              ((enabled) & 0x01))
 
 // Specify the radius of a point
 //  size - radius in 1/16ths of pixels
@@ -279,7 +304,6 @@ typedef enum
 
 /*
 #define VERTEX2F(x,y) ((1UL<<30)|(((x)&32767UL)<<15)|(((y)&32767UL)<<0))
-#define TAG(s) ((3UL<<24)|(((s)&255UL)<<0))
 #define CELL(cell) ((6UL<<24)|(((cell)&127UL)<<0))
 #define ALPHA_FUNC(func,ref) ((9UL<<24)|(((func)&7UL)<<8)|(((ref)&255UL)<<0))
 #define STENCIL_FUNC(func,ref,mask) ((10UL<<24)|(((func)&7UL)<<16)|(((ref)&255UL)<<8)|(((mask)&255UL)<<0))
@@ -287,9 +311,7 @@ typedef enum
 #define CLEAR_COLOUR_A(alpha) ((15UL<<24)|(((alpha)&255UL)<<0))
 #define COLOUR_A(alpha) ((16UL<<24)|(((alpha)&255UL)<<0))
 #define CLEAR_STENCIL(s) ((17UL<<24)|(((s)&255UL)<<0))
-#define CLEAR_TAG(s) ((18UL<<24)|(((s)&255UL)<<0))
 #define STENCIL_MASK(mask) ((19UL<<24)|(((mask)&255UL)<<0))
-#define TAG_MASK(mask) ((20UL<<24)|(((mask)&1UL)<<0))
 #define BITMAP_TRANSFORM_A(a) ((21UL<<24)|(((a)&131071UL)<<0))
 #define BITMAP_TRANSFORM_B(b) ((22UL<<24)|(((b)&131071UL)<<0))
 #define BITMAP_TRANSFORM_C(c) ((23UL<<24)|(((c)&16777215UL)<<0))
