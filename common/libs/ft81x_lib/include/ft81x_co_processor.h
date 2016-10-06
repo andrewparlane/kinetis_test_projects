@@ -32,6 +32,18 @@ typedef enum
     FT81X_COPROC_SPINNER_STYLE_ORBIT        = 3,
 } FT81X_Coproc_Spinner_Style;
 
+typedef enum
+{
+    FT81X_COPROC_SCREEN_ORIENTATION_DEFAULT                     = 0,
+    FT81X_COPROC_SCREEN_ORIENTATION_INVERTED                    = 1,
+    FT81X_COPROC_SCREEN_ORIENTATION_ROTATED                     = 2,
+    FT81X_COPROC_SCREEN_ORIENTATION_ROTATED_INVERTED            = 3,
+    FT81X_COPROC_SCREEN_ORIENTATION_MIRRORED                    = 4,
+    FT81X_COPROC_SCREEN_ORIENTATION_MIRRORED_INVERTED           = 5,
+    FT81X_COPROC_SCREEN_ORIENTATION_MIRRORED_ROTATED            = 6,
+    FT81X_COPROC_SCREEN_ORIENTATION_MIRRORED_ROTATED_INVERTED   = 7,
+} FT81X_Coproc_Screen_Orientation;
+
 // ----------------------------------------------------------------------------
 // Functions
 // ----------------------------------------------------------------------------
@@ -309,6 +321,10 @@ ft81x_result ft81x_coproc_cmd_getmatrix(FT81X_Handle *handle);
 // A button or key starts with the gradient colour at the top
 // and fades to the fg colour at the bottom
 ft81x_result ft81x_coproc_cmd_gradcolour(FT81X_Handle *handle, uint8_t r, uint8_t g, uint8_t b);
+
+// Sets the screen orientation
+//  orientation - see enum FT81X_Coproc_Screen_Orientation
+ft81x_result ft81x_coproc_cmd_setrotate(FT81X_Handle *handle, FT81X_Coproc_Screen_Orientation orientation);
 
 // Set the base for use with CMD_NUMBER
 //  base - the base to output in 2-36

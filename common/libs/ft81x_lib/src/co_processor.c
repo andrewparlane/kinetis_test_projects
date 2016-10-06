@@ -41,6 +41,7 @@
 #define FT81X_COPROC_CMD_ID_COLDSTART       0xFFFFFF32
 #define FT81X_COPROC_CMD_ID_GETMATRIX       0xFFFFFF33
 #define FT81X_COPROC_CMD_ID_GRADCOLOUR      0xFFFFFF34
+#define FT81X_COPROC_CMD_ID_SETROTATE       0xFFFFFF36
 #define FT81X_COPROC_CMD_ID_SETBASE         0xFFFFFF38
 #define FT81X_COPROC_CMD_ID_SETFONT2        0xFFFFFF3B
 #define FT81X_COPROC_CMD_ID_ROMFONT         0xFFFFFF3F
@@ -393,6 +394,14 @@ ft81x_result ft81x_coproc_cmd_gradcolour(FT81X_Handle *handle, uint8_t r, uint8_
                               (r << 16) | (g << 8) | b };
 
     return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(data), data);
+}
+
+ft81x_result ft81x_coproc_cmd_setrotate(FT81X_Handle *handle, FT81X_Coproc_Screen_Orientation orientation)
+{
+    const uint32_t cmd[] = { FT81X_COPROC_CMD_ID_SETROTATE,
+                             orientation };
+
+    return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(cmd), cmd);
 }
 
 ft81x_result ft81x_coproc_cmd_setbase(FT81X_Handle *handle, uint8_t base)
