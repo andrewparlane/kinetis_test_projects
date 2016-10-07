@@ -280,6 +280,20 @@ ft81x_result ft81x_coproc_cmd_setmatrix(FT81X_Handle *handle);
 //  font_metric_block_offset    - The offset into g_ram of the font metric block
 ft81x_result ft81x_coproc_cmd_setfont(FT81X_Handle *handle, uint8_t font_id, uint32_t font_metric_block_offset);
 
+// Add a tracking region
+// This allows the co-processor to tell you how far along a slider
+// or what angle around a dial is being touched.
+// Set width, height to:
+//  1,1 for rotary mode,
+//  0,0 to disable
+//  width, height for linear mode
+// Note: Should only be used through touch manager and not directly
+//  x, y    - co-ords of top left of widget if linear, or centre if rotary
+//  width   - width of the widge if linear, set to 1 for rotary
+//  height  - height of the widge if linear, set to 1 for rotary
+//  tag     - associated tag of the graphics object see FT81X_DL_CMD_TAG()
+ft81x_result ft81x_coproc_cmd_track(FT81X_Handle *handle, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t tag);
+
 // Draw a rotary dial to the screen
 //  x       - x co-ord of clock
 //  y       - y co-ord of clock

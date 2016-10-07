@@ -34,6 +34,7 @@
 #define FT81X_COPROC_CMD_ID_ROTATE          0xFFFFFF29
 #define FT81X_COPROC_CMD_ID_SETMATRIX       0xFFFFFF2A
 #define FT81X_COPROC_CMD_ID_SETFONT         0xFFFFFF2B
+#define FT81X_COPROC_CMD_ID_TRACK           0xFFFFFF2C
 #define FT81X_COPROC_CMD_ID_DIAL            0xFFFFFF2D
 #define FT81X_COPROC_CMD_ID_NUMBER          0xFFFFFF2E
 #define FT81X_COPROC_CMD_ID_SCREENSAVER     0xFFFFFF2F
@@ -338,6 +339,16 @@ ft81x_result ft81x_coproc_cmd_setfont(FT81X_Handle *handle, uint8_t font_id, uin
     const uint32_t cmd[] = { FT81X_COPROC_CMD_ID_SETFONT,
                              font_id,
                              font_metric_block_offset};
+
+    return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(cmd), cmd);
+}
+
+ft81x_result ft81x_coproc_cmd_track(FT81X_Handle *handle, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t tag)
+{
+    const uint32_t cmd[] = { FT81X_COPROC_CMD_ID_TRACK,
+                             (y << 16) | x,
+                             (height << 16) | width,
+                             tag };
 
     return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(cmd), cmd);
 }
