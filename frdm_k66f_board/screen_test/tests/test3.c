@@ -233,6 +233,17 @@ ft81x_result test3_tags(FT81X_Handle *handle)
     ft81x_result res;
 
     // ----------------------------------------------------------
+    // Get font handles for inbuilt fonts
+    // ----------------------------------------------------------
+    FT81X_Font_Handle inbuilt_31_font_handle;
+    res = ft81x_text_manager_get_font_handle_for_inbuilt_font(handle, &inbuilt_31_font_handle, 31);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_text_manager_get_font_handle_for_inbuilt_font failed with %u\n", res);
+        return res;
+    }
+
+    // ----------------------------------------------------------
     // Build and display the display list
     // ----------------------------------------------------------
     // reset the co-proc to it's default state
@@ -299,13 +310,43 @@ ft81x_result test3_tags(FT81X_Handle *handle)
                 FT81X_DL_CMD_VERTEX2II(150, 300, 0, 0),
             FT81X_DL_CMD_END(),
 
-            FT81X_DL_CMD_DISPLAY(),
+            // set up a third rectangle with tag 5
+            // it's always red
+            FT81X_DL_CMD_TAG(5),
+            FT81X_DL_CMD_TAG_MASK(1),
+            FT81X_DL_CMD_COLOUR_RGB(255, 0, 0),
+            FT81X_DL_CMD_BEGIN(FT81X_PRIMITIVE_RECTS),
+                FT81X_DL_CMD_VERTEX2II(380, 270, 0, 0),
+                FT81X_DL_CMD_VERTEX2II(480, 320, 0, 0),
+            FT81X_DL_CMD_END(),
+
+            // disable tagging
+            FT81X_DL_CMD_TAG_MASK(0),
+
+            // set the font text to white
+            FT81X_DL_CMD_COLOUR_RGB(255, 255, 255),
         };
 
         res = ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(dl), dl);
         if (res != FT81X_RESULT_OK)
         {
             DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+            return res;
+        }
+
+        // Label the exit button
+        res = ft81x_text_manager_write_text(handle, &inbuilt_31_font_handle, 430, 295, FT81X_TEXT_COORDS_CENTRE, "EXIT");
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_text_manager_write_text failed with %u\n", res);
+            return res;
+        }
+
+        // display it
+        res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_DISPLAY());
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
             return res;
         }
 
@@ -328,7 +369,15 @@ ft81x_result test3_tags(FT81X_Handle *handle)
             }
         }
         DbgConsole_Printf("last_tag %d, touched_tag %d\n", last_tag, touched_tag);
+
+        if (touched_tag == 5)
+        {
+            // exit button pressed
+            break;
+        }
     }
+
+    return FT81X_RESULT_OK;
 }
 
 ft81x_result test3(FT81X_Handle *handle)
