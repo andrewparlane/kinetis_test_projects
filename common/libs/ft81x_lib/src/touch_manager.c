@@ -75,9 +75,60 @@ ft81x_result ft81x_touch_manager_get_calibration_values(FT81X_Handle *handle, ui
     return FT81X_RESULT_OK;
 }
 
-ft81x_result ft81x_touch_manager_check_for_touched_tag(FT81X_Handle *handle, uint8_t *tag)
+inline ft81x_result ft81x_touch_manager_track_linear_region(FT81X_Handle *handle, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t tag)
 {
-    READ_GPU_REG_8(FT81X_REG_TOUCH_TAG, *tag);
+    return ft81x_coproc_cmd_track(handle, x, y, width, height, tag);
+}
+
+inline ft81x_result ft81x_touch_manager_track_rotary_region(FT81X_Handle *handle, uint16_t x, uint16_t y, uint8_t tag)
+{
+    return ft81x_coproc_cmd_track(handle, x, y, 1, 1, tag);
+}
+
+ft81x_result ft81x_touch_manager_check_for_touched_tag(FT81X_Handle *handle, uint8_t *tag, uint16_t *track_value)
+{
+    // first see if any tag is active
+    uint8_t touch_tag;
+    READ_GPU_REG_8(FT81X_REG_TOUCH_TAG, touch_tag);
+
+    if (touch_tag)
+    {
+        // we have an active tag, check to see if we want track data
+        if (track_value)
+        {
+            // we do, see if the tracker knows about this tag
+            uint32_t tmp;
+            READ_GPU_REG_32(FT81X_REG_TRACKER, tmp);
+
+            uint8_t tracked_tag = (tmp & 0xFFFF);
+            if (tracked_tag == 0)
+            {
+                // tracker doesn't know about this tag.
+                // so just return the original tag value
+                *tag = touch_tag;
+            }
+            else
+            {
+                // the tracker has an active tag
+                // they could be the same or different, however
+                // tracked values take priority + this is newer
+                // so use this value
+                *tag = tracked_tag;
+                *track_value = tmp >> 16;
+            }
+        }
+        else
+        {
+            // don't want tracking data
+            // just return the touch tag
+            *tag = touch_tag;
+        }
+    }
+    else
+    {
+        // no tags
+        *tag = 0;
+    }
 
     return FT81X_RESULT_OK;
 }
