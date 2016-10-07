@@ -13,6 +13,14 @@
 #include "ft81x_text_manager.h"
 #include "ft81x_touch_manager.h"
 
+//#define USE_HARDCODED_CALIB_VALUES
+
+uint32_t hardcoded_calib_values[6] =
+{
+    0x00006D9C, 0xFFFFFEA9, 0xFFC41058,
+    0x00000259, 0xFFFF695B, 0x021BA87D,
+};
+
 static const uint32_t clear_dl_snippet[] =
 {
     // set the background colour to dark grey and clear the screen
@@ -45,6 +53,14 @@ ft81x_result test3_calibrate(FT81X_Handle *handle)
 {
     ft81x_result res;
 
+#ifdef USE_HARDCODED_CALIB_VALUES
+    res = ft81x_touch_manager_write_calibration_values(handle, hardcoded_calib_values);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_touch_manager_set_calibration_values failed with %u\n", res);
+        return res;
+    }
+#else
     // ----------------------------------------------------------
     // Get font handles for inbuilt fonts
     // ----------------------------------------------------------
@@ -126,6 +142,18 @@ ft81x_result test3_calibrate(FT81X_Handle *handle)
         return res;
     }
 
+    // get the matrix values
+    uint32_t values[6];
+    res = ft81x_touch_manager_get_calibration_values(handle, values);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_touch_manager_get_calibration_values failed with %u\n", res);
+        return res;
+    }
+
+    DbgConsole_Printf("0x%08X, 0x%08X, 0x%08X,\n", values[0], values[1], values[2]);
+    DbgConsole_Printf("0x%08X, 0x%08X, 0x%08X,\n", values[3], values[4], values[5]);
+#endif
     return FT81X_RESULT_OK;
 }
 
