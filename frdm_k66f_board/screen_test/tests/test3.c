@@ -389,7 +389,7 @@ ft81x_result test3_tags(FT81X_Handle *handle)
         uint8_t last_tag = touched_tag;
         while(touched_tag == last_tag)
         {
-            res = ft81x_touch_manager_check_for_touched_tag(handle, &touched_tag);
+            res = ft81x_touch_manager_check_for_touched_tag(handle, &touched_tag, NULL);
             if (res != FT81X_RESULT_OK)
             {
                 DbgConsole_Printf("ft81x_touch_manager_check_for_touched_tag failed with %u\n", res);
@@ -402,6 +402,250 @@ ft81x_result test3_tags(FT81X_Handle *handle)
         {
             // exit button pressed
             break;
+        }
+    }
+
+    return FT81X_RESULT_OK;
+}
+
+ft81x_result test3_tracking(FT81X_Handle *handle)
+{
+    ft81x_result res;
+
+    // ----------------------------------------------------------
+    // Get font handles for inbuilt fonts
+    // ----------------------------------------------------------
+    FT81X_Font_Handle font_handle;
+    res = ft81x_text_manager_get_font_handle_for_inbuilt_font(handle, &font_handle, 29);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_text_manager_get_font_handle_for_inbuilt_font failed with %u\n", res);
+        return res;
+    }
+
+    // ----------------------------------------------------------
+    // Build and display the display list
+    // ----------------------------------------------------------
+    // reset the co-proc to it's default state
+    res = ft81x_coproc_cmd_coldstart(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("ft81x_coproc_cmd_coldstart failed with %u\n", res);
+        return res;
+    }
+
+    typedef struct
+    {
+        char *name;
+        uint16_t value;
+    } Control;
+
+    Control controls[] =
+    {
+        { "Volume",     0x8000 },
+        { "Low",        0x1000 },
+        { "Med",        0x1000 },
+        { "High",       0x1000 },
+        { "WOMWOMWOM",  0xC000 },
+        { "WOBWOBWOB",  0xC000 },
+    };
+
+    const uint32_t NUM_CONTROLS = sizeof(controls) / sizeof(Control);
+
+    const uint32_t CONTROLS_OFFSET = 180;
+
+    uint8_t touched_tag = 0;
+    uint16_t touched_tag_track = 0;
+    uint16_t scroll_offset = 0;
+    while (1)
+    {
+        // clear the screen
+        res = ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(clear_dl_snippet), clear_dl_snippet);
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+            return res;
+        }
+
+        // draw the controls
+        uint16_t start_y = 0;
+        for (uint32_t i = 0; i < NUM_CONTROLS; i++)
+        {
+            // disable tags for the text
+            res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_TAG_MASK(0));
+            if (res != FT81X_RESULT_OK)
+            {
+                DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+                return res;
+            }
+
+            // write the control's name
+            res = ft81x_text_manager_write_text(handle, &font_handle, 325, start_y + 30 - scroll_offset, FT81X_TEXT_COORDS_CENTRE_X, controls[i].name);
+            if (res != FT81X_RESULT_OK)
+            {
+                DbgConsole_Printf("ft81x_text_manager_write_text failed with %u\n", res);
+                return res;
+            }
+
+            // enable tags for the rest
+            res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_TAG_MASK(1));
+            if (res != FT81X_RESULT_OK)
+            {
+                DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+                return res;
+            }
+
+            // draw the dial as tag ((i * 2) + 1)
+            res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_TAG((i * 2) + 1));
+            if (res != FT81X_RESULT_OK)
+            {
+                DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+                return res;
+            }
+
+            // draw a dial
+            uint16_t dial_x = 100;
+            uint16_t dial_y = start_y + 100 - scroll_offset;
+            res = ft81x_coproc_cmd_dial(handle, dial_x, dial_y, 70, 0, controls[i].value);
+            if (res != FT81X_RESULT_OK)
+            {
+                DbgConsole_Printf("ft81x_coproc_cmd_dial failed with %u\n", res);
+                return res;
+            }
+
+            // track the dial
+            res = ft81x_touch_manager_track_rotary_region(handle, dial_x, dial_y, (i * 2) + 1);
+            if (res != FT81X_RESULT_OK)
+            {
+                DbgConsole_Printf("ft81x_touch_manager_track_rotary_region failed with %u\n", res);
+                return res;
+            }
+
+            // draw the slider as tag (i * 2) + 2
+            res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_TAG((i * 2) + 2));
+            if (res != FT81X_RESULT_OK)
+            {
+                DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+                return res;
+            }
+
+            // draw a slider
+            uint16_t slider_x = 250;
+            uint16_t slider_y = start_y + 95 - scroll_offset;
+            res = ft81x_coproc_cmd_slider(handle, slider_x, slider_y, 150, 10, 0, controls[i].value, 65535);
+            if (res != FT81X_RESULT_OK)
+            {
+                DbgConsole_Printf("ft81x_coproc_cmd_slider failed with %u\n", res);
+                return res;
+            }
+
+            // track the slider (support twice the height, to make it easier)
+            res = ft81x_touch_manager_track_linear_region(handle, slider_x, slider_y-5, 150, 20, (i * 2) + 2);
+            if (res != FT81X_RESULT_OK)
+            {
+                DbgConsole_Printf("ft81x_touch_manager_track_linear_region failed with %u\n", res);
+                return res;
+            }
+
+            start_y += CONTROLS_OFFSET;
+        }
+
+        // tag the exit button as (NUM_CONTROLS * 2) + 1
+        res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_TAG((NUM_CONTROLS * 2) + 1));
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+            return res;
+        }
+
+        // add an exit button to the bottom
+        res = ft81x_coproc_cmd_button(handle, 190, start_y - scroll_offset, 100, 50, 31, 0, "EXIT");
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_coproc_cmd_button failed with %u\n", res);
+            return res;
+        }
+
+        // tag the scrollbar as (NUM_CONTROLS * 2) + 2
+        res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_TAG((NUM_CONTROLS * 2) + 2));
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+            return res;
+        }
+
+        // draw a scrollbar
+        // don't quite go to the edges, as it makes it easier to touch
+        uint16_t total_height = start_y + 200;
+        res = ft81x_coproc_cmd_scrollbar(handle, 450, 20, 30, 280, 0, scroll_offset, 320, total_height);
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_coproc_cmd_scrollbar failed with %u\n", res);
+            return res;
+        }
+
+        // track the scrollbar
+        res = ft81x_touch_manager_track_linear_region(handle, 420, 20, 60, 280, (NUM_CONTROLS * 2) + 2);
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_touch_manager_track_linear_region failed with %u\n", res);
+            return res;
+        }
+
+        // display it
+        res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_DISPLAY());
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+            return res;
+        }
+
+        // write everything to the DL ram and then swap it in
+        res = ft81x_graphics_engine_end_display_list(handle);
+        if (res != FT81X_RESULT_OK)
+        {
+            DbgConsole_Printf("ft81x_graphics_engine_end_display_list failed with %u\n", res);
+            return res;
+        }
+
+        // wait for a touch event
+        uint8_t last_tag = touched_tag;
+        uint16_t last_tracked = touched_tag_track;
+        while(touched_tag == last_tag &&
+              touched_tag_track == last_tracked)
+        {
+            res = ft81x_touch_manager_check_for_touched_tag(handle, &touched_tag, &touched_tag_track);
+            if (res != FT81X_RESULT_OK)
+            {
+                DbgConsole_Printf("ft81x_touch_manager_check_for_touched_tag failed with %u\n", res);
+                return res;
+            }
+        }
+
+        if (touched_tag > 0)
+        {
+            // touched something
+            if (touched_tag <= (NUM_CONTROLS * 2))
+            {
+                // it's a control.
+                // update
+                uint8_t control_idx = (touched_tag - 1) / 2;
+                controls[control_idx].value = touched_tag_track;
+            }
+            else if (touched_tag == ((NUM_CONTROLS * 2) + 1))
+            {
+                // exit button
+                break;
+            }
+            else if (touched_tag == ((NUM_CONTROLS * 2) + 2))
+            {
+                // scrollbar
+                scroll_offset = (touched_tag_track * total_height) / 65536;
+                if (scroll_offset > (total_height - 320))
+                {
+                    scroll_offset = (total_height - 320);
+                }
+            }
         }
     }
 
@@ -449,6 +693,16 @@ ft81x_result test3(FT81X_Handle *handle)
     if (res != FT81X_RESULT_OK)
     {
         DbgConsole_Printf("test3_tags failed with %u\n", res);
+        return res;
+    }
+
+    // ----------------------------------------------------------
+    // Do a tracking test
+    // ----------------------------------------------------------
+    res = test3_tracking(handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        DbgConsole_Printf("test3_tracking failed with %u\n", res);
         return res;
     }
 
