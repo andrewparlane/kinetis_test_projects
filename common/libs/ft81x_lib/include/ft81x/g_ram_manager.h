@@ -4,14 +4,6 @@
 #include "ft81x/memory_map.h"
 #include <stdint.h>
 
-// some defines for use by the G_RAM manager
-#define FT81X_G_RAM_MANAGER_ADDRESS_MASK        0x0FFFFE
-#define FT81X_G_RAM_MANAGER_ALLOCATED_MASK      0x000001
-#define FT81X_G_RAM_MANAGER_ALLOCATED           1
-#define FT81X_G_RAM_MANAGER_FREE                0
-
-// minimum allocation size (no point having a node with only 1 byte available)
-#define FT81X_G_RAM_MANAGER_MINIMUM_ALLOC_SIZE  32
 
 typedef struct _GRAM_Linked_List_Node
 {

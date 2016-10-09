@@ -4,6 +4,16 @@
 
 #include <stdlib.h>
 
+// some defines for use by the G_RAM manager
+#define ADDRESS_MASK        0x0FFFFE
+#define ALLOCATED_MASK      0x000001
+#define NODE_ALLOCATED      1
+#define NODE_FREE           0
+
+// minimum allocation size (no point having a node with only 1 byte available)
+#define MINIMUM_ALLOC_SIZE  32
+
+
 // ----------------------------------------------------------------------------
 // API functions
 // ----------------------------------------------------------------------------
@@ -17,8 +27,8 @@ ft81x_result ft81x_g_ram_manager_initialise(FT81X_Handle *handle)
     // initialise the head of the linked list
     // address is 0
     // and we are not allocated.
-    handle->g_ram_manager_data.head.address_and_flags = (0 & (FT81X_G_RAM_MANAGER_ADDRESS_MASK)) |
-                                               ((FT81X_G_RAM_MANAGER_FREE) & (FT81X_G_RAM_MANAGER_ALLOCATED_MASK));
+    handle->g_ram_manager_data.head.address_and_flags = (0 & (ADDRESS_MASK)) |
+                                                        ((NODE_FREE) & (ALLOCATED_MASK));
 
     // there is no next node
     handle->g_ram_manager_data.head.next = NULL;
@@ -33,7 +43,7 @@ ft81x_result ft81x_g_ram_manager_allocate(FT81X_Handle *handle, uint32_t count, 
     while (node)
     {
         // is this node free?
-        if ((node->address_and_flags & (FT81X_G_RAM_MANAGER_ALLOCATED_MASK)) == (FT81X_G_RAM_MANAGER_ALLOCATED))
+        if ((node->address_and_flags & (ALLOCATED_MASK)) == (NODE_ALLOCATED))
         {
             // nope
             node = node->next;
@@ -44,13 +54,13 @@ ft81x_result ft81x_g_ram_manager_allocate(FT81X_Handle *handle, uint32_t count, 
         uint32_t nextAddress;
         if (node->next)
         {
-            nextAddress = node->next->address_and_flags & (FT81X_G_RAM_MANAGER_ADDRESS_MASK);
+            nextAddress = node->next->address_and_flags & (ADDRESS_MASK);
         }
         else
         {
             nextAddress = FT81X_G_RAM_SIZE;
         }
-        uint32_t available = nextAddress - (node->address_and_flags & (FT81X_G_RAM_MANAGER_ADDRESS_MASK));
+        uint32_t available = nextAddress - (node->address_and_flags & (ADDRESS_MASK));
 
         // is there enough space?
         if (available < count)
@@ -62,14 +72,14 @@ ft81x_result ft81x_g_ram_manager_allocate(FT81X_Handle *handle, uint32_t count, 
 
         // we can fit into this node
         // so mark this node as allocated
-        node->address_and_flags = (node->address_and_flags & ~(FT81X_G_RAM_MANAGER_ALLOCATED_MASK)) |
-                                  ((FT81X_G_RAM_MANAGER_ALLOCATED) & (FT81X_G_RAM_MANAGER_ALLOCATED_MASK));
+        node->address_and_flags = (node->address_and_flags & ~(ALLOCATED_MASK)) |
+                                  ((NODE_ALLOCATED) & (ALLOCATED_MASK));
 
         // insert a new node if needed
-        if (available > (count + (FT81X_G_RAM_MANAGER_MINIMUM_ALLOC_SIZE)))
+        if (available > (count + (MINIMUM_ALLOC_SIZE)))
         {
             // work out the address for the next node
-            uint32_t next_free_addr = (node->address_and_flags & (FT81X_G_RAM_MANAGER_ADDRESS_MASK)) + count;
+            uint32_t next_free_addr = (node->address_and_flags & (ADDRESS_MASK)) + count;
 
             // alloctaed a new node
             GRAM_Linked_List_Node *new_node = (GRAM_Linked_List_Node *)malloc(sizeof(GRAM_Linked_List_Node));
@@ -79,17 +89,17 @@ ft81x_result ft81x_g_ram_manager_allocate(FT81X_Handle *handle, uint32_t count, 
             }
 
             // update the new node
-            // next_free_addr + 1 & (FT81X_G_RAM_MANAGER_ADDRESS_MASK)
+            // next_free_addr + 1 & (ADDRESS_MASK)
             //  ensures alignment to 16 bits
-            new_node->address_and_flags = ((next_free_addr + 1) & (FT81X_G_RAM_MANAGER_ADDRESS_MASK)) |
-                                          ((FT81X_G_RAM_MANAGER_FREE) & (FT81X_G_RAM_MANAGER_ALLOCATED_MASK));
+            new_node->address_and_flags = ((next_free_addr + 1) & (ADDRESS_MASK)) |
+                                          ((NODE_FREE) & (ALLOCATED_MASK));
             new_node->next = node->next;
 
             // update current node to point at this new node
             node->next = new_node;
         }
 
-        *offset = node->address_and_flags & (FT81X_G_RAM_MANAGER_ADDRESS_MASK);
+        *offset = node->address_and_flags & (ADDRESS_MASK);
         return FT81X_RESULT_OK;
     }
 
