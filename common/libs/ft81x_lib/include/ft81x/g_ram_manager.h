@@ -27,4 +27,6 @@ ft81x_result ft81x_g_ram_manager_initialise(FT81X_Handle *handle);
 ft81x_result ft81x_g_ram_manager_allocate(FT81X_Handle *handle, uint32_t count, uint32_t *offset);
 ft81x_result ft81x_g_ram_manager_write(FT81X_Handle *, uint32_t offset, uint32_t count, const uint8_t *data);
 
+void ft81x_g_ram_manager_dump_nodes(FT81X_Handle *handle);
+
 #endif

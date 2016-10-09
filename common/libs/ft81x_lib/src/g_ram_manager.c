@@ -2,6 +2,7 @@
 #include "ft81x/g_ram_manager.h"
 #include "ft81x/platforms/platform.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 
 // some defines for use by the G_RAM manager
@@ -123,4 +124,20 @@ ft81x_result ft81x_g_ram_manager_write(FT81X_Handle *handle, uint32_t offset, ui
     WRITE_GPU_MEM(((FT81X_G_RAM) + offset), count, data);
 
     return FT81X_RESULT_OK;
+}
+
+void ft81x_g_ram_manager_dump_nodes(FT81X_Handle *handle)
+{
+    GRAM_Linked_List_Node *node = &(handle->g_ram_manager_data.head);
+    while (node)
+    {
+        printf("node: %08X\n", (unsigned int)node);
+        printf("      offset: %08X\n", (unsigned int)(node->address_and_flags & ADDRESS_MASK));
+        printf("      %s\n", (node->address_and_flags & ALLOCATED_MASK) ? "allocated" : "free");
+        printf("      next: %08X\n", (unsigned int)node->next);
+        printf("      prev: %08X\n", (unsigned int)node->prev);
+        printf("\n");
+
+        node = node->next;
+    }
 }
