@@ -30,8 +30,9 @@ ft81x_result ft81x_g_ram_manager_initialise(FT81X_Handle *handle)
     handle->g_ram_manager_data.head.address_and_flags = (0 & (ADDRESS_MASK)) |
                                                         ((NODE_FREE) & (ALLOCATED_MASK));
 
-    // there is no next node
+    // there is no next node nor previous one
     handle->g_ram_manager_data.head.next = NULL;
+    handle->g_ram_manager_data.head.prev = NULL;
 
     return FT81X_RESULT_OK;
 }
@@ -94,6 +95,13 @@ ft81x_result ft81x_g_ram_manager_allocate(FT81X_Handle *handle, uint32_t count, 
             new_node->address_and_flags = ((next_free_addr + 1) & (ADDRESS_MASK)) |
                                           ((NODE_FREE) & (ALLOCATED_MASK));
             new_node->next = node->next;
+            new_node->prev = node;
+
+            // update next node's prev pointer to point at this node
+            if (new_node->next)
+            {
+                new_node->next->prev = new_node;
+            }
 
             // update current node to point at this new node
             node->next = new_node;

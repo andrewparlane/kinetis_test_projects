@@ -9,6 +9,7 @@ typedef struct _GRAM_Linked_List_Node
 {
     uint32_t address_and_flags;
     struct _GRAM_Linked_List_Node *next;
+    struct _GRAM_Linked_List_Node *prev;
 } GRAM_Linked_List_Node;
 
 typedef struct
