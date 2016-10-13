@@ -8,6 +8,7 @@
 #define NUM_CHARS               128
 #define FIRST_CHAR              ' '
 
+PACK(
 typedef struct
 {
     // uint8_t widths[NUM_CHARS]    // no point copying this much data, just here for reference
@@ -16,7 +17,7 @@ typedef struct
     uint32_t width;
     uint32_t height;
     uint32_t image_offset;          // offset into G_RAM of the bitmap data
-} __attribute__((packed)) Font_Metric_Block;
+}) Font_Metric_Block;
 
 // + NUM_CHARS for the widths array
 #define SIZEOF_FONT_METRIC_BLOCK    (NUM_CHARS + sizeof(Font_Metric_Block))

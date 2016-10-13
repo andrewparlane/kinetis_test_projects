@@ -20,6 +20,13 @@
 #   define WARN(exp) ("WARNING: " exp)
 #endif
 
+// common packing support
+#if _MSC_VER
+#define PACK( __Declaration__ ) __pragma( pack(push, 1) ) __Declaration__ __pragma( pack(pop) )
+#else // __GNUC__ - may need other defines for different compilers
+#define PACK( __Declaration__ ) __Declaration__ __attribute__((__packed__))
+#endif
+
 // GPU chip types
 #define FT81X_GPU_TYPE_FT810 0
 #define FT81X_GPU_TYPE_FT811 1
