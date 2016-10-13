@@ -113,7 +113,7 @@ ft81x_result ft81x_g_ram_manager_allocate(FT81X_Handle *handle, uint32_t count, 
     }
 
     // looked through everything, no space left
-#warning TODO: defrag g_ram?
+#pragma message WARN("TODO: defrag g_ram?")
     // we have to somehow tell the user to update the address in the DL.
 
     return FT81X_RESULT_OUT_OF_G_RAM;

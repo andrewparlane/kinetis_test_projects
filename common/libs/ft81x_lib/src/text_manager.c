@@ -68,7 +68,7 @@ ft81x_result ft81x_text_manager_load_custom_font(FT81X_Handle *handle, const FT8
     if (res != FT81X_RESULT_OK)
     {
         // free the image data
-#warning TODO Free the image data
+#pragma message WARN("TODO Free the image data")
         return res;
     }
 

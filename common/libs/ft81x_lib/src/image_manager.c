@@ -341,7 +341,7 @@ ft81x_result ft81x_image_manager_load_image(FT81X_Handle *handle, const FT81X_Im
         if (res != FT81X_RESULT_OK)
         {
             // failed, free the indices data
-#warning TODO: free the indices data
+#pragma message WARN("TODO: free the indices data")
             return res;
         }
     }
@@ -354,7 +354,7 @@ ft81x_result ft81x_image_manager_load_image(FT81X_Handle *handle, const FT81X_Im
     if (res != FT81X_RESULT_OK)
     {
         // failed, free the image data (LUT + indices)
-#warning TODO: free the indices data + LUT data
+#pragma message WARN("TODO: free the indices data + LUT data")
         return res;
     }
 

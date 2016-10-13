@@ -32,7 +32,7 @@ static ft81x_result configure_gpu(FT81X_Handle *handle)
     }
 
     // Use the external clock
-#warning TODO use external clock
+#pragma message WARN("TODO use external clock")
     /*res = ft81x_platform_gpu_send_command(handle, FT81X_COMMAND_CLKEXT, 0);
     if (res != FT81X_RESULT_OK)
     {
@@ -82,7 +82,7 @@ static ft81x_result configure_gpu(FT81X_Handle *handle)
         return FT81X_RESULT_INVALID_ID;
     }
 
-#warning TODO Clock trimming?
+#pragma message WARN("TODO Clock trimming?")
 
     // Horizontal parameters
     // total pixels per line (visible + not visible)
