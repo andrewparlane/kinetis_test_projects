@@ -2,10 +2,12 @@
 #define __DISPLAY_TYPES_H
 
 // supported displays - for use with #define FT81X_DISPLAY
-#define FT81X_DISPLAY_ILI9488               0
+#define FT81X_DISPLAY_WINDOWS_EMULATOR      0
+#define FT81X_DISPLAY_ILI9488               1
 
 // comms types - for use with #define FT81X_DISPLAY_COMMS_TYPE
-#define FT81X_DISPLAY_COMMS_TYPE_SPI        0
+#define FT81X_DISPLAY_COMMS_TYPE_NONE       0
+#define FT81X_DISPLAY_COMMS_TYPE_SPI        1
 
 // spi modes - for use with #define FT81X_DISPLAY_SPI_MODE
 #define FT81X_DISPLAY_SPI_MODE_0            0

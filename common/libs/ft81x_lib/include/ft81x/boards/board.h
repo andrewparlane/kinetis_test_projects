@@ -8,6 +8,8 @@
 
 #ifndef FT81X_BOARD
 #  error FT81X_BOARD is not defined
+#elif ((FT81X_BOARD) == (FT81X_BOARD_WINDOWS_EMULATOR))
+#  include "ft81x/boards/windows_emulator_board.h"
 #elif ((FT81X_BOARD) == (FT81X_BOARD_FRDM_K66F))
 #  include "ft81x/boards/frdm_k66f.h"
 #else

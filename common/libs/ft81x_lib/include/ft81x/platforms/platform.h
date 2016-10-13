@@ -8,6 +8,8 @@
 
 #ifndef FT81X_PLATFORM
 #  error FT81X_PLATFORM is not defined
+#elif ((FT81X_PLATFORM) == (FT81X_PLATFORM_WINDOWS_EMULATOR))
+#include "ft81x/platforms/FT_Emulator.h"
 #elif ((FT81X_PLATFORM) == (FT81X_PLATFORM_NXP_KINETIS_K66))
 #  include "ft81x/platforms/nxp_kinetis_k66.h"
 #else
