@@ -4,6 +4,7 @@
 #include "ft81x/platforms/platform.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 // ----------------------------------------------------------------------------
 // Local functions
