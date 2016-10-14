@@ -51,12 +51,12 @@
 // CMD functions
 // ----------------------------------------------------------------------------
 
-inline ft81x_result ft81x_coproc_cmd_dlstart(FT81X_Handle *handle)
+ft81x_result ft81x_coproc_cmd_dlstart(FT81X_Handle *handle)
 {
     return ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_COPROC_CMD_ID_DLSTART);
 }
 
-inline ft81x_result ft81x_coproc_cmd_swap(FT81X_Handle *handle)
+ft81x_result ft81x_coproc_cmd_swap(FT81X_Handle *handle)
 {
     return ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_COPROC_CMD_ID_SWAP);
 }
@@ -247,7 +247,7 @@ ft81x_result ft81x_coproc_cmd_spinner(FT81X_Handle *handle, uint16_t x, uint16_t
     return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(data), data);
 }
 
-inline ft81x_result ft81x_coproc_cmd_stop(FT81X_Handle *handle)
+ft81x_result ft81x_coproc_cmd_stop(FT81X_Handle *handle)
 {
     return ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_COPROC_CMD_ID_STOP);
 }
@@ -374,17 +374,17 @@ ft81x_result ft81x_coproc_cmd_number(FT81X_Handle *handle, uint16_t x, uint16_t 
     return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(data), data);
 }
 
-inline ft81x_result ft81x_coproc_cmd_screensaver(FT81X_Handle *handle)
+ft81x_result ft81x_coproc_cmd_screensaver(FT81X_Handle *handle)
 {
     return ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_COPROC_CMD_ID_SCREENSAVER);
 }
 
-inline ft81x_result ft81x_coproc_cmd_logo(FT81X_Handle *handle)
+ft81x_result ft81x_coproc_cmd_logo(FT81X_Handle *handle)
 {
     return ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_COPROC_CMD_ID_LOGO);
 }
 
-inline ft81x_result ft81x_coproc_cmd_coldstart(FT81X_Handle *handle)
+ft81x_result ft81x_coproc_cmd_coldstart(FT81X_Handle *handle)
 {
     return ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_COPROC_CMD_ID_COLDSTART);
 }

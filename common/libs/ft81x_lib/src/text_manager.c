@@ -140,7 +140,7 @@ ft81x_result ft81x_text_manager_send_font_init_dl(FT81X_Handle *handle, const FT
     }
 }
 
-inline ft81x_result ft81x_text_manager_write_text(FT81X_Handle *handle, const FT81X_Font_Handle *font_handle, uint16_t x, uint16_t y, FT81X_Text_Manager_Options options, const char *str)
+ft81x_result ft81x_text_manager_write_text(FT81X_Handle *handle, const FT81X_Font_Handle *font_handle, uint16_t x, uint16_t y, FT81X_Text_Manager_Options options, const char *str)
 {
     return ft81x_coproc_cmd_text(handle,
                                  x, y,
@@ -149,7 +149,7 @@ inline ft81x_result ft81x_text_manager_write_text(FT81X_Handle *handle, const FT
                                  str);
 }
 
-inline ft81x_result ft81x_text_manager_write_unsigned_number(FT81X_Handle *handle, const FT81X_Font_Handle *font_handle, uint16_t x, uint16_t y, FT81X_Text_Manager_Options options, uint32_t num)
+ft81x_result ft81x_text_manager_write_unsigned_number(FT81X_Handle *handle, const FT81X_Font_Handle *font_handle, uint16_t x, uint16_t y, FT81X_Text_Manager_Options options, uint32_t num)
 {
     return ft81x_coproc_cmd_number(handle,
                                    x, y,
@@ -158,7 +158,7 @@ inline ft81x_result ft81x_text_manager_write_unsigned_number(FT81X_Handle *handl
                                    num);
 }
 
-inline ft81x_result ft81x_text_manager_write_signed_number(FT81X_Handle *handle, const FT81X_Font_Handle *font_handle, uint16_t x, uint16_t y, FT81X_Text_Manager_Options options, int32_t num)
+ft81x_result ft81x_text_manager_write_signed_number(FT81X_Handle *handle, const FT81X_Font_Handle *font_handle, uint16_t x, uint16_t y, FT81X_Text_Manager_Options options, int32_t num)
 {
     return ft81x_coproc_cmd_number(handle,
                                    x, y,

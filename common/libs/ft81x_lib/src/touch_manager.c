@@ -75,12 +75,12 @@ ft81x_result ft81x_touch_manager_get_calibration_values(FT81X_Handle *handle, ui
     return FT81X_RESULT_OK;
 }
 
-inline ft81x_result ft81x_touch_manager_track_linear_region(FT81X_Handle *handle, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t tag)
+ft81x_result ft81x_touch_manager_track_linear_region(FT81X_Handle *handle, uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t tag)
 {
     return ft81x_coproc_cmd_track(handle, x, y, width, height, tag);
 }
 
-inline ft81x_result ft81x_touch_manager_track_rotary_region(FT81X_Handle *handle, uint16_t x, uint16_t y, uint8_t tag)
+ft81x_result ft81x_touch_manager_track_rotary_region(FT81X_Handle *handle, uint16_t x, uint16_t y, uint8_t tag)
 {
     return ft81x_coproc_cmd_track(handle, x, y, 1, 1, tag);
 }

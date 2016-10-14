@@ -190,12 +190,12 @@ ft81x_result ft81x_graphics_engine_write_display_list_data(FT81X_Handle *handle,
     return res;
 }
 
-inline ft81x_result ft81x_graphics_engine_write_display_list_cmd(FT81X_Handle *handle, uint32_t cmd)
+ft81x_result ft81x_graphics_engine_write_display_list_cmd(FT81X_Handle *handle, uint32_t cmd)
 {
     return ft81x_graphics_engine_write_display_list_data(handle, 4, (uint8_t *)&cmd);
 }
 
-inline ft81x_result ft81x_graphics_engine_write_display_list_snippet(FT81X_Handle *handle, uint32_t bytes, const uint32_t *dl)
+ft81x_result ft81x_graphics_engine_write_display_list_snippet(FT81X_Handle *handle, uint32_t bytes, const uint32_t *dl)
 {
     return ft81x_graphics_engine_write_display_list_data(handle, bytes, (uint8_t *)dl);
 }

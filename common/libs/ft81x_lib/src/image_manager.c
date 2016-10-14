@@ -452,7 +452,7 @@ ft81x_result ft81x_image_manager_send_image_draw_dl_with_macro_0(FT81X_Handle *h
     }
 }
 
-inline ft81x_result ft81x_image_manager_set_active_bitmap(FT81X_Handle *handle, FT81X_Image_Handle *image_handle)
+ft81x_result ft81x_image_manager_set_active_bitmap(FT81X_Handle *handle, FT81X_Image_Handle *image_handle)
 {
     return ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_BITMAP_HANDLE(image_handle->bitmap_handle));
 }
