@@ -32,14 +32,14 @@ void init_lib_and_run_tests()
     ft81x_result res = ft81x_initialise(&handle, DL_BUFFER_SIZE, dl_buffer);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_initialise failed with %u\n", res);
+        printf("ft81x_initialise failed with %u\n", res);
         ft81x_cleanup(&handle);
         return;
     }
     res = ft81x_configure(&handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_configure failed with %u\n", res);
+        printf("ft81x_configure failed with %u\n", res);
         ft81x_cleanup(&handle);
         return;
     }
@@ -52,7 +52,7 @@ void init_lib_and_run_tests()
     res = ft81x_backlight(&handle, FT81X_BACKLIGHT_LEVEL_MAX);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_backlight failed with %u\n", res);
+        printf("ft81x_backlight failed with %u\n", res);
         ft81x_cleanup(&handle);
         return;
     }
@@ -62,7 +62,7 @@ void init_lib_and_run_tests()
     res = test1(&handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("test1 failed with %u\n", res);
+        printf("test1 failed with %u\n", res);
         ft81x_cleanup(&handle);
         return;
     }
@@ -71,7 +71,7 @@ void init_lib_and_run_tests()
     res = test2(&handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("test2 failed with %u\n", res);
+        printf("test2 failed with %u\n", res);
         ft81x_cleanup(&handle);
         return;
     }
@@ -80,12 +80,12 @@ void init_lib_and_run_tests()
     res = test3(&handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("test3 failed with %u\n", res);
+        printf("test3 failed with %u\n", res);
         ft81x_cleanup(&handle);
         return;
     }
 
-    DbgConsole_Printf("sreen_test completed successfully\n");
+    printf("sreen_test completed successfully\n");
 
     ft81x_cleanup(&handle);
 }

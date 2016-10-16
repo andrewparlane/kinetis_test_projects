@@ -1,5 +1,3 @@
-#include "fsl_debug_console.h"
-
 // freeRTOS includes
 #include "FreeRTOS.h"
 #include "task.h"
@@ -15,6 +13,9 @@
 #include "resources/cat_l8_raw.h"
 #include "resources/cat_argb1555_raw.h"
 #include "resources/cat_paletted8_raw.h"
+
+// standard includes
+#include <stdio.h>
 
 static const uint32_t clear_dl_snippet[] =
 {
@@ -75,7 +76,7 @@ ft81x_result test1(FT81X_Handle *handle)
     res = ft81x_image_manager_load_image(handle, &cat_l8_raw_image_properties, &cat_l8_raw_image_handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_image_manager_load_image failed with %u\n", res);
+        printf("ft81x_image_manager_load_image failed with %u\n", res);
         return res;
     }
 
@@ -84,7 +85,7 @@ ft81x_result test1(FT81X_Handle *handle)
     res = ft81x_image_manager_load_image(handle, &cat_argb1555_raw_image_properties, &cat_argb1555_raw_image_handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_image_manager_load_image failed with %u\n", res);
+        printf("ft81x_image_manager_load_image failed with %u\n", res);
         return res;
     }
 
@@ -93,7 +94,7 @@ ft81x_result test1(FT81X_Handle *handle)
     res = ft81x_image_manager_load_image(handle, &cat_paletted8_raw_image_properties, &cat_paletted8_raw_image_handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_image_manager_load_image failed with %u\n", res);
+        printf("ft81x_image_manager_load_image failed with %u\n", res);
         return res;
     }
 
@@ -104,14 +105,14 @@ ft81x_result test1(FT81X_Handle *handle)
     res = ft81x_graphics_engine_start_display_list(handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_graphics_engine_start_display_list failed with %u\n", res);
+        printf("ft81x_graphics_engine_start_display_list failed with %u\n", res);
         return res;
     }
     // clear the screen
     res = ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(clear_dl_snippet), clear_dl_snippet);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+        printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
         return res;
     }
 
@@ -120,7 +121,7 @@ ft81x_result test1(FT81X_Handle *handle)
                                                  &cat_l8_raw_image_handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_image_manager_send_image_init_dl failed with %u\n", res);
+        printf("ft81x_image_manager_send_image_init_dl failed with %u\n", res);
         return res;
     }
 
@@ -129,7 +130,7 @@ ft81x_result test1(FT81X_Handle *handle)
                                                  &cat_argb1555_raw_image_handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_image_manager_send_image_init_dl failed with %u\n", res);
+        printf("ft81x_image_manager_send_image_init_dl failed with %u\n", res);
         return res;
     }
 
@@ -138,7 +139,7 @@ ft81x_result test1(FT81X_Handle *handle)
                                                  &cat_paletted8_raw_image_handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_image_manager_send_image_init_dl failed with %u\n", res);
+        printf("ft81x_image_manager_send_image_init_dl failed with %u\n", res);
         return res;
     }
 
@@ -151,7 +152,7 @@ ft81x_result test1(FT81X_Handle *handle)
                                                  NULL);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_image_manager_send_non_paletted8_image_draw_dl failed with %u\n", res);
+        printf("ft81x_image_manager_send_non_paletted8_image_draw_dl failed with %u\n", res);
         return res;
     }
 
@@ -163,7 +164,7 @@ ft81x_result test1(FT81X_Handle *handle)
                                                  NULL);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_image_manager_send_non_paletted8_image_draw_dl failed with %u\n", res);
+        printf("ft81x_image_manager_send_non_paletted8_image_draw_dl failed with %u\n", res);
         return res;
     }
 
@@ -176,7 +177,7 @@ ft81x_result test1(FT81X_Handle *handle)
                                                  NULL);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_image_manager_send_paletted8_image_draw_dl failed with %u\n", res);
+        printf("ft81x_image_manager_send_paletted8_image_draw_dl failed with %u\n", res);
         return res;
     }
 
@@ -184,7 +185,7 @@ ft81x_result test1(FT81X_Handle *handle)
     res = ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(test_dl_snippet), test_dl_snippet);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+        printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
         return res;
     }
 
@@ -192,7 +193,7 @@ ft81x_result test1(FT81X_Handle *handle)
     res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_DISPLAY());
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+        printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
         return res;
     }
 
@@ -200,7 +201,7 @@ ft81x_result test1(FT81X_Handle *handle)
     res = ft81x_graphics_engine_end_display_list(handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_graphics_engine_end_display_list failed with %u\n", res);
+        printf("ft81x_graphics_engine_end_display_list failed with %u\n", res);
         return res;
     }
 

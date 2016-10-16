@@ -1,5 +1,3 @@
-#include "fsl_debug_console.h"
-
 // freeRTOS includes
 #include "FreeRTOS.h"
 #include "task.h"
@@ -12,6 +10,9 @@
 #include "ft81x_image_manager.h"
 #include "ft81x_text_manager.h"
 #include "ft81x_touch_manager.h"
+
+// standard includes
+#include <stdio.h>
 
 //#define USE_HARDCODED_CALIB_VALUES
 
@@ -35,14 +36,14 @@ ft81x_result test3_set_screen_orientation(FT81X_Handle *handle)
     res = ft81x_coproc_cmd_setrotate(handle, FT81X_COPROC_SCREEN_ORIENTATION_ROTATED);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_coproc_cmd_setrotate failed with %u\n", res);
+        printf("ft81x_coproc_cmd_setrotate failed with %u\n", res);
         return res;
     }
 
     res = ft81x_graphics_engine_flush_and_synchronise(handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_graphics_engine_flush_and_synchronise failed with %u\n", res);
+        printf("ft81x_graphics_engine_flush_and_synchronise failed with %u\n", res);
         return res;
     }
 
@@ -57,7 +58,7 @@ ft81x_result test3_calibrate(FT81X_Handle *handle)
     res = ft81x_touch_manager_write_calibration_values(handle, hardcoded_calib_values);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_touch_manager_set_calibration_values failed with %u\n", res);
+        printf("ft81x_touch_manager_set_calibration_values failed with %u\n", res);
         return res;
     }
 #else
@@ -68,7 +69,7 @@ ft81x_result test3_calibrate(FT81X_Handle *handle)
     res = ft81x_text_manager_get_font_handle_for_inbuilt_font(handle, &inbuilt_26_font_handle, 26);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_text_manager_get_font_handle_for_inbuilt_font failed with %u\n", res);
+        printf("ft81x_text_manager_get_font_handle_for_inbuilt_font failed with %u\n", res);
         return res;
     }
 
@@ -76,7 +77,7 @@ ft81x_result test3_calibrate(FT81X_Handle *handle)
     res = ft81x_text_manager_get_font_handle_for_inbuilt_font(handle, &inbuilt_31_font_handle, 31);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_text_manager_get_font_handle_for_inbuilt_font failed with %u\n", res);
+        printf("ft81x_text_manager_get_font_handle_for_inbuilt_font failed with %u\n", res);
         return res;
     }
 
@@ -87,7 +88,7 @@ ft81x_result test3_calibrate(FT81X_Handle *handle)
     res = ft81x_coproc_cmd_coldstart(handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_coproc_cmd_coldstart failed with %u\n", res);
+        printf("ft81x_coproc_cmd_coldstart failed with %u\n", res);
         return res;
     }
 
@@ -95,7 +96,7 @@ ft81x_result test3_calibrate(FT81X_Handle *handle)
     res = ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(clear_dl_snippet), clear_dl_snippet);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+        printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
         return res;
     }
 
@@ -103,7 +104,7 @@ ft81x_result test3_calibrate(FT81X_Handle *handle)
     res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_COLOUR_RGB(255,0,0));
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+        printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
         return res;
     }
 
@@ -111,7 +112,7 @@ ft81x_result test3_calibrate(FT81X_Handle *handle)
     res = ft81x_text_manager_write_text(handle, &inbuilt_31_font_handle, 160, 220, FT81X_TEXT_COORDS_CENTRE, "Calibrating...");
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_text_manager_write_text failed with %u\n", res);
+        printf("ft81x_text_manager_write_text failed with %u\n", res);
         return res;
     }
 
@@ -119,7 +120,7 @@ ft81x_result test3_calibrate(FT81X_Handle *handle)
     res = ft81x_text_manager_write_text(handle, &inbuilt_26_font_handle, 160, 260, FT81X_TEXT_COORDS_CENTRE, "Tap the flashing dots.");
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_text_manager_write_text failed with %u\n", res);
+        printf("ft81x_text_manager_write_text failed with %u\n", res);
         return res;
     }
 
@@ -127,7 +128,7 @@ ft81x_result test3_calibrate(FT81X_Handle *handle)
     res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_COLOUR_RGB(0,255,0));
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+        printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
         return res;
     }
 
@@ -138,7 +139,7 @@ ft81x_result test3_calibrate(FT81X_Handle *handle)
     res = ft81x_touch_manager_calibrate(handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_touch_manager_calibrate failed with %u\n", res);
+        printf("ft81x_touch_manager_calibrate failed with %u\n", res);
         return res;
     }
 
@@ -147,12 +148,12 @@ ft81x_result test3_calibrate(FT81X_Handle *handle)
     res = ft81x_touch_manager_get_calibration_values(handle, values);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_touch_manager_get_calibration_values failed with %u\n", res);
+        printf("ft81x_touch_manager_get_calibration_values failed with %u\n", res);
         return res;
     }
 
-    DbgConsole_Printf("0x%08X, 0x%08X, 0x%08X,\n", values[0], values[1], values[2]);
-    DbgConsole_Printf("0x%08X, 0x%08X, 0x%08X,\n", values[3], values[4], values[5]);
+    printf("0x%08X, 0x%08X, 0x%08X,\n", values[0], values[1], values[2]);
+    printf("0x%08X, 0x%08X, 0x%08X,\n", values[3], values[4], values[5]);
 #endif
     return FT81X_RESULT_OK;
 }
@@ -168,7 +169,7 @@ ft81x_result test3_display_calibration_matrix(FT81X_Handle *handle)
     res = ft81x_text_manager_get_font_handle_for_inbuilt_font(handle, &inbuilt_28_font_handle, 28);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_text_manager_get_font_handle_for_inbuilt_font failed with %u\n", res);
+        printf("ft81x_text_manager_get_font_handle_for_inbuilt_font failed with %u\n", res);
         return res;
     }
 
@@ -179,7 +180,7 @@ ft81x_result test3_display_calibration_matrix(FT81X_Handle *handle)
     res = ft81x_coproc_cmd_coldstart(handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_coproc_cmd_coldstart failed with %u\n", res);
+        printf("ft81x_coproc_cmd_coldstart failed with %u\n", res);
         return res;
     }
 
@@ -187,7 +188,7 @@ ft81x_result test3_display_calibration_matrix(FT81X_Handle *handle)
     res = ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(clear_dl_snippet), clear_dl_snippet);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+        printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
         return res;
     }
 
@@ -195,7 +196,7 @@ ft81x_result test3_display_calibration_matrix(FT81X_Handle *handle)
     res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_COLOUR_RGB(0,0,255));
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+        printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
         return res;
     }
 
@@ -204,14 +205,14 @@ ft81x_result test3_display_calibration_matrix(FT81X_Handle *handle)
     res = ft81x_touch_manager_get_calibration_values(handle, values);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_touch_manager_get_calibration_values failed with %u\n", res);
+        printf("ft81x_touch_manager_get_calibration_values failed with %u\n", res);
         return res;
     }
 
     res = ft81x_text_manager_write_text(handle, &inbuilt_28_font_handle, 240, 50, FT81X_TEXT_COORDS_CENTRE, "Calibration results");
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_text_manager_write_text failed with %u\n", res);
+        printf("ft81x_text_manager_write_text failed with %u\n", res);
         return res;
     }
 
@@ -219,7 +220,7 @@ ft81x_result test3_display_calibration_matrix(FT81X_Handle *handle)
     res = ft81x_coproc_cmd_setbase(handle, 16);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_coproc_cmd_setbase failed with %u\n", res);
+        printf("ft81x_coproc_cmd_setbase failed with %u\n", res);
         return res;
     }
 
@@ -230,7 +231,7 @@ ft81x_result test3_display_calibration_matrix(FT81X_Handle *handle)
         res = ft81x_text_manager_write_unsigned_number(handle, &inbuilt_28_font_handle, x_co_ords[i], y_co_ords[i], FT81X_TEXT_COORDS_CENTRE, values[i]);
         if (res != FT81X_RESULT_OK)
         {
-            DbgConsole_Printf("ft81x_text_manager_write_unsigned_number failed with %u\n", res);
+            printf("ft81x_text_manager_write_unsigned_number failed with %u\n", res);
             return res;
         }
     }
@@ -239,7 +240,7 @@ ft81x_result test3_display_calibration_matrix(FT81X_Handle *handle)
     res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_DISPLAY());
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+        printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
         return res;
     }
 
@@ -247,7 +248,7 @@ ft81x_result test3_display_calibration_matrix(FT81X_Handle *handle)
     res = ft81x_graphics_engine_end_display_list(handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_graphics_engine_end_display_list failed with %u\n", res);
+        printf("ft81x_graphics_engine_end_display_list failed with %u\n", res);
         return res;
     }
 
@@ -267,7 +268,7 @@ ft81x_result test3_tags(FT81X_Handle *handle)
     res = ft81x_text_manager_get_font_handle_for_inbuilt_font(handle, &inbuilt_31_font_handle, 31);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_text_manager_get_font_handle_for_inbuilt_font failed with %u\n", res);
+        printf("ft81x_text_manager_get_font_handle_for_inbuilt_font failed with %u\n", res);
         return res;
     }
 
@@ -278,7 +279,7 @@ ft81x_result test3_tags(FT81X_Handle *handle)
     res = ft81x_coproc_cmd_coldstart(handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_coproc_cmd_coldstart failed with %u\n", res);
+        printf("ft81x_coproc_cmd_coldstart failed with %u\n", res);
         return res;
     }
 
@@ -358,7 +359,7 @@ ft81x_result test3_tags(FT81X_Handle *handle)
         res = ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(dl), dl);
         if (res != FT81X_RESULT_OK)
         {
-            DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+            printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
             return res;
         }
 
@@ -366,7 +367,7 @@ ft81x_result test3_tags(FT81X_Handle *handle)
         res = ft81x_text_manager_write_text(handle, &inbuilt_31_font_handle, 430, 295, FT81X_TEXT_COORDS_CENTRE, "EXIT");
         if (res != FT81X_RESULT_OK)
         {
-            DbgConsole_Printf("ft81x_text_manager_write_text failed with %u\n", res);
+            printf("ft81x_text_manager_write_text failed with %u\n", res);
             return res;
         }
 
@@ -374,7 +375,7 @@ ft81x_result test3_tags(FT81X_Handle *handle)
         res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_DISPLAY());
         if (res != FT81X_RESULT_OK)
         {
-            DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+            printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
             return res;
         }
 
@@ -382,7 +383,7 @@ ft81x_result test3_tags(FT81X_Handle *handle)
         res = ft81x_graphics_engine_end_display_list(handle);
         if (res != FT81X_RESULT_OK)
         {
-            DbgConsole_Printf("ft81x_graphics_engine_end_display_list failed with %u\n", res);
+            printf("ft81x_graphics_engine_end_display_list failed with %u\n", res);
             return res;
         }
 
@@ -392,11 +393,11 @@ ft81x_result test3_tags(FT81X_Handle *handle)
             res = ft81x_touch_manager_check_for_touched_tag(handle, &touched_tag, NULL);
             if (res != FT81X_RESULT_OK)
             {
-                DbgConsole_Printf("ft81x_touch_manager_check_for_touched_tag failed with %u\n", res);
+                printf("ft81x_touch_manager_check_for_touched_tag failed with %u\n", res);
                 return res;
             }
         }
-        DbgConsole_Printf("last_tag %d, touched_tag %d\n", last_tag, touched_tag);
+        printf("last_tag %d, touched_tag %d\n", last_tag, touched_tag);
 
         if (touched_tag == 5)
         {
@@ -419,7 +420,7 @@ ft81x_result test3_tracking(FT81X_Handle *handle)
     res = ft81x_text_manager_get_font_handle_for_inbuilt_font(handle, &font_handle, 29);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_text_manager_get_font_handle_for_inbuilt_font failed with %u\n", res);
+        printf("ft81x_text_manager_get_font_handle_for_inbuilt_font failed with %u\n", res);
         return res;
     }
 
@@ -430,7 +431,7 @@ ft81x_result test3_tracking(FT81X_Handle *handle)
     res = ft81x_coproc_cmd_coldstart(handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("ft81x_coproc_cmd_coldstart failed with %u\n", res);
+        printf("ft81x_coproc_cmd_coldstart failed with %u\n", res);
         return res;
     }
 
@@ -463,7 +464,7 @@ ft81x_result test3_tracking(FT81X_Handle *handle)
         res = ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(clear_dl_snippet), clear_dl_snippet);
         if (res != FT81X_RESULT_OK)
         {
-            DbgConsole_Printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
+            printf("ft81x_graphics_engine_write_display_list_snippet failed with %u\n", res);
             return res;
         }
 
@@ -475,7 +476,7 @@ ft81x_result test3_tracking(FT81X_Handle *handle)
             res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_TAG_MASK(0));
             if (res != FT81X_RESULT_OK)
             {
-                DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+                printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
                 return res;
             }
 
@@ -483,7 +484,7 @@ ft81x_result test3_tracking(FT81X_Handle *handle)
             res = ft81x_text_manager_write_text(handle, &font_handle, 325, start_y + 30 - scroll_offset, FT81X_TEXT_COORDS_CENTRE_X, controls[i].name);
             if (res != FT81X_RESULT_OK)
             {
-                DbgConsole_Printf("ft81x_text_manager_write_text failed with %u\n", res);
+                printf("ft81x_text_manager_write_text failed with %u\n", res);
                 return res;
             }
 
@@ -491,7 +492,7 @@ ft81x_result test3_tracking(FT81X_Handle *handle)
             res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_TAG_MASK(1));
             if (res != FT81X_RESULT_OK)
             {
-                DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+                printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
                 return res;
             }
 
@@ -499,7 +500,7 @@ ft81x_result test3_tracking(FT81X_Handle *handle)
             res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_TAG((i * 2) + 1));
             if (res != FT81X_RESULT_OK)
             {
-                DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+                printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
                 return res;
             }
 
@@ -509,7 +510,7 @@ ft81x_result test3_tracking(FT81X_Handle *handle)
             res = ft81x_coproc_cmd_dial(handle, dial_x, dial_y, 70, 0, controls[i].value);
             if (res != FT81X_RESULT_OK)
             {
-                DbgConsole_Printf("ft81x_coproc_cmd_dial failed with %u\n", res);
+                printf("ft81x_coproc_cmd_dial failed with %u\n", res);
                 return res;
             }
 
@@ -517,7 +518,7 @@ ft81x_result test3_tracking(FT81X_Handle *handle)
             res = ft81x_touch_manager_track_rotary_region(handle, dial_x, dial_y, (i * 2) + 1);
             if (res != FT81X_RESULT_OK)
             {
-                DbgConsole_Printf("ft81x_touch_manager_track_rotary_region failed with %u\n", res);
+                printf("ft81x_touch_manager_track_rotary_region failed with %u\n", res);
                 return res;
             }
 
@@ -525,7 +526,7 @@ ft81x_result test3_tracking(FT81X_Handle *handle)
             res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_TAG((i * 2) + 2));
             if (res != FT81X_RESULT_OK)
             {
-                DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+                printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
                 return res;
             }
 
@@ -535,7 +536,7 @@ ft81x_result test3_tracking(FT81X_Handle *handle)
             res = ft81x_coproc_cmd_slider(handle, slider_x, slider_y, 150, 10, 0, controls[i].value, 65535);
             if (res != FT81X_RESULT_OK)
             {
-                DbgConsole_Printf("ft81x_coproc_cmd_slider failed with %u\n", res);
+                printf("ft81x_coproc_cmd_slider failed with %u\n", res);
                 return res;
             }
 
@@ -543,7 +544,7 @@ ft81x_result test3_tracking(FT81X_Handle *handle)
             res = ft81x_touch_manager_track_linear_region(handle, slider_x, slider_y-5, 150, 20, (i * 2) + 2);
             if (res != FT81X_RESULT_OK)
             {
-                DbgConsole_Printf("ft81x_touch_manager_track_linear_region failed with %u\n", res);
+                printf("ft81x_touch_manager_track_linear_region failed with %u\n", res);
                 return res;
             }
 
@@ -554,7 +555,7 @@ ft81x_result test3_tracking(FT81X_Handle *handle)
         res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_TAG((NUM_CONTROLS * 2) + 1));
         if (res != FT81X_RESULT_OK)
         {
-            DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+            printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
             return res;
         }
 
@@ -562,7 +563,7 @@ ft81x_result test3_tracking(FT81X_Handle *handle)
         res = ft81x_coproc_cmd_button(handle, 190, start_y - scroll_offset, 100, 50, 31, 0, "EXIT");
         if (res != FT81X_RESULT_OK)
         {
-            DbgConsole_Printf("ft81x_coproc_cmd_button failed with %u\n", res);
+            printf("ft81x_coproc_cmd_button failed with %u\n", res);
             return res;
         }
 
@@ -570,7 +571,7 @@ ft81x_result test3_tracking(FT81X_Handle *handle)
         res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_TAG((NUM_CONTROLS * 2) + 2));
         if (res != FT81X_RESULT_OK)
         {
-            DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+            printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
             return res;
         }
 
@@ -580,7 +581,7 @@ ft81x_result test3_tracking(FT81X_Handle *handle)
         res = ft81x_coproc_cmd_scrollbar(handle, 450, 20, 30, 280, 0, scroll_offset, 320, total_height);
         if (res != FT81X_RESULT_OK)
         {
-            DbgConsole_Printf("ft81x_coproc_cmd_scrollbar failed with %u\n", res);
+            printf("ft81x_coproc_cmd_scrollbar failed with %u\n", res);
             return res;
         }
 
@@ -588,7 +589,7 @@ ft81x_result test3_tracking(FT81X_Handle *handle)
         res = ft81x_touch_manager_track_linear_region(handle, 420, 20, 60, 280, (NUM_CONTROLS * 2) + 2);
         if (res != FT81X_RESULT_OK)
         {
-            DbgConsole_Printf("ft81x_touch_manager_track_linear_region failed with %u\n", res);
+            printf("ft81x_touch_manager_track_linear_region failed with %u\n", res);
             return res;
         }
 
@@ -596,7 +597,7 @@ ft81x_result test3_tracking(FT81X_Handle *handle)
         res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_DISPLAY());
         if (res != FT81X_RESULT_OK)
         {
-            DbgConsole_Printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
+            printf("ft81x_graphics_engine_write_display_list_cmd failed with %u\n", res);
             return res;
         }
 
@@ -604,7 +605,7 @@ ft81x_result test3_tracking(FT81X_Handle *handle)
         res = ft81x_graphics_engine_end_display_list(handle);
         if (res != FT81X_RESULT_OK)
         {
-            DbgConsole_Printf("ft81x_graphics_engine_end_display_list failed with %u\n", res);
+            printf("ft81x_graphics_engine_end_display_list failed with %u\n", res);
             return res;
         }
 
@@ -617,7 +618,7 @@ ft81x_result test3_tracking(FT81X_Handle *handle)
             res = ft81x_touch_manager_check_for_touched_tag(handle, &touched_tag, &touched_tag_track);
             if (res != FT81X_RESULT_OK)
             {
-                DbgConsole_Printf("ft81x_touch_manager_check_for_touched_tag failed with %u\n", res);
+                printf("ft81x_touch_manager_check_for_touched_tag failed with %u\n", res);
                 return res;
             }
         }
@@ -662,7 +663,7 @@ ft81x_result test3(FT81X_Handle *handle)
     res = test3_calibrate(handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("test3_calibrate failed with %u\n", res);
+        printf("test3_calibrate failed with %u\n", res);
         return res;
     }
 
@@ -672,7 +673,7 @@ ft81x_result test3(FT81X_Handle *handle)
     res = test3_set_screen_orientation(handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("test3_set_screen_orientation failed with %u\n", res);
+        printf("test3_set_screen_orientation failed with %u\n", res);
         return res;
     }
 
@@ -682,7 +683,7 @@ ft81x_result test3(FT81X_Handle *handle)
     res = test3_display_calibration_matrix(handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("test3_display_calibration_matrix failed with %u\n", res);
+        printf("test3_display_calibration_matrix failed with %u\n", res);
         return res;
     }
 
@@ -692,7 +693,7 @@ ft81x_result test3(FT81X_Handle *handle)
     res = test3_tags(handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("test3_tags failed with %u\n", res);
+        printf("test3_tags failed with %u\n", res);
         return res;
     }
 
@@ -702,7 +703,7 @@ ft81x_result test3(FT81X_Handle *handle)
     res = test3_tracking(handle);
     if (res != FT81X_RESULT_OK)
     {
-        DbgConsole_Printf("test3_tracking failed with %u\n", res);
+        printf("test3_tracking failed with %u\n", res);
         return res;
     }
 
