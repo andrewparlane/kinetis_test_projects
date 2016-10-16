@@ -151,8 +151,8 @@ ft81x_result test3_calibrate(FT81X_Handle *handle)
         return res;
     }
 
-    printf("0x%08X, 0x%08X, 0x%08X,\n", values[0], values[1], values[2]);
-    printf("0x%08X, 0x%08X, 0x%08X,\n", values[3], values[4], values[5]);
+    printf("0x%08X, 0x%08X, 0x%08X,\n", (unsigned int)values[0], (unsigned int)values[1], (unsigned int)values[2]);
+    printf("0x%08X, 0x%08X, 0x%08X,\n", (unsigned int)values[3], (unsigned int)values[4], (unsigned int)values[5]);
 #endif
     return FT81X_RESULT_OK;
 }
