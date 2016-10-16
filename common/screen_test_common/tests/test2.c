@@ -680,7 +680,7 @@ ft81x_result test2_gradient(FT81X_Handle *handle)
         return res;
     }
 
-#warning TODO: add support for scissor commands then improve test2_gradient()
+#pragma message WARN("TODO: add support for scissor commands then improve test2_gradient()")
 
     // display it
     res = ft81x_graphics_engine_write_display_list_cmd(handle, FT81X_DL_CMD_DISPLAY());
