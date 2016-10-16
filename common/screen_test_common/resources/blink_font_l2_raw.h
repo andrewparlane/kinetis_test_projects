@@ -11,6 +11,8 @@
 #include "ft81x_display_list.h"
 #include "ft81x_text_manager.h"
 
+#include <string.h>
+
 /*('file properties ',
             'format ', 'L2',
             ' stride ', 5,

@@ -4,6 +4,8 @@
 #include "ft81x.h"
 #include "ft81x_display_list.h"
 
+#include <string.h>
+
 /*
 ('file properties: ',
     'resolution ', 158x210,
