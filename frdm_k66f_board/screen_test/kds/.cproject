@@ -81,6 +81,7 @@
 									<listOptionValue builtIn="false" value="../../../../common/rtos/freertos_8.2.3/Source"/>
 									<listOptionValue builtIn="false" value="../../../../common/devices/MK66F18/gcc"/>
 									<listOptionValue builtIn="false" value="../../../../common/libs/ft81x_lib/include"/>
+									<listOptionValue builtIn="false" value="../../../../common/screen_test_common"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.933718024" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.gnu99" valueType="enumerated"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.869311397" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
@@ -222,6 +223,7 @@
 									<listOptionValue builtIn="false" value="../../../../common/rtos/freertos_8.2.3/Source"/>
 									<listOptionValue builtIn="false" value="../../../../common/devices/MK66F18/gcc"/>
 									<listOptionValue builtIn="false" value="../../../../common/libs/ft81x_lib/include"/>
+									<listOptionValue builtIn="false" value="../../../../common/screen_test_common"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.997197032" name="Language standard" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.std.gnu99" valueType="enumerated"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.2881285214" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">

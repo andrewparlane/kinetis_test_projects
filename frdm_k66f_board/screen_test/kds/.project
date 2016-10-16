@@ -163,17 +163,17 @@
 		<link>
 			<name>tests/test1.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/tests/test1.c</locationURI>
+			<locationURI>PARENT-3-PROJECT_LOC/common/screen_test_common/tests/test1.c</locationURI>
 		</link>
 		<link>
 			<name>tests/test2.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/tests/test2.c</locationURI>
+			<locationURI>PARENT-3-PROJECT_LOC/common/screen_test_common/tests/test2.c</locationURI>
 		</link>
 		<link>
 			<name>tests/test3.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/tests/test3.c</locationURI>
+			<locationURI>PARENT-3-PROJECT_LOC/common/screen_test_common/tests/test3.c</locationURI>
 		</link>
 		<link>
 			<name>MK66F18/drivers/fsl_adc16.c</name>
