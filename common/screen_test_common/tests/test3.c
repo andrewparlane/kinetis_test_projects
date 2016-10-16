@@ -1,7 +1,3 @@
-// freeRTOS includes
-#include "FreeRTOS.h"
-#include "task.h"
-
 // ft81x_lib includes
 #include "ft81x.h"
 #include "ft81x_display_list.h"
@@ -10,6 +6,9 @@
 #include "ft81x_image_manager.h"
 #include "ft81x_text_manager.h"
 #include "ft81x_touch_manager.h"
+
+// test platform
+#include "tests/platform.h"
 
 // standard includes
 #include <stdio.h>
@@ -252,7 +251,7 @@ ft81x_result test3_display_calibration_matrix(FT81X_Handle *handle)
         return res;
     }
 
-    vTaskDelay(3000);
+    Sleep(3000);
 
     return FT81X_RESULT_OK;
 }

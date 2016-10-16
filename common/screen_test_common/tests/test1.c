@@ -1,7 +1,3 @@
-// freeRTOS includes
-#include "FreeRTOS.h"
-#include "task.h"
-
 // ft81x_lib includes
 #include "ft81x.h"
 #include "ft81x_graphics_engine.h"
@@ -13,6 +9,9 @@
 #include "resources/cat_l8_raw.h"
 #include "resources/cat_argb1555_raw.h"
 #include "resources/cat_paletted8_raw.h"
+
+// test platform
+#include "tests/platform.h"
 
 // standard includes
 #include <stdio.h>
@@ -205,7 +204,7 @@ ft81x_result test1(FT81X_Handle *handle)
         return res;
     }
 
-    vTaskDelay(3000);
+    Sleep(3000);
 
     return FT81X_RESULT_OK;
 }

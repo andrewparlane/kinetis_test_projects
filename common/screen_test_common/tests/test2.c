@@ -1,7 +1,3 @@
-// freeRTOS includes
-#include "FreeRTOS.h"
-#include "task.h"
-
 // ft81x_lib includes
 #include "ft81x.h"
 #include "ft81x_display_list.h"
@@ -16,6 +12,9 @@
 #include "resources/cat_paletted8_compressed.h"
 #include "resources/nyam_rgb565_compressed.h"
 #include "resources/blink_font_l2_raw.h"
+
+// test platform
+#include "tests/platform.h"
 
 // standard includes
 #include <stdio.h>
@@ -44,7 +43,7 @@ ft81x_result test2_logo(FT81X_Handle *handle)
         printf("ft81x_graphics_engine_end_display_list failed with %u\n", res);
         return res;
     }
-    vTaskDelay(3000);
+    Sleep(3000);
 
     return FT81X_RESULT_OK;
 }
@@ -183,7 +182,7 @@ ft81x_result test2_compressed_images(FT81X_Handle *handle)
         return res;
     }
 
-    vTaskDelay(3000);
+    Sleep(3000);
 
     return FT81X_RESULT_OK;
 }
@@ -341,7 +340,7 @@ ft81x_result test2_text(FT81X_Handle *handle)
         return res;
     }
 
-    vTaskDelay(3000);
+    Sleep(3000);
 
     return FT81X_RESULT_OK;
 }
@@ -430,7 +429,7 @@ ft81x_result test2_buttons(FT81X_Handle *handle)
         return res;
     }
 
-    vTaskDelay(3000);
+    Sleep(3000);
 
     return FT81X_RESULT_OK;
 }
@@ -527,7 +526,7 @@ ft81x_result test2_clocks_and_guages(FT81X_Handle *handle)
         return res;
     }
 
-    vTaskDelay(3000);
+    Sleep(3000);
 
     return FT81X_RESULT_OK;
 }
@@ -648,7 +647,7 @@ ft81x_result test2_keys_dials_toggles(FT81X_Handle *handle)
         return res;
     }
 
-    vTaskDelay(3000);
+    Sleep(3000);
 
     return FT81X_RESULT_OK;
 }
@@ -699,7 +698,7 @@ ft81x_result test2_gradient(FT81X_Handle *handle)
         return res;
     }
 
-    vTaskDelay(3000);
+    Sleep(3000);
 
     return FT81X_RESULT_OK;
 }
@@ -782,9 +781,9 @@ ft81x_result test2_progress_scrollbars_sliders(FT81X_Handle *handle)
             return res;
         }
 
-        vTaskDelay(100);
+        Sleep(100);
     }
-    vTaskDelay(3000);
+    Sleep(3000);
 
     return FT81X_RESULT_OK;
 }
@@ -892,7 +891,7 @@ ft81x_result test2_transformations(FT81X_Handle *handle)
         return res;
     }
 
-    vTaskDelay(3000);
+    Sleep(3000);
 
     return FT81X_RESULT_OK;
 }
@@ -979,7 +978,7 @@ ft81x_result test2_spinners(FT81X_Handle *handle)
             return res;
         }
 
-        vTaskDelay(2000);
+        Sleep(2000);
 
         // stop it
         res = ft81x_coproc_cmd_stop(handle);
@@ -996,7 +995,7 @@ ft81x_result test2_spinners(FT81X_Handle *handle)
             return res;
         }
 
-        vTaskDelay(1000);
+        Sleep(1000);
     }
 
     return FT81X_RESULT_OK;
@@ -1109,7 +1108,7 @@ ft81x_result test2_screensaver(FT81X_Handle *handle)
         return res;
     }
 
-    vTaskDelay(5000);
+    Sleep(5000);
 
     // stop it
     res = ft81x_coproc_cmd_stop(handle);
@@ -1198,7 +1197,7 @@ ft81x_result test2_screensaver(FT81X_Handle *handle)
         return res;
     }
 
-    vTaskDelay(5000);
+    Sleep(5000);
 
     // stop it
     res = ft81x_coproc_cmd_stop(handle);
