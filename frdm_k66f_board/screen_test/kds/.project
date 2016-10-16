@@ -176,6 +176,11 @@
 			<locationURI>PARENT-3-PROJECT_LOC/common/screen_test_common/tests/test3.c</locationURI>
 		</link>
 		<link>
+			<name>tests/test_main.c</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/common/screen_test_common/tests/test_main.c</locationURI>
+		</link>
+		<link>
 			<name>MK66F18/drivers/fsl_adc16.c</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/common/devices/MK66F18/drivers/fsl_adc16.c</locationURI>
