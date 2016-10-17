@@ -45,6 +45,13 @@
 ** ###################################################################
 */
 
+/*
+   NOTE: This has been modified to limit the size of the bootloader.
+         Make sure that the value used in the length field for the
+         text section, is the same as is used as offsets in the app
+         linker script
+*/
+
 /* Entry Point */
 ENTRY(Reset_Handler)
 
@@ -57,7 +64,7 @@ MEMORY
 {
   m_interrupts          (RX)  : ORIGIN = 0x00000000, LENGTH = 0x00000400
   m_flash_config        (RX)  : ORIGIN = 0x00000400, LENGTH = 0x00000010
-  m_text                (RX)  : ORIGIN = 0x00000410, LENGTH = 0x001FFBF0
+  m_text                (RX)  : ORIGIN = 0x00000410, LENGTH = 0x00008000 - 0x410
   m_data                (RW)  : ORIGIN = 0x1FFF0000, LENGTH = 0x00010000
   m_data_2              (RW)  : ORIGIN = 0x20000000, LENGTH = 0x00030000
 }
