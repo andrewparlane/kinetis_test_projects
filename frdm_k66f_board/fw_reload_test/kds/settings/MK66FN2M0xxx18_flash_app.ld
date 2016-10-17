@@ -45,6 +45,15 @@
 ** ###################################################################
 */
 
+/*
+   NOTE: This has been modified to place the app after the bootloader
+         Make sure that the value used in the origin and length fields
+         for program flash sections is the same as in the bootloader
+
+         Additionally we scrap the flash config section. That is managed
+         by the bootloader and not the app
+*/
+
 /* Entry Point */
 ENTRY(Reset_Handler)
 
@@ -55,11 +64,10 @@ M_VECTOR_RAM_SIZE = DEFINED(__ram_vector_table__) ? 0x0400 : 0x0;
 /* Specify the memory areas */
 MEMORY
 {
-  m_interrupts          (RX)  : ORIGIN = 0x00000000, LENGTH = 0x00000400
-  m_flash_config        (RX)  : ORIGIN = 0x00000400, LENGTH = 0x00000010
-  m_text                (RX)  : ORIGIN = 0x00000410, LENGTH = 0x001FFBF0
-  m_data                (RW)  : ORIGIN = 0x1FFF0000, LENGTH = 0x00010000
-  m_data_2              (RW)  : ORIGIN = 0x20000000, LENGTH = 0x00030000
+  m_interrupts          (RX)  : ORIGIN = 0x00008000 + 0x00000000,  LENGTH = 0x00000400
+  m_text                (RX)  : ORIGIN = 0x00008000 + 0x00000400,  LENGTH = 0x00200000 - (0x00008000 + 0x400)
+  m_data                (RW)  : ORIGIN = 0x1FFF0000,               LENGTH = 0x00010000
+  m_data_2              (RW)  : ORIGIN = 0x20000000,               LENGTH = 0x00030000
 }
 
 /* Define output sections */
@@ -73,13 +81,6 @@ SECTIONS
     KEEP(*(.isr_vector))     /* Startup code */
     . = ALIGN(4);
   } > m_interrupts
-
-  .flash_config :
-  {
-    . = ALIGN(4);
-    KEEP(*(.FlashConfig))    /* Flash Configuration Field (FCF) */
-    . = ALIGN(4);
-  } > m_flash_config
 
   /* The program code and other data goes into internal flash */
   .text :
