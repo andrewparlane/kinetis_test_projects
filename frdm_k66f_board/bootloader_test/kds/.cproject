@@ -285,14 +285,14 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
-		<configuration configurationName="release">
-			<resource resourceType="PROJECT" workspacePath="/FRDM-K64F_Test"/>
-		</configuration>
 		<configuration configurationName="Multiple configurations">
 			<resource resourceType="PROJECT" workspacePath="/FRDM-K64F_Demo"/>
 		</configuration>
 		<configuration configurationName="debug">
-			<resource resourceType="PROJECT" workspacePath="/FRDM-K64F_Test"/>
+			<resource resourceType="PROJECT" workspacePath="/bootloader_test"/>
+		</configuration>
+		<configuration configurationName="release">
+			<resource resourceType="PROJECT" workspacePath="/bootloader_test"/>
 		</configuration>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>

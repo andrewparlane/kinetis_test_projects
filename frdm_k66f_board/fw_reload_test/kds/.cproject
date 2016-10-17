@@ -305,10 +305,10 @@
 			<resource resourceType="PROJECT" workspacePath="/FRDM-K64F_Demo"/>
 		</configuration>
 		<configuration configurationName="debug">
-			<resource resourceType="PROJECT" workspacePath="/FRDM-K64F_Test"/>
+			<resource resourceType="PROJECT" workspacePath="/fw_reload_test"/>
 		</configuration>
 		<configuration configurationName="release">
-			<resource resourceType="PROJECT" workspacePath="/FRDM-K64F_Test"/>
+			<resource resourceType="PROJECT" workspacePath="/fw_reload_test"/>
 		</configuration>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
