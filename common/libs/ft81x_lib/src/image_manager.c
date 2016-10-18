@@ -387,6 +387,16 @@ ft81x_result ft81x_image_manager_send_image_draw_dl(FT81X_Handle *handle, const 
         return res;
     }
 
+    // set the image as active
+    // this doesn't seem to be needed by the actual hardware
+    // however it is needed by the windows emulator
+    // doesn't hurt much to put it in here
+    res = ft81x_image_manager_set_active_bitmap(handle, image_handle);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
     // then draw the image
     if (image_handle->image_properties->format != FT81X_BITMAP_FORMAT_PALETTED8)
     {
@@ -419,6 +429,16 @@ ft81x_result ft81x_image_manager_send_image_draw_dl_with_macro_0(FT81X_Handle *h
 {
     // first we set up the matrix for any transforms
     ft81x_result res = setup_draw_transforms(handle, image_handle, filter, transform);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // set the image as active
+    // this doesn't seem to be needed by the actual hardware
+    // however it is needed by the windows emulator
+    // doesn't hurt much to put it in here
+    res = ft81x_image_manager_set_active_bitmap(handle, image_handle);
     if (res != FT81X_RESULT_OK)
     {
         return res;
