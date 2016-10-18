@@ -61,11 +61,18 @@ ft81x_result ft81x_text_manager_load_custom_font(FT81X_Handle *handle, const FT8
         .linestride     = ip->linestride,
         .width          = ip->width,
         .height         = ip->height,
-        .image_offset   = font_handle->image_handle.load_offset,
     };
 
+    // get the address of the image in g_ram
+    res = ft81x_g_ram_manager_get_addr(handle, &font_handle->image_handle.allocation_data, &fmb.image_offset);
+    if (res != FT81X_RESULT_OK)
+    {
+        // free the image data
+        return res;
+    }
+
     // allocate space in g_ram, storing the offset in the font_handle
-    res = ft81x_g_ram_manager_allocate(handle, SIZEOF_FONT_METRIC_BLOCK, &(font_handle->metric_block_offset));
+    res = ft81x_g_ram_manager_allocate(handle, SIZEOF_FONT_METRIC_BLOCK, &(font_handle->metric_block_allocation_data));
     if (res != FT81X_RESULT_OK)
     {
         // free the image data
@@ -74,14 +81,14 @@ ft81x_result ft81x_text_manager_load_custom_font(FT81X_Handle *handle, const FT8
     }
 
     // write the character widths array
-    res = ft81x_g_ram_manager_write(handle, font_handle->metric_block_offset, NUM_CHARS, font_properties->character_widths);
+    res = ft81x_g_ram_manager_write(handle, &font_handle->metric_block_allocation_data, 0, NUM_CHARS, font_properties->character_widths);
     if (res != FT81X_RESULT_OK)
     {
         return res;
     }
 
     // write the metric block
-    return ft81x_g_ram_manager_write(handle, font_handle->metric_block_offset + NUM_CHARS, sizeof(Font_Metric_Block), (uint8_t *)&fmb);
+    return ft81x_g_ram_manager_write(handle, &font_handle->metric_block_allocation_data, NUM_CHARS, sizeof(Font_Metric_Block), (uint8_t *)&fmb);
 }
 
 ft81x_result ft81x_text_manager_get_font_handle_for_inbuilt_font(FT81X_Handle *handle, FT81X_Font_Handle *font_handle, uint8_t font_id)
@@ -130,8 +137,16 @@ ft81x_result ft81x_text_manager_send_font_init_dl(FT81X_Handle *handle, const FT
             return res;
         }
 
+        // get the addr we've been allocated, to pass to the co-proc
+        uint32_t metric_allocated_addr;
+        res = ft81x_g_ram_manager_get_addr(handle, &(font_handle->metric_block_allocation_data), &metric_allocated_addr);
+        if (res != FT81X_RESULT_OK)
+        {
+            return res;
+        }
+
         // then we use the setfont2 co-proc command to set this image up as a font
-        return ft81x_coproc_cmd_setfont2(handle, font_handle->image_handle.bitmap_handle, font_handle->metric_block_offset, FIRST_CHAR);
+        return ft81x_coproc_cmd_setfont2(handle, font_handle->image_handle.bitmap_handle, metric_allocated_addr, FIRST_CHAR);
     }
     else
     {

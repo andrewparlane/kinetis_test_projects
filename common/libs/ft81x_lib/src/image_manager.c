@@ -15,14 +15,14 @@ static ft81x_result load_raw_image(FT81X_Handle *handle, const FT81X_Image_Prope
     ft81x_result res;
 
     // allocate space in g_ram, storing the offset in the image_handle
-    res = ft81x_g_ram_manager_allocate(handle, image_properties->size, &(image_handle->load_offset));
+    res = ft81x_g_ram_manager_allocate(handle, image_properties->size, &(image_handle->allocation_data));
     if (res != FT81X_RESULT_OK)
     {
         return res;
     }
 
     // write the image to g_ram
-    return ft81x_g_ram_manager_write(handle, image_handle->load_offset, image_properties->size, image_properties->data);
+    return ft81x_g_ram_manager_write(handle, &image_handle->allocation_data, 0, image_properties->size, image_properties->data);
 }
 
 static ft81x_result load_raw_image_lut(FT81X_Handle *handle, const FT81X_Image_Properties *image_properties, FT81X_Image_Handle *image_handle)
@@ -30,19 +30,19 @@ static ft81x_result load_raw_image_lut(FT81X_Handle *handle, const FT81X_Image_P
     ft81x_result res;
 
     // allocate space in g_ram, storing the offset in the image_handle
-    res = ft81x_g_ram_manager_allocate(handle, image_properties->lut_size, &(image_handle->lut_load_offset));
+    res = ft81x_g_ram_manager_allocate(handle, image_properties->lut_size, &(image_handle->lut_allocation_data));
     if (res != FT81X_RESULT_OK)
     {
         return res;
     }
 
     // write the LUT to g_ram
-    return ft81x_g_ram_manager_write(handle, image_handle->lut_load_offset, image_properties->lut_size, image_properties->lut_data);
+    return ft81x_g_ram_manager_write(handle, &image_handle->lut_allocation_data, 0, image_properties->lut_size, image_properties->lut_data);
 }
 
 #ifdef FT81X_DEBUG
 
-static ft81x_result check_for_overflow(FT81X_Handle *handle, uint32_t load_offset, uint32_t expected_decompress_size)
+static ft81x_result check_for_overflow(FT81X_Handle *handle, uint32_t start_addr, uint32_t expected_decompress_size)
 {
     ft81x_result res;
 
@@ -86,7 +86,7 @@ static ft81x_result check_for_overflow(FT81X_Handle *handle, uint32_t load_offse
     uint32_t end_addr;
     READ_GPU_REG_32(FT81X_COPROC_CMD_RAM + end_address_location, end_addr);
 
-    uint32_t actual_decompress_size = end_addr - load_offset;
+    uint32_t actual_decompress_size = end_addr - start_addr;
 
     if (actual_decompress_size > expected_decompress_size)
     {
@@ -109,21 +109,29 @@ static ft81x_result load_compressed_image(FT81X_Handle *handle, const FT81X_Imag
     // but will detect if your image decompressed to larger
     // than it should.
     uint32_t decompress_size = image_properties->linestride * image_properties->height;
-    res = ft81x_g_ram_manager_allocate(handle, decompress_size, &(image_handle->load_offset));
+    res = ft81x_g_ram_manager_allocate(handle, decompress_size, &(image_handle->allocation_data));
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // get the addr we've been allocated, to pass to the co-proc
+    uint32_t allocated_addr;
+    res = ft81x_g_ram_manager_get_addr(handle, &(image_handle->allocation_data), &allocated_addr);
     if (res != FT81X_RESULT_OK)
     {
         return res;
     }
 
     // send the inflate command and the data
-    res = ft81x_coproc_cmd_inflate(handle, image_handle->load_offset, image_properties->size, image_properties->data);
+    res = ft81x_coproc_cmd_inflate(handle, allocated_addr, image_properties->size, image_properties->data);
     if (res != FT81X_RESULT_OK)
     {
         return res;
     }
 
 #ifdef FT81X_DEBUG
-    res = check_for_overflow(handle, image_handle->load_offset, decompress_size);
+    res = check_for_overflow(handle, allocated_addr, decompress_size);
     if (res != FT81X_RESULT_OK)
     {
         return res;
@@ -166,21 +174,29 @@ static ft81x_result load_compressed_image_lut(FT81X_Handle *handle, const FT81X_
     // for overflows. This will slow down the execution
     // but will detect if your image decompressed to larger
     // than it should.
-    res = ft81x_g_ram_manager_allocate(handle, decompress_size, &(image_handle->lut_load_offset));
+    res = ft81x_g_ram_manager_allocate(handle, decompress_size, &(image_handle->lut_allocation_data));
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
+    // get the addr we've been allocated, to pass to the co-proc
+    uint32_t allocated_addr;
+    res = ft81x_g_ram_manager_get_addr(handle, &(image_handle->lut_allocation_data), &allocated_addr);
     if (res != FT81X_RESULT_OK)
     {
         return res;
     }
 
     // send the inflate command and the data
-    res = ft81x_coproc_cmd_inflate(handle, image_handle->lut_load_offset, image_properties->lut_size, image_properties->lut_data);
+    res = ft81x_coproc_cmd_inflate(handle, allocated_addr, image_properties->lut_size, image_properties->lut_data);
     if (res != FT81X_RESULT_OK)
     {
         return res;
     }
 
 #ifdef FT81X_DEBUG
-    res = check_for_overflow(handle, image_handle->lut_load_offset, decompress_size);
+    res = check_for_overflow(handle, allocated_addr, decompress_size);
     if (res != FT81X_RESULT_OK)
     {
         return res;
@@ -262,6 +278,16 @@ static ft81x_result send_non_paletted8_image_draw_dl(FT81X_Handle *handle, const
 
 static ft81x_result send_paletted8_image_draw_dl(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle, uint32_t x, uint32_t y, uint8_t use_macro_0)
 {
+    ft81x_result res;
+
+    // get the addr we've been allocated, to use in the DL
+    uint32_t lut_allocated_addr;
+    res = ft81x_g_ram_manager_get_addr(handle, &(image_handle->lut_allocation_data), &lut_allocated_addr);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
+
     const uint32_t dl[] =
     {
         FT81X_DL_CMD_BEGIN((FT81X_PRIMITIVE_BITMAP)),
@@ -271,7 +297,7 @@ static ft81x_result send_paletted8_image_draw_dl(FT81X_Handle *handle, const FT8
             /* alpha */
             FT81X_DL_CMD_BLEND_FUNC(FT81X_BLEND_FUNC_ONE, FT81X_BLEND_FUNC_ZERO),
             FT81X_DL_CMD_COLOUR_MASK(0, 0, 0, 1),
-            FT81X_DL_CMD_PALETTE_SOURCE(image_handle->lut_load_offset+3),
+            FT81X_DL_CMD_PALETTE_SOURCE(lut_allocated_addr + 3),
             (use_macro_0 ? FT81X_DL_CMD_MACRO(0) :
                            FT81X_DL_CMD_VERTEX2II(x, y, image_handle->bitmap_handle, 0)),
 
@@ -279,17 +305,17 @@ static ft81x_result send_paletted8_image_draw_dl(FT81X_Handle *handle, const FT8
             FT81X_DL_CMD_BLEND_FUNC(FT81X_BLEND_FUNC_DST_ALPHA, FT81X_BLEND_FUNC_ONE_MINUS_DST_ALPHA),
             /* red */
             FT81X_DL_CMD_COLOUR_MASK(1, 0, 0, 0),
-            FT81X_DL_CMD_PALETTE_SOURCE(image_handle->lut_load_offset+2),
+            FT81X_DL_CMD_PALETTE_SOURCE(lut_allocated_addr + 2),
             (use_macro_0 ? FT81X_DL_CMD_MACRO(0) :
                            FT81X_DL_CMD_VERTEX2II(x, y, image_handle->bitmap_handle, 0)),
             /* green */
             FT81X_DL_CMD_COLOUR_MASK(0, 1, 0, 0),
-            FT81X_DL_CMD_PALETTE_SOURCE(image_handle->lut_load_offset+1),
+            FT81X_DL_CMD_PALETTE_SOURCE(lut_allocated_addr + 1),
             (use_macro_0 ? FT81X_DL_CMD_MACRO(0) :
                            FT81X_DL_CMD_VERTEX2II(x, y, image_handle->bitmap_handle, 0)),
             /* blue */
             FT81X_DL_CMD_COLOUR_MASK(0, 0, 1, 0),
-            FT81X_DL_CMD_PALETTE_SOURCE(image_handle->lut_load_offset+0),
+            FT81X_DL_CMD_PALETTE_SOURCE(lut_allocated_addr + 0),
             (use_macro_0 ? FT81X_DL_CMD_MACRO(0) :
                            FT81X_DL_CMD_VERTEX2II(x, y, image_handle->bitmap_handle, 0)),
 
@@ -366,13 +392,22 @@ ft81x_result ft81x_image_manager_load_image(FT81X_Handle *handle, const FT81X_Im
 // ----------------------------------------------------------------------------
 ft81x_result ft81x_image_manager_send_image_init_dl(FT81X_Handle *handle, const FT81X_Image_Handle *image_handle)
 {
+    ft81x_result res;
     const FT81X_Image_Properties *ip = image_handle->image_properties;
+
+    // get the addr we've been allocated, to use in the DL
+    uint32_t allocated_addr;
+    res = ft81x_g_ram_manager_get_addr(handle, &(image_handle->allocation_data), &allocated_addr);
+    if (res != FT81X_RESULT_OK)
+    {
+        return res;
+    }
 
     const uint32_t dl[] =
     {
         FT81X_DL_CMD_BITMAP_HANDLE(image_handle->bitmap_handle),
         FT81X_DL_CMD_BITMAP_LAYOUT(ip->format, ip->linestride, ip->height),
-        FT81X_DL_CMD_BITMAP_SOURCE(image_handle->load_offset)
+        FT81X_DL_CMD_BITMAP_SOURCE(allocated_addr)
     };
 
     return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(dl), dl);

@@ -70,9 +70,9 @@ typedef struct
 
 typedef struct
 {
-    FT81X_Image_Handle image_handle;
-    uint32_t           metric_block_offset; // offset of the metric block in g_ram
-    uint8_t            custom;              // are we a custom / or an inbuilt font?
+    FT81X_Image_Handle                  image_handle;
+    FT81X_G_RAM_Manager_Allocation_Data metric_block_allocation_data; // offset of the metric block in g_ram
+    uint8_t                             custom;                       // are we a custom / or an inbuilt font?
 } FT81X_Font_Handle;
 
 ft81x_result ft81x_text_manager_load_custom_font(FT81X_Handle *handle, const FT81X_Font_Properties *font_properties, FT81X_Font_Handle *font_handle);

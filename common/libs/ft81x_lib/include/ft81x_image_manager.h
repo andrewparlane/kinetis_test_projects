@@ -24,10 +24,10 @@ typedef struct
 
 typedef struct
 {
-    const FT81X_Image_Properties   *image_properties;
-    uint8_t                         bitmap_handle;      // pass to VERTEX2II()
-    uint32_t                        load_offset;        // offset of image in g_ram
-    uint32_t                        lut_load_offset;    // offset of LUT in g_ram (if format is paletted)
+    const FT81X_Image_Properties       *image_properties;
+    uint8_t                             bitmap_handle;          // pass to VERTEX2II()
+    FT81X_G_RAM_Manager_Allocation_Data allocation_data;        // offset of image in g_ram
+    FT81X_G_RAM_Manager_Allocation_Data lut_allocation_data;    // offset of LUT in g_ram (if format is paletted)
 } FT81X_Image_Handle;
 
 typedef struct

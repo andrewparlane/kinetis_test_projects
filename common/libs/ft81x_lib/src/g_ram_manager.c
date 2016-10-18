@@ -38,7 +38,7 @@ ft81x_result ft81x_g_ram_manager_initialise(FT81X_Handle *handle)
     return FT81X_RESULT_OK;
 }
 
-ft81x_result ft81x_g_ram_manager_allocate(FT81X_Handle *handle, uint32_t count, uint32_t *offset)
+ft81x_result ft81x_g_ram_manager_allocate(FT81X_Handle *handle, uint32_t count, FT81X_G_RAM_Manager_Allocation_Data *allocation_data)
 {
     // look through the linked list trying to find a big enough unalloctade region
     GRAM_Linked_List_Node *node = &(handle->g_ram_manager_data.head);
@@ -108,7 +108,8 @@ ft81x_result ft81x_g_ram_manager_allocate(FT81X_Handle *handle, uint32_t count, 
             node->next = new_node;
         }
 
-        *offset = node->address_and_flags & (ADDRESS_MASK);
+        *allocation_data = (void *)node;
+
         return FT81X_RESULT_OK;
     }
 
@@ -119,9 +120,19 @@ ft81x_result ft81x_g_ram_manager_allocate(FT81X_Handle *handle, uint32_t count, 
     return FT81X_RESULT_OUT_OF_G_RAM;
 }
 
-ft81x_result ft81x_g_ram_manager_write(FT81X_Handle *handle, uint32_t offset, uint32_t count, const uint8_t *data)
+ft81x_result ft81x_g_ram_manager_write(FT81X_Handle *handle, const FT81X_G_RAM_Manager_Allocation_Data *allocation_data, uint32_t offset, uint32_t count, const uint8_t *data)
 {
-    WRITE_GPU_MEM(((FT81X_G_RAM) + offset), count, data);
+    const GRAM_Linked_List_Node *node = (const GRAM_Linked_List_Node *)*allocation_data;
+
+    WRITE_GPU_MEM(((FT81X_G_RAM) + (node->address_and_flags & ADDRESS_MASK)) + offset, count, data);
+
+    return FT81X_RESULT_OK;
+}
+
+ft81x_result ft81x_g_ram_manager_get_addr(FT81X_Handle *handle, const FT81X_G_RAM_Manager_Allocation_Data *allocation_data, uint32_t *addr)
+{
+    const GRAM_Linked_List_Node *node = (const GRAM_Linked_List_Node *)*allocation_data;
+    *addr = node->address_and_flags & ADDRESS_MASK;
 
     return FT81X_RESULT_OK;
 }
