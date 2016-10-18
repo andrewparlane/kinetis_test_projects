@@ -286,8 +286,8 @@ ft81x_result ft81x_coproc_cmd_translate_double(FT81X_Handle *handle, double x, d
 {
     // pass x and y to the processor in 16.16 fixed point format
     const uint32_t cmd[] = { FT81X_COPROC_CMD_ID_TRANSLATE,
-                             x * 65536,
-                             y * 65536};
+                             (uint32_t)(x * 65536.0),
+                             (uint32_t)(y * 65536.0)};
 
     return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(cmd), cmd);
 }
@@ -306,8 +306,8 @@ ft81x_result ft81x_coproc_cmd_scale_double(FT81X_Handle *handle, double x, doubl
 {
     // pass x and y to the processor in 16.16 fixed point format
     const uint32_t cmd[] = { FT81X_COPROC_CMD_ID_SCALE,
-                             x * 65536,
-                             y * 65536};
+                             (uint32_t)(x * 65536.0),
+                             (uint32_t)(y * 65536.0)};
 
     return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(cmd), cmd);
 }
@@ -315,7 +315,7 @@ ft81x_result ft81x_coproc_cmd_scale_double(FT81X_Handle *handle, double x, doubl
 ft81x_result ft81x_coproc_cmd_rotate_double(FT81X_Handle *handle, double degrees)
 {
     const uint32_t cmd[] = { FT81X_COPROC_CMD_ID_ROTATE,
-                             (degrees * 65536) / 360 };
+                             (uint32_t)((degrees * 65536.0) / 360.0) };
 
     return ft81x_graphics_engine_write_display_list_snippet(handle, sizeof(cmd), cmd);
 }
