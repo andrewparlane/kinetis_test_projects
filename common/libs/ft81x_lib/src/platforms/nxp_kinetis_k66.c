@@ -95,7 +95,11 @@ ft81x_result ft81x_platform_gpu_spi_comms_initialise(FT81X_Handle *handle)
     config.ctarConfig.cpol = kDSPI_ClockPolarityActiveHigh;
     config.ctarConfig.cpha = kDSPI_ClockPhaseFirstEdge;
     config.ctarConfig.direction = kDSPI_MsbFirst;
-    config.ctarConfig.pcsToSckDelayInNanoSec = 500000000U / FT81X_GPU_SPI_BAUD_RATE; // todo this needs to be at least 4nS
+    // Set the delay between bytes to be 1/2 the period of the clk
+    // The + 1 is so we round up not down.
+    // must be at least 4nS. However the max SPI clk is 30MHz.
+    // (int)(500,000,000 / 30,000,000) + 1 = 17
+    config.ctarConfig.pcsToSckDelayInNanoSec = (500000000U / FT81X_GPU_SPI_BAUD_RATE) + 1;
     config.ctarConfig.lastSckToPcsDelayInNanoSec = 0;
     config.ctarConfig.betweenTransferDelayInNanoSec = 0;
     config.whichPcs = FT81X_BOARD_GPU_SPI_INIT_CS;
